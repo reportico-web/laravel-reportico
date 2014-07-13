@@ -1,0 +1,27 @@
+{
+    "name": "reportico/reportico",
+    "description": "",
+    "authors": [
+        {
+            "name": "Reportico",
+            "email": "info@reportico.org"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations",
+            "src/controllers"
+        ],
+        "files": [
+            "src/Reportico/Reportico/reportico.php"
+        ],
+        "psr-0": {
+            "Reportico\\Reportico\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
