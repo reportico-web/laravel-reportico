@@ -153,7 +153,7 @@ class reportico_graph
 	var $plot = array();
 	var $reportico = false;
 
-	function reportico_graph(&$reportico, $in_val = "")
+	function __construct(&$reportico, $in_val = "")
 	{
 		$this->reportico = $reportico;
 		$this->graph_column = $in_val;

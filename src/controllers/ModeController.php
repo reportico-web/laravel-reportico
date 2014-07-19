@@ -12,8 +12,6 @@ class ModeController extends BaseController
 
     function __construct() {
         $this->engine= App::make("getReporticoEngine");
-        //$this->partialRender = Yii::app()->request->getQuery("partialReportico", false);
-        //parent::__construct($id,$module);
     }
 
     // Run reportico in admin mode

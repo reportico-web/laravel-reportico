@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reportico;
  /*
      pData - Simplifying data population for pChart
      Copyright (C) 2008 Jean-Damien POGOLOTTI
@@ -50,7 +50,7 @@
    var $Data;
    var $DataDescription;
 
-   function pData()
+   function __construct()
     {
      $this->Data                           = "";
      $this->DataDescription                = "";

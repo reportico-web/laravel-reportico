@@ -69,17 +69,12 @@ class reportico_datasource extends reportico_object
 	var $_conn_database = SW_DB_DATABASE;
 	var $_conn_server = SW_DB_SERVER;
 	var $_conn_protocol = SW_DB_PROTOCOL;
-	
-	function reportico_datasource($driver = "mysql", $host_name = "localhost", 
-						$service_name = "?Unknown?", $server = false, $protocol = false )
-	{
-		reportico_object::reportico_object();
 
-		$this->driver = $driver;
-		$this->host_name = $host_name;
-		$this->service_name = $service_name;
-		$this->protocol = $protocol;
-		$this->server = $server;
+    var $external_connection = false;
+	
+	function __construct($pdo = false)
+	{
+        $this->external_connection = &$pdo;
 	}
 
 	function set_details($driver = "mysql", $host_name = "localhost", 
@@ -288,7 +283,7 @@ class reportico_datasource extends reportico_object
         return $found;
     }
 
-	function connect($ignore_config = false)
+	function connect()
 	{
 		$connected = false;
 
@@ -297,17 +292,7 @@ class reportico_datasource extends reportico_object
 			$this->disconnect();
 		}
 
-		if ( $ignore_config )
-		{
-			$this->_conn_driver = $this->driver;
-			$this->_conn_user_name = $this->user_name;
-			$this->_conn_password = $this->password;
-			$this->_conn_host_name = $this->host_name;
-			$this->_conn_database = $this->database;
-			$this->_conn_server = $this->server;
-			$this->_conn_protocol = $this->protocol;
-		}
-		else if ( SW_DB_CONNECT_FROM_CONFIG )
+		if ( SW_DB_CONNECT_FROM_CONFIG )
 		{
 			$this->_conn_driver = SW_DB_DRIVER;
 			if ( !$this->_conn_user_name ) 
@@ -337,6 +322,14 @@ class reportico_datasource extends reportico_object
 			$connected = true;
 		}
 
+
+        if ( $this->external_connection )
+        {
+            $this->ado_connection = NewADOConnection("pdo");
+			$this->ado_connection->ConnectExisting($this->external_connection);
+		    $this->connected = true;
+		    return $this->connected;
+        }
 
 		switch ( $this->_conn_driver )
 		{
@@ -516,6 +509,7 @@ class reportico_datasource extends reportico_object
 				break;
 
 			case "pdo_mysql":
+echo "done";
 				if ( class_exists('PDO', false) )
 				{
                     if ( !$this->pdo_driver_exists( "mysql" ) )
@@ -640,6 +634,7 @@ class reportico_datasource extends reportico_object
 		}
 
 		$this->connected = $connected;
+echo "done";
 		return $this->connected;
 	}
 
@@ -666,7 +661,7 @@ class reportico_db_array
 	var $ct = 0;
 	var $numrows = 0;
 
-	function reportico_db_array()
+	function __construct()
 	{
 	}
 

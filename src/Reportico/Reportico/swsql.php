@@ -56,7 +56,7 @@ class reportico_sql_parser
     var $whereoffset = 0;       // Positon in sql where WHERE clause exists or would exist
     var $haswhere = false;      // Does the sql have a where clause?
 
-	function reportico_sql_parser( $in_sql )
+	function __construct( $in_sql )
 	{
 		$this->sql = $in_sql;
 	}

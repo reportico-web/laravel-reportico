@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2014-07-10 21:52:00
+<?php /* Smarty version 2.6.26, created on 2014-07-19 12:01:20
          compiled from prepare.tpl */ ?>
 <?php if (! $this->_tpl_vars['REPORTICO_AJAX_CALLED']): ?>
 <?php if (! $this->_tpl_vars['EMBEDDED_REPORT']): ?>
@@ -545,22 +545,16 @@ swLinkMenu" type="submit" name="logout" value="<?php echo $this->_tpl_vars['T_LO
 " name="mainquerquryqcol0000_ANY">
     				<input type="submit" class="prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITASSIGNMENT']; ?>
-" id="submit_mainquerassg<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITASSIGNMENT']; ?>
-" name="mainquerassg<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainquerassg0000" value="<?php echo $this->_tpl_vars['T_EDITASSIGNMENT']; ?>
+" name="mainquerassg0000_ANY">
     				<input type="submit" class="prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITGROUPS']; ?>
-" id="submit_mainqueroutpgrps<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITGROUPS']; ?>
-" name="mainqueroutpgrps<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainqueroutpgrps0000" value="<?php echo $this->_tpl_vars['T_EDITGROUPS']; ?>
+" name="mainqueroutpgrps0000_ANY">
     				<input type="submit" class="prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITGRAPHS']; ?>
-" id="submit_mainqueroutpgrph<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITGRAPHS']; ?>
-" name="mainqueroutpgrph<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainqueroutpgrph0000" value="<?php echo $this->_tpl_vars['T_EDITGRAPHS']; ?>
+" name="mainqueroutpgrph0000_ANY">
 </div>
 <?php else: ?>
 <div style="width: 100%; padding-top: 3px; text-align: right">
@@ -577,24 +571,18 @@ prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo
     				<input type="submit" class="<?php echo $this->_tpl_vars['BOOTSTRAP_STYLE_TOOLBAR_BUTTON']; ?>
 prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITASSIGNMENT']; ?>
-" id="submit_mainquerassg<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITASSIGNMENT']; ?>
-" name="mainquerassg<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainquerassg0000" value="<?php echo $this->_tpl_vars['T_EDITASSIGNMENT']; ?>
+" name="mainquerassg0000_ANY">
     				<input type="submit" class="<?php echo $this->_tpl_vars['BOOTSTRAP_STYLE_TOOLBAR_BUTTON']; ?>
 prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITGROUPS']; ?>
-" id="submit_mainqueroutpgrps<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITGROUPS']; ?>
-" name="mainqueroutpgrps<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainqueroutpgrps0000" value="<?php echo $this->_tpl_vars['T_EDITGROUPS']; ?>
+" name="mainqueroutpgrps0000_ANY">
     				<input type="submit" class="<?php echo $this->_tpl_vars['BOOTSTRAP_STYLE_TOOLBAR_BUTTON']; ?>
 prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITGRAPHS']; ?>
-" id="submit_mainqueroutpgrph<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITGRAPHS']; ?>
-" name="mainqueroutpgrph<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainqueroutpgrph0000" value="<?php echo $this->_tpl_vars['T_EDITGRAPHS']; ?>
+" name="mainqueroutpgrph0000_ANY">
 </div>
 <?php endif; ?>
 <?php endif; ?>
@@ -604,14 +592,12 @@ _ANY">
 <?php if (! $this->_tpl_vars['REPORTICO_BOOTSTRAP_MODAL']): ?>
     				<input type="submit" class="prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITTITLE']; ?>
-" id="submit_mainquerform_SHOW" value="<?php echo $this->_tpl_vars['T_SQL']; ?>
-" name="mainquerform_ReportTitle">
+" id="submit_mainquerform_SHOW" value="" name="mainquerform_ReportTitle">
 <?php else: ?>
     				<input type="submit" class="<?php echo $this->_tpl_vars['BOOTSTRAP_STYLE_TOOLBAR_BUTTON']; ?>
 prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITTITLE']; ?>
-" id="submit_mainquerform_SHOW" value="<?php echo $this->_tpl_vars['T_SQL']; ?>
-" name="mainquerform_ReportTitle">
+" id="submit_mainquerform_SHOW" value="" name="mainquerform_ReportTitle">
 <?php endif; ?>
 <?php endif; ?>
 </h1>
@@ -808,18 +794,14 @@ reporticoSubmit" name="clearform" value="<?php echo $this->_tpl_vars['T_RESET'];
 <?php if (! $this->_tpl_vars['REPORTICO_BOOTSTRAP_MODAL']): ?>
     				<input type="submit" class="prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITCRITERIA']; ?>
-" id="submit_mainquercrit<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITCRITERIA']; ?>
-" name="mainquercrit<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainquercrit0000" value="<?php echo $this->_tpl_vars['T_EDITCRITERIA']; ?>
+" name="mainquercrit0000_ANY">
 <?php else: ?>
     				<input type="submit" class="<?php echo $this->_tpl_vars['BOOTSTRAP_STYLE_TOOLBAR_BUTTON']; ?>
 prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="<?php echo $this->_tpl_vars['T_EDIT']; ?>
  <?php echo $this->_tpl_vars['T_EDITCRITERIA']; ?>
-" id="submit_mainquercrit<?php echo $this->_tpl_vars['criterianumber']; ?>
-" value="<?php echo $this->_tpl_vars['T_EDITCRITERIA']; ?>
-" name="mainquercrit<?php echo $this->_tpl_vars['criterianumber']; ?>
-_ANY">
+" id="submit_mainquercrit0000" value="<?php echo $this->_tpl_vars['T_EDITCRITERIA']; ?>
+" name="mainquercrit0000_ANY">
 <?php endif; ?>
 </div>
 <?php endif; ?>

@@ -41,7 +41,7 @@ define('AJAX_ENABLED',true);
 
 // Location of Reportico Top Level Directory From Browser Point of View
 // DB connection details for ADODB
-define('SW_DB_TYPE', 'pdo_mysql');
+define('SW_DB_TYPE', 'framework');
 // If connecting to existing framework db then use
 // db parameters from external framework
 if ( SW_DB_TYPE == "framework" )
@@ -55,16 +55,16 @@ define('SW_DB_DATABASE', SW_FRAMEWORK_DB_DATABASE);
 else
 {
 define('SW_DB_DRIVER', SW_DB_TYPE);
-define('SW_DB_USER', 'root');
-define('SW_DB_PASSWORD', 'root');
-define('SW_DB_HOST', 'localhost');
-define('SW_DB_DATABASE', 'iconnex');
+define('SW_DB_USER', 'N/A');
+define('SW_DB_PASSWORD', 'N/A');
+define('SW_DB_HOST', 'N/A');
+define('SW_DB_DATABASE', 'N/A');
 }
 define('SW_DB_CONNECT_FROM_CONFIG', true);
 define('SW_DB_DATEFORMAT', 'Y-m-d');
 define('SW_PREP_DATEFORMAT', 'Y-m-d');
-define('SW_DB_SERVER', '');
-define('SW_DB_PROTOCOL', '');
+define('SW_DB_SERVER', 'N/A');
+define('SW_DB_PROTOCOL', 'N/A');
 define('SW_DB_ENCODING', 'None');
 
 //HTML Output Encoding

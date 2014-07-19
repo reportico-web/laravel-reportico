@@ -1,40 +1,46 @@
 <?php
-class ReporticoController extends Controller
+/*
+** ReporticoController -
+** Controllers for base reportico functions like graphs and dbimages
+** - Admin
+*/
+class ReporticoController extends BaseController
 {
     public $engine = false;
+    public $partialRender = false;
 
-    function __construct($id,$module=null) {
-	$this->engine = $module->getReporticoEngine();
-        parent::__construct($id,$module);
+    function __construct() {
+        $this->engine= App::make("getReporticoEngine");
     }
 
-    public function actionReportico()
+    public function reportico()
     {
-	$this->renderPartial('reportico');
+        $this->engine->clear_reportico_session = true;
+        $this->engine->execute();
     }
 
-    public function actionAjax()
+    public function ajax()
     {
-	$this->renderPartial('reportico');
+        $this->engine->execute();
     }
 
-    public function actionGraph()
+    public function graph()
     {
-	include("dyngraph_pchart.php");
+	    include(__DIR__."/../Reportico/Reportico/dyngraph_pchart.php");
     }
 
-    public function actionDbimage()
+    public function dbimage()
     {
-	// Set Joomla Database Access Config from configuration
-	if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
-	{
+	    // Set Joomla Database Access Config from configuration
+	    if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
+	    {
             define('SW_FRAMEWORK_DB_DRIVER','pdo_mysql');
             define('SW_FRAMEWORK_DB_USER',Yii::app()->db->username);
             define('SW_FRAMEWORK_DB_PASSWORD',Yii::app()->db->password);
             define('SW_FRAMEWORK_DB_HOST',"127.0.0.1");
             define('SW_FRAMEWORK_DB_DATABASE',"reportico");
-	}
+	    }
 
-	include("imageget.php");
+	    include("imageget.php");
     }
 }

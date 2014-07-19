@@ -58,16 +58,16 @@ define('SW_DB_DATABASE', SW_FRAMEWORK_DB_DATABASE);
 else
 {
 define('SW_DB_DRIVER', SW_DB_TYPE);
-define('SW_DB_USER', '');
-define('SW_DB_PASSWORD', '');
-define('SW_DB_HOST', '127.0.0.1');
-define('SW_DB_DATABASE', '');
+define('SW_DB_USER', 'N/A');
+define('SW_DB_PASSWORD', 'N/A');
+define('SW_DB_HOST', 'N/A');
+define('SW_DB_DATABASE', 'N/A');
 }
 define('SW_DB_CONNECT_FROM_CONFIG', true);
 define('SW_DB_DATEFORMAT', 'Y-m-d');
 define('SW_PREP_DATEFORMAT', 'Y-m-d');
-define('SW_DB_SERVER', '');
-define('SW_DB_PROTOCOL', '');
+define('SW_DB_SERVER', 'N/A');
+define('SW_DB_PROTOCOL', 'N/A');
 define('SW_DB_ENCODING', 'UTF8');
 
 //HTML Output Encoding

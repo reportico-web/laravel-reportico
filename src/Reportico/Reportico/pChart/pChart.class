@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reportico;
  /*
      pChart - a PHP class to build charts!
      Copyright (C) 2008 Jean-Damien POGOLOTTI
@@ -194,7 +194,7 @@
    var $MapID            = NULL;
 
    /* This function create the background picture */
-   function pChart($XSize,$YSize)
+   function __construct($XSize,$YSize)
     {
      $this->XSize   = $XSize * 2;
      $this->YSize   = $YSize * 2;

@@ -1,6 +1,8 @@
 <?php namespace Reportico\Reportico;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Guard;
+
 
 class ReporticoServiceProvider extends ServiceProvider {
 
@@ -34,20 +36,11 @@ class ReporticoServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-//echo "<PRE>";
-//var_dump($this->app);
-//die;
         $app = $this->app;
         $this->app["router"]->get("reportico", function() use ($app)
         {
             //return View::make('reportico::reportico');
             return $this->app["view"]->make('reportico::reportico');
-        });
-
-        $this->app["router"]->get("reportico/do", function() use ($app)
-        {
-            //return View::make('reportico::reportico');
-            echo "oo";
         });
 
         $this->app["router"]->post("reportico/ajax", function() use ($app)
@@ -77,171 +70,131 @@ class ReporticoServiceProvider extends ServiceProvider {
 
         $this->app['getReporticoEngine'] = $this->app->share(function($app)
         {
-            //$form = new FormBuilder($app['html'], $app['url'], $app['session']->getToken());
-            //return $form->setSessionStore($app['session']);
-                $this->engine = new reportico();
+            $this->engine = new reportico();
 
-                //$x =  Yii::app()->getUrlManager() ;
-                //$type = Yii::app()->getUrlManager()->getUrlFormat();
-                //if ( Yii::app()->getUrlManager()->getUrlFormat() == "get" )
-                //{
-                    //$this->engine->reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"];
-                    //$this->engine->forward_url_get_parameters = "r=reportico/reportico/ajax";
-                    //$this->engine->forward_url_get_parameters_graph = "r=reportico/reportico/graph";
-                    //$this->engine->forward_url_get_parameters_dbimage = "r=reportico/reportico/dbimage";
-                    //$this->engine->reportico_ajax_mode = 1;
-                //}
-                //else
-                //{
-                    $this->engine->reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"]."/reportico/ajax";
-//$this->engine->reportico_ajax_script_url."/reportico/ajax";
-                    $this->engine->forward_url_get_parameters = false;
-                    $this->engine->forward_url_get_parameters_graph = "r=reportico/reportico/graph";
-                    $this->engine->forward_url_get_parameters_dbimage = "r=reportico/reportico/dbimage";
-                    $this->engine->reportico_ajax_mode = 2;
-                //}
-                $this->engine->embedded_report = true;
-                $this->engine->allow_debug = true;
-                $this->engine->framework_parent = "yii";
-                $this->engine->external_user = ""; //Yii::app()->user->id;
-                $this->engine->url_path_to_assets = $this->app["url"]->asset("packages/reportico/reportico/");
+            $this->engine->reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"]."/reportico/ajax";
+            $this->engine->forward_url_get_parameters = false;
+            //$this->engine->forward_url_get_parameters_graph = "reportico/graph";
+            //$this->engine->forward_url_get_parameters_dbimage = "reportico/dbimage";
 
-                // Indicates whether report output should include a refresh button
-                //$this->engine->show_refresh_button = false;
+            // Inficate 'path' mechanism for controllers in stead of 'get'
+            $this->engine->reportico_ajax_mode = 2;
 
+            $this->engine->embedded_report = true;
+            $this->engine->allow_debug = true;
+            $this->engine->framework_parent = \Config::get("reportico::framework_type");
 
-                // Jquery already included?
-                //$this->engine->jquery_preloaded = false;
+            if ( \Auth::user() )
+                $this->engine->external_user = \Auth::user()->id;
+            else
+                $this->engine->external_user = false;
+            $this->engine->external_user = ""; //Yii::app()->user->id;
+            $this->engine->url_path_to_assets = $this->app["url"]->asset(\Config::get("reportico::path_to_assets"));
 
-                // Bootstrap Features
-                // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
-                // If you are embedding reportico and you have already loaded bootstrap then set bootstrap_preloaded equals true so reportico
-                // doestnt load it again.
-                $this->engine->bootstrap_styles = "3";
-                $this->engine->bootstrap_preloaded = false;
+            // Indicates whether report output should include a refresh button
+            $this->engine->show_refresh_button = \Config::get("reportico::show_refresh_button");
 
-                // In bootstrap enable pages, the bootstrap modal is by default used for the quick edit buttons
-                // but they can be ignored and reportico's own modal invoked by setting this to true
-                $this->engine->force_reportico_mini_maintains = true;
+            // Jquery already included?
+            $this->engine->jquery_preloaded = \Config::get("reportico::jquery_preloaded");
 
-                // Engine to use for charts .. 
-                // HTML reports can use javascript charting, PDF reports must use PCHART
-                //$this->engine->charting_engine = "PCHART";
-                //$this->engine->charting_engine_html = "NVD3";
+            // Bootstrap Features
+            // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
+            // If you are embedding reportico and you have already loaded bootstrap then set bootstrap_preloaded equals true so reportico
+            // doestnt load it again.
+            $this->engine->bootstrap_styles = \Config::get("reportico::bootstrap_styles");
+            $this->engine->bootstrap_preloaded = \Config::get("reportico::bootstrap_preloaded");
 
-                // Whether to turn on dynamic grids to provide searchable/sortable reports
-                // $this->engine->dynamic_grids = true;
-                // $this->engine->dynamic_grids_sortable = true;
-                // $this->engine->dynamic_grids_searchable = true;
-                // $this->engine->dynamic_grids_paging = false;
-                // $this->engine->dynamic_grids_page_size = 10;
+            // In bootstrap enable pages, the bootstrap modal is by default used for the quick edit buttons
+            // but they can be ignored and reportico's own modal invoked by setting this to true
+            $this->engine->force_reportico_mini_maintains = \Config::get("reportico::force_reportico_maintain_modals");
 
-                // Show or hide various report elements
-                //$this->engine->output_template_parameters["show_hide_navigation_menu"] = "show";
-                //$this->engine->output_template_parameters["show_hide_dropdown_menu"] = "show";
-                //$this->engine->output_template_parameters["show_hide_report_output_title"] = "show";
-                $this->engine->output_template_parameters["show_hide_prepare_section_boxes"] = "hide";
-                $this->engine->output_template_parameters["show_hide_prepare_pdf_button"] = "hide";
-                $this->engine->output_template_parameters["show_hide_prepare_html_button"] = "hide";
-                //$this->engine->output_template_parameters["show_hide_prepare_print_html_button"] = "show";
-                $this->engine->output_template_parameters["show_hide_prepare_csv_button"] = "hide";
-                $this->engine->output_template_parameters["show_hide_prepare_page_style"] = "hide";
+            // Engine to use for charts .. 
+            // HTML reports can use javascript charting, PDF reports must use PCHART
+            $this->engine->charting_engine = \Config::get("reportico::charting_engine");
+            $this->engine->charting_engine_html = \Config::get("reportico::charting_engine_html");
 
-                // Static Menu definition
-                // ======================
-                // identifies the items that will show in the middle of the project menu page.
-                // If not set will use the project level menu definitions in project/projectname/menu.php
-                // To have no static menu ( for example if you just want to use a drop down then set to empty array )
-                // To define a static menu, follow the example here.
-                // report can be a valid report file ( without the xml suffix ).
-                // If title is left as AUTO then the title will be taken form the report definition
-                // Use title of BLANKLINE to separate items and LINE to draw a horizontal line separator
+            // Whether to turn on dynamic grids to provide searchable/sortable reports
+            $this->engine->dynamic_grids = \Config::get("reportico::dynamic_grids");
+            $this->engine->dynamic_grids_sortable = \Config::get("reportico::dynamic_grids_sortable");
+            $this->engine->dynamic_grids_searchable = \Config::get("reportico::dynamic_grids_searchable");
+            $this->engine->dynamic_grids_paging = \Config::get("reportico::dynamic_grids_paging");
+            $this->engine->dynamic_grids_page_size = \Config::get("reportico::dynamic_grids_page_size");
 
-                //$this->engine->static_menu = array (
-                    //array ( "report" => "an_xml_reportfile1", "title" => "<AUTO>" ),
-                    //array ( "report" => "another_reportfile", "title" => "<AUTO>" ),
-                    //array ( "report" => "", "title" => "BLANKLINE" ),
-                    //array ( "report" => "anotherfreportfile", "title" => "Custom Title" ),
-                    //array ( "report" => "", "title" => "BLANKLINE" ),
-                    //array ( "report" => "andanother", "title" => "Another Custom Title" ),
-                //);
-            
-                // To auto generate a static menu from all the xml report files in the project use
-                //$this->engine->static_menu = array ( array ( "report" => ".*\.xml", "title" => "<AUTO>" ) );
-            
-                // To hide the static report menu
-                //$this->engine->static_menu = array ();
+            // Show or hide various report elements
+            $this->engine->output_template_parameters["show_hide_navigation_menu"] = \Config::get("reportico::show_hide_navigation_menu");
+            $this->engine->output_template_parameters["show_hide_dropdown_menu"] = \Config::get("reportico::show_hide_dropdown_menu");
+            $this->engine->output_template_parameters["show_hide_report_output_title"] = \Config::get("reportico::show_hide_report_output_title");
+            $this->engine->output_template_parameters["show_hide_prepare_section_boxes"] = \Config::get("reportico::show_hide_prepare_section_boxes");
+            $this->engine->output_template_parameters["show_hide_prepare_pdf_button"] = \Config::get("reportico::show_hide_prepare_pdf_button");
+            $this->engine->output_template_parameters["show_hide_prepare_html_button"] = \Config::get("reportico::show_hide_prepare_html_button");
+            $this->engine->output_template_parameters["show_hide_prepare_print_html_button"] = \Config::get("reportico::show_hide_prepare_print_html_button");
+            $this->engine->output_template_parameters["show_hide_prepare_csv_button"] = \Config::get("reportico::show_hide_prepare_csv_button");
+            $this->engine->output_template_parameters["show_hide_prepare_page_style"] = \Config::get("reportico::show_hide_prepare_page_style");
 
-                // Dropdown Menu definition
-                // ========================
-                // Menu items for the drop down menu
-                // Enter definition for the the dropdown menu options across the top of the page
-                // Each array element represents a dropdown menu across the page and sub array items for each drop down
-                // You must specifiy a project folder for each project entry and the reportfile definitions must point to a valid xml report file
-                // within the specified project
-                //$this->engine->dropdown_menu = array(
-                //                array ( 
-                //                    "project" => "projectname",
-                //                    "title" => "dropdown menu 1 title",
-                //                    "items" => array (
-                //                        array ( "reportfile" => "report" ),
-                //                        array ( "reportfile" => "anotherreport" ),
-                //                        )
-                //                    ),
-                //                array ( 
-                //                    "project" => "projectname",
-                //                    "title" => "dropdown menu 2 title",
-                //                    "items" => array (
-                //                        array ( "reportfile" => "report" ),
-                //                        array ( "reportfile" => "anotherreport" ),
-                //                        )
-                //                    ),
-                //            );
+            // Static Menu definition
+            // ======================
+            $this->engine->static_menu = \Config::get("reportico::static_menu");
 
+            // Dropdown Menu definition
+            // ========================
+            $this->engine->dropdown_menu = \Config::get("reportico::dropdown_menu");
 
-                // Set Joomla Database Access Config from configuration
-                if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
+            $defaultconnection = \Config::get("database.default");
+            $useConnection = false;
+            if ( $defaultconnection )
+                $useConnection = \Config::get("database.connections.$defaultconnection");
+            else
+                $useConnection = array(
+                        "driver" => "unknown",
+                        "dbname" => "unknown",
+                        "user" => "unknown",
+                        "password" => "unknown",
+                        );
+
+            $this->engine->external_connection = \DB::connection()->getPdo();
+
+            // Set Joomla Database Access Config from configuration
+            if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
+            {
+
+                switch($useConnection["driver"]) 
                 {
-                    // Extract Yii database elements from connection string 
-                    $driver = "mysql";
-                    $host = "127.0.0.1";
-                    $dbname = "unnknown";
-                    //if ( Yii::app()->db->connectionString )
-                    //{
-                        $dbelements  = explode(':', "a:b:c:d:e");
-                        //$dbelements  = explode(':', Yii::app()->db->connectionString);
-                        if ( count($dbelements) > 1 )
-                        {
-                            $driver = $dbelements[0];
-                            $dbconbits = explode(";", $dbelements[1]);
-                            if ( preg_match("/mysql/", $driver ) )
-                                $driver = "pdo_mysql";
-
-                            foreach ( $dbconbits as $value )
-                            {
-                                $after = substr(strstr($value, "="), 1);
-                                $pos = strpos($value, "=");
-                                if ( $pos )
-                                {
-                                    $k = substr($value, 0, $pos);
-                                    $v = substr($value, $pos + 1);
-                                    if ( $k == "host" || $k == "hostname" ) 
-                                        $host = $v;
-                                    if ( $k == "dbname" || $k == "database" ) 
-                                        $dbname = $v;
-                                }
-                            }
-                        }
-                    //}
-                    define('SW_FRAMEWORK_DB_DRIVER', $driver);
-                    define('SW_FRAMEWORK_DB_USER', "user"); //Yii::app()->db->username);
-                    define('SW_FRAMEWORK_DB_PASSWORD', "password"); //Yii::app()->db->password);
-
-                    define('SW_FRAMEWORK_DB_HOST',$host);
-                    define('SW_FRAMEWORK_DB_DATABASE',$dbname);
+                    case "pgsql":
+                        $driver = "pdo_pgsql";
+                        break;
+                    case "sqlsrv":
+                        $driver = "pdo_sqlsrv";
+                        break;
+                    case "mysql":
+                        $driver = "pdo_mysql";
+                        break;
+                    case "sqlite":
+                        $driver = "pdo_sqlite3";
+                        break;
+                    default: 
+                        $driver = "unknown";
                 }
 
-                return $this->engine;
+                // Extract Yii database elements from connection string 
+                $host = "unknown";
+                $dbname = "unknown";
+                $user = "unknown";
+                $password = "unknown";
+
+                if ( isset ( $useConnection["host"] ) ) $host = $useConnection["host"];
+                if ( isset ( $useConnection["database"] ) ) $dbname = $useConnection["database"];
+                if ( isset ( $useConnection["username"] ) ) $user = $useConnection["username"];
+                if ( isset ( $useConnection["password"] ) ) $password = $useConnection["password"];
+
+                define('SW_FRAMEWORK_DB_DRIVER', $driver);
+                define('SW_FRAMEWORK_DB_USER', $user);
+                define('SW_FRAMEWORK_DB_PASSWORD', $password);
+
+                define('SW_FRAMEWORK_DB_HOST',$host);
+                define('SW_FRAMEWORK_DB_DATABASE',$dbname);
+            }
+
+            return $this->engine;
         });
 	}
 

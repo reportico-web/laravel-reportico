@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reportico;
  /*
      pCache - Faster renderding using data cache
      Copyright (C) 2008 Jean-Damien POGOLOTTI

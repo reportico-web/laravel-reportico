@@ -124,6 +124,44 @@ class ADODB_pdo extends ADOConnection {
 	}
 	
 	// returns true or false
+	function _connectExisting($pdo)
+	{
+		$this->_connectionID = $pdo;
+		if ($this->_connectionID) {
+			switch(ADODB_ASSOC_CASE){
+			case 0: $m = PDO::CASE_LOWER; break;
+			case 1: $m = PDO::CASE_UPPER; break;
+			default:
+			case 2: $m = PDO::CASE_NATURAL; break;
+			}
+			
+			//$this->_connectionID->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_SILENT );
+			$this->_connectionID->setAttribute(PDO::ATTR_CASE,$m);
+			
+			$class = 'ADODB_pdo_'.$this->dsnType;
+			//$this->_connectionID->setAttribute(PDO::ATTR_AUTOCOMMIT,true);
+			switch($this->dsnType) {
+			case 'oci':
+			case 'mysql':
+			case 'pgsql':
+			case 'mssql':
+				include_once(ADODB_DIR.'/drivers/adodb-pdo_'.$this->dsnType.'.inc.php');
+				break;
+			}
+			if (class_exists($class,false))
+				$this->_driver = new $class();
+			else
+				$this->_driver = new ADODB_pdo_base();
+			
+			$this->_driver->_connectionID = $this->_connectionID;
+			$this->_UpdatePDO();
+			return true;
+		}
+		$this->_driver = new ADODB_pdo_base();
+		return false;
+	}
+	
+	// returns true or false
 	function _connect($argDSN, $argUsername, $argPassword, $argDatabasename, $persist=false)
 	{
 		$at = strpos($argDSN,':');
@@ -247,7 +285,8 @@ class ADODB_pdo extends ADOConnection {
 		if ($this->_errormsg !== false) return $this->_errormsg;
 		if (!empty($this->_stmt)) $arr = $this->_stmt->errorInfo();
 		else if (!empty($this->_connectionID)) $arr = $this->_connectionID->errorInfo();
-		else return 'No Connection Established';
+		else 
+            return 'No Connection Established';
 		
 		
 		if ($arr) {
@@ -437,8 +476,10 @@ class ADOPDOStatement {
 	
 	function Execute($inputArr=false)
 	{
+echo "ex";
 		$savestmt = $this->_connectionID->_stmt;
 		$rs = $this->_connectionID->Execute(array(false,$this->_stmt),$inputArr);
+echo "ex";
 		$this->_connectionID->_stmt = $savestmt;
 		return $rs;
 	}

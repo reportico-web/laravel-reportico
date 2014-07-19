@@ -509,6 +509,9 @@ class reportico extends reportico_object
     var $dynamic_grids_paging = false;
     var $dynamic_grids_page_size = 10;
 
+    // Dynamic grids
+    var $parent_reportico = false;
+
     // In bootstrap enabled pages, the bootstrap modal is by default used for the quick edit buttons
     // but they can be ignored and reportico's own modal invoked by setting this to true
     var $force_reportico_mini_maintains = false;
@@ -945,6 +948,7 @@ class reportico extends reportico_object
 		else
 		{
 			$this->lookup_queries[$query_name] = new reportico_criteria_column(
+                        $this,
 						$query_name,
 						$in_table,
 						$in_column,
@@ -1817,7 +1821,7 @@ class reportico extends reportico_object
 		
 		if ( !$this->datasource )
 		{
-			$this->datasource = new reportico_datasource("none", "localhost", "");
+			$this->datasource = new reportico_datasource($this->external_connection);
 		}
 
 		$loggedon = false;
@@ -2755,6 +2759,7 @@ class reportico extends reportico_object
 			{
 				$this->columns[] = new reportico_criteria_column
 					(
+                        $this,
 						$query_name,
 						$table_name,
 						$column_name, 
@@ -3299,6 +3304,7 @@ class reportico extends reportico_object
 				if ( $this->datasource->connect() || $mode != "MAINTAIN" )
 				{
 					// Store connection session details
+					//echo " connected okay<br>";
 					set_reportico_session_param("database",$this->datasource->database);
 					set_reportico_session_param("hostname",$this->datasource->host_name);
 					set_reportico_session_param("driver",$this->datasource->driver);
@@ -3603,9 +3609,6 @@ class reportico extends reportico_object
         {
                 $p->import_into_query($this);
         }
-        //$this->sqlinput = $sql;
-        //if ( !get_reportico_session_param("sqlin") )
-		    //set_reportico_session_param("sqlin",$this->initial_sql);
     }
 
 	// -----------------------------------------------------------------------------
@@ -3874,6 +3877,12 @@ class reportico extends reportico_object
 				$this->panels["MAIN"]->smarty->debugging =false;
 				$this->panels["MAIN"]->smarty->assign('LANGUAGES', available_languages());
 				$this->panels["MAIN"]->smarty->assign('CONTENT', $txt);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS', $this->dynamic_grids);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SORTABLE', $this->dynamic_grids_sortable);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SEARCHABLE', $this->dynamic_grids_searchable);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGING', $this->dynamic_grids_paging);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGE_SIZE', $this->dynamic_grids_page_size);
+
                 restore_error_handler();
 
 				if ( $this->user_template )
@@ -3894,12 +3903,18 @@ class reportico extends reportico_object
 				$this->panels["MAIN"]->smarty->debugging =false;
 				$this->panels["MAIN"]->smarty->assign('CONTENT', $text);
 			    $this->panels["MAIN"]->smarty->assign('LANGUAGES', available_languages());
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS', $this->dynamic_grids);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SORTABLE', $this->dynamic_grids_sortable);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SEARCHABLE', $this->dynamic_grids_searchable);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGING', $this->dynamic_grids_paging);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGE_SIZE', $this->dynamic_grids_page_size);
+
                 restore_error_handler();
 				if ( $this->user_template )
 				    $this->panels["MAIN"]->smarty->display($this->user_template.'_menu.tpl');
 				else
 				    $this->panels["MAIN"]->smarty->display('menu.tpl');
-		        $old_error_handler = set_error_handler("ErrorHandler");
+		        $old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 				break;
 
 			case "PREPARE":
@@ -3924,6 +3939,12 @@ class reportico extends reportico_object
 				$text = $this->panels["BODY"]->draw_smarty();
 				$this->panels["MAIN"]->smarty->debugging =false;
 				$this->panels["MAIN"]->smarty->assign('CONTENT', $text);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS', $this->dynamic_grids);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SORTABLE', $this->dynamic_grids_sortable);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SEARCHABLE', $this->dynamic_grids_searchable);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGING', $this->dynamic_grids_paging);
+                $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGE_SIZE', $this->dynamic_grids_page_size);
+
 
 				$reportname = preg_replace("/.xml/", "", $this->xmloutfile.'_prepare.tpl');
                 restore_error_handler();
@@ -3936,7 +3957,7 @@ class reportico extends reportico_object
 				        $this->panels["MAIN"]->smarty->display($this->user_template.'_prepare.tpl');
 				else
 				        $this->panels["MAIN"]->smarty->display('prepare.tpl');
-		        $old_error_handler = set_error_handler("ErrorHandler");
+		        $old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 				break;
 				 
 			
@@ -4026,7 +4047,7 @@ class reportico extends reportico_object
 							$this->panels["MAIN"]->smarty->display($this->user_template.'_prepare.tpl');
 						else
 							$this->panels["MAIN"]->smarty->display('prepare.tpl');
-	                $old_error_handler = set_error_handler("ErrorHandler");
+	                $old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
                 }
                 else
                 {	
@@ -4096,7 +4117,7 @@ class reportico extends reportico_object
 							    {
 								    $this->panels["MAIN"]->smarty->display('execute.tpl');
 							    }
-	                        $old_error_handler = set_error_handler("ErrorHandler");
+	                        $old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 						}
 					}
 				}
@@ -4118,6 +4139,11 @@ class reportico extends reportico_object
 					$text = $this->panels["BODY"]->draw_smarty();
 				    $this->panels["MAIN"]->smarty->assign('PARTIALMAINTAIN', get_request_item("partialMaintain", false ));
 					$this->panels["MAIN"]->smarty->assign('CONTENT', $text);
+                    $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS', $this->dynamic_grids);
+                    $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SORTABLE', $this->dynamic_grids_sortable);
+                    $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_SEARCHABLE', $this->dynamic_grids_searchable);
+                    $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGING', $this->dynamic_grids_paging);
+                    $this->panels["MAIN"]->smarty->assign('REPORTICO_DYNAMIC_GRIDS_PAGE_SIZE', $this->dynamic_grids_page_size);
                     if ( $this->user_template )
                         $this->panels["MAIN"]->smarty->display($this->user_template.'_maintain.tpl');
                     else
@@ -4346,12 +4372,6 @@ class reportico extends reportico_object
 		global $g_code_source;
 		global $g_error_status;
 
-        // If external pdo connection is specified then use this
-        if ( !$in_criteria_name && $this->external_connection )
-        {
-		    $this->datasource->ado_connection->_connectionID = $this->external_connection;
-        }
-
 		$text = "";
 		$g_error_status = false;
 
@@ -4379,7 +4399,7 @@ class reportico extends reportico_object
 		{
 			// Execute query 2
 			$this->assignment = array();
-			$ds = new reportico_datasource("array", "localhost");
+			$ds = new reportico_datasource();
 			$this->set_datasource($ds);
 
 			$ds->set_database($this->targets[0]->results);
@@ -4486,6 +4506,7 @@ class reportico extends reportico_object
 		global $g_no_sql;
 		if ( $g_no_sql )
 			return;
+
 
 		if ( !$g_error_status && $conn != false )
 			$recordSet = $conn->Execute($this->query_statement) 
@@ -5379,6 +5400,7 @@ class reportico_criteria_column extends reportico_query_column
 	var $order_type;
 	var $list_values = array();
 	var	$first_criteria_selection = true;
+    var $parent_reportico = false;
     
     // For criteria that is linked to in another report
     // Specifies both the report to link to and the criteria item
@@ -5403,8 +5425,9 @@ class reportico_criteria_column extends reportico_query_column
 						"SWITCH"
 						);
 
-	function reportico_criteria_column
+	function __construct
 	(
+            $parent_reportico,
 			$query_name,
 			$table_name,
 			$column_name, 
@@ -5414,7 +5437,8 @@ class reportico_criteria_column extends reportico_query_column
 			$in_select
 	)
 	{
-		reportico_query_column::reportico_query_column(	
+        $this->parent_reportico = $parent_reportico;
+		reportico_query_column::__construct(	
 			$query_name,
 			$table_name,
 			$column_name, 
@@ -5431,7 +5455,7 @@ class reportico_criteria_column extends reportico_query_column
 	// -----------------------------------------------------------------------------
 	// Function : execute_criteria_lookup
 	// -----------------------------------------------------------------------------
-	function execute_criteria_lookup($in_is_expanding = false, $parent_query = false)
+	function execute_criteria_lookup($in_is_expanding = false)
 	{
 		global $g_code_area;
 		require_once("swoutput.php");
@@ -5444,13 +5468,8 @@ class reportico_criteria_column extends reportico_query_column
 		$this->lookup_query->targets = array();
 		$this->lookup_query->add_target($rep);
 		$this->lookup_query->build_query($in_is_expanding, $this->query_name);
-		if ( $this->lookup_query->datasource->connect() )
-		{
-			$this->lookup_query->fetch_column_attributes();
-			$this->lookup_query->execute_query($this->query_name);
-		}
-		else
-			handle_error( "Error in Connection: ");
+
+		$this->lookup_query->execute_query($this->query_name);
 		$g_code_area = "";
 	}
 
@@ -7600,7 +7619,7 @@ function set_project_environment($initial_project = false)
 		$g_menu = false;
 		$g_menu_title = "";
 		$g_dropdown_menu = false;
-		$old_error_handler = set_error_handler("ErrorHandler");
+		$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 		handle_error("Project Directory $project not found. Check INCLUDE_PATH or project name");
 		return;
 	}
@@ -7655,7 +7674,7 @@ function set_project_environment($initial_project = false)
 		$g_menu = false;
 		$g_menu_title = "";
 		$g_dropdown_menu = false;
-		$old_error_handler = set_error_handler("ErrorHandler");
+		$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 		handle_error("Configuration Definition file config.php not found in project $project", E_USER_ERROR);
 	}
 
