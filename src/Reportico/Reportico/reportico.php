@@ -1,6 +1,4 @@
-<?php  namespace Reportico\Reportico;
-
-
+<?php namespace Reportico\Reportico;
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2014 Peter Deed
@@ -511,6 +509,10 @@ class reportico extends reportico_object
 
     // Dynamic grids
     var $parent_reportico = false;
+
+    // For laravel ( and other frameworks supporting multiple connections ) specifies
+    // an array of available databases to connect ot
+    var $available_connections=array();
 
     // In bootstrap enabled pages, the bootstrap modal is by default used for the quick edit buttons
     // but they can be ignored and reportico's own modal invoked by setting this to true
@@ -1821,7 +1823,7 @@ class reportico extends reportico_object
 		
 		if ( !$this->datasource )
 		{
-			$this->datasource = new reportico_datasource($this->external_connection);
+			$this->datasource = new reportico_datasource($this->external_connection, $this->available_connections);
 		}
 
 		$loggedon = false;
@@ -3040,13 +3042,9 @@ class reportico extends reportico_object
         {
             $csspath = $this->url_path_to_assets."/css/reportico.css";
             if ( $this->url_path_to_assets )
-            {
                 $csspath = $this->url_path_to_assets."/css/reportico.css";
-            }
             else
-            {
                 $csspath = $this->reportico_url_path."/".find_best_url_in_include_path( "/css/reportico.css" );
-            }
         }
         else
         {
@@ -3234,6 +3232,10 @@ class reportico extends reportico_object
 		$this->panels["USERINFO"]->set_visibility(true);
 		$this->panels["RUNMODE"]->set_visibility(true);
 
+		$smarty->assign('REPORTICO_BOOTSTRAP_MODAL', true);
+        if ( !$this->bootstrap_styles || $this->force_reportico_mini_maintains )
+            $smarty->assign('REPORTICO_BOOTSTRAP_MODAL', false);
+
 		// If no admin password then force user to enter one and  a language
 		if ( $g_project == "admin" && SW_ADMIN_PASSWORD == "PROMPT" )
 		{
@@ -3255,10 +3257,6 @@ class reportico extends reportico_object
 			else
 				$smarty->assign('SHOW_SET_ADMIN_PASSWORD', false);
 		} 
-
-		$smarty->assign('REPORTICO_BOOTSTRAP_MODAL', true);
-        if ( !$this->bootstrap_styles || $this->force_reportico_mini_maintains )
-            $smarty->assign('REPORTICO_BOOTSTRAP_MODAL', false);
 
 		$smarty->assign('SHOW_MINIMAINTAIN', false);
 		{
@@ -3304,7 +3302,6 @@ class reportico extends reportico_object
 				if ( $this->datasource->connect() || $mode != "MAINTAIN" )
 				{
 					// Store connection session details
-					//echo " connected okay<br>";
 					set_reportico_session_param("database",$this->datasource->database);
 					set_reportico_session_param("hostname",$this->datasource->host_name);
 					set_reportico_session_param("driver",$this->datasource->driver);
@@ -3640,8 +3637,8 @@ class reportico extends reportico_object
         if ( !$mode )
             $mode = $this->get_execute_mode();
 
-		$old_error_handler = set_error_handler("Reportico\Reportico\ErrorHandler");
-        set_exception_handler("Reportico\Reportico\ExceptionHandler");
+		$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
+        set_exception_handler("\Reportico\Reportico\ExceptionHandler");
 
         // If new session, we need to use initial project, report etc, otherwise ignore them
 	    $this->handle_initial_settings();
@@ -3889,7 +3886,7 @@ class reportico extends reportico_object
 				    $this->panels["MAIN"]->smarty->display($this->user_template.'_admin.tpl');
 				else
 				    $this->panels["MAIN"]->smarty->display('admin.tpl');
-		        $old_error_handler = set_error_handler("Reportico\Reportico\ErrorHandler");
+		        $old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 				break;
 
 			case "MENU":
@@ -4340,8 +4337,19 @@ class reportico extends reportico_object
 		foreach ( $this->pre_sql as $sql)
 		{
 			$nsql = reportico_assignment::reportico_lookup_string_to_php($sql);
-			$recordSet = $conn->Execute($sql) ;
-			echo $this->query_statement."<br>Query failed : ".$conn->ErrorMsg();
+            $recordSet = false;
+            try {
+			    $recordSet = $conn->Execute($sql) ;
+            }
+            catch ( \PDOException $ex)
+            {
+            }
+            if ( !$recordSet )
+            {
+			    handle_error("Query Failed<BR><BR>".$sql."<br><br>" . 
+			    "Status ".$conn->ErrorNo()." - ".
+			    $conn->ErrorMsg());
+            }
 		}
 
 		
@@ -4423,10 +4431,15 @@ class reportico extends reportico_object
 			$g_code_area = "Custom User SQLs";
 			$nsql = reportico_assignment::reportico_meta_sql_criteria($this, $sql, true);
 			handle_debug("Pre-SQL".$nsql, SW_DEBUG_LOW);
-			//echo "<br>META SQL<br>========<br>";
-			//echo "<BR>$nsql<BR>";
-			$recordSet = $conn->Execute($nsql) 
-				or handle_error("Pre-Query Failed<BR>$nsql<br><br>" . 
+            $recordSet = false;
+            try {
+			    $recordSet = $conn->Execute($nsql) ;
+            }
+            catch ( \PDOException $ex)
+            {
+            }
+            if ( !$recordSet )
+				handle_error("Pre-Query Failed<BR>$nsql<br><br>" . 
 						$conn->ErrorMsg());
 			$g_code_area = "";
 		}
@@ -4453,7 +4466,10 @@ class reportico extends reportico_object
 			$code = "\$ds =& \$this->datasource->ado_connection;". $code;
 			$code = "\$_criteria =& \$this->lookup_queries;". $code;
 			$code = "\$_pdo =& \$_connection->_connectionID;". $code;
+			$code = "if ( \$_connection )". $code;
+			$code = "\$_pdo = false;". $code;
 			$code = "\$_connection =& \$this->datasource->ado_connection;". $code;
+$code = "namespace Reportico\Reportico;". $code;
 
 			// set to the user defined error handler
 			global $g_eval_code;
@@ -4508,16 +4524,28 @@ class reportico extends reportico_object
 			return;
 
 
-		if ( !$g_error_status && $conn != false )
-			$recordSet = $conn->Execute($this->query_statement) 
-			or handle_error("Query Failed<BR><BR>".$this->query_statement."<br><br>" . 
+        $recordSet = false;
+        try {
+		    if ( !$g_error_status && $conn != false )
+			    $recordSet = $conn->Execute($this->query_statement) ;
+        }
+        catch ( \PDOException $ex)
+        {
+            $g_error_status = 1;
+        }
+
+        if ( $conn && !$recordSet )
+        {
+			handle_error("Query Failed<BR><BR>".$this->query_statement."<br><br>" . 
 			"Status ".$conn->ErrorNo()." - ".
 			$conn->ErrorMsg());
+        }
+
 		if ( $conn != false )
 			handle_debug($this->query_statement, SW_DEBUG_LOW);
 
 		// Begin Target Output
-		if (!$recordSet) 
+		if (!$recordSet || $g_error_status) 
 		{
 			return;
 		}
@@ -4728,12 +4756,10 @@ class reportico extends reportico_object
 			$g_code_source = "<BR>In Assignment ".$assign->query_name."=".$assign->expression;
 			if ( $this->test($assign->criteria) )
 			{
-                
                 if ( $assign->non_assignment_operation )
 				    $a = $assign->expression.';';
                 else
 				    $a = '$col->column_value = '.$assign->expression.';';
-
 				$r = eval($a);
 
 				if ( /*SW_DEBUG ||*/ $g_debug_mode )
@@ -4933,13 +4959,13 @@ class reportico extends reportico_object
 			handle_error ("The report includes an sum assignment involving a group or column ($query_name) that does not exist within the report");
 			return 0;
 		}
-		$result = $col->column_value;
+		$result = str_replace(",", "", $col->column_value);
 
 		if ( $col->old_column_value &&  !$col->reset_flag )
 		{
 			$result = 
 				$col->old_column_value +
-				$col->column_value;
+				str_replace(",", "", $col->column_value);
 		}
 		if ( $group_name )
 		{
@@ -4953,17 +4979,17 @@ class reportico extends reportico_object
 						"max" => 0 );
 
 			if ( $this->changed($group_name) )
-				$col->groupvals[$group_name]["sum"] = $col->column_value;
+				$col->groupvals[$group_name]["sum"] = str_replace(",", "", $col->column_value);
 			else
-				$col->groupvals[$group_name]["sum"] += $col->column_value;
+				$col->groupvals[$group_name]["sum"] += str_replace(",", "", $col->column_value);
 			$result = $col->groupvals[$group_name]["sum"];
 		}
 		else
 		{
 			if ( $col->reset_flag || !$col->sum)
-				$col->sum = $col->column_value;
+				$col->sum = str_replace(",", "", $col->column_value);
 			else
-				$col->sum += $col->column_value;
+				$col->sum += str_replace(",", "", $col->column_value);
 
 			$result = $col->sum;
 		}
@@ -5438,6 +5464,7 @@ class reportico_criteria_column extends reportico_query_column
 	)
 	{
         $this->parent_reportico = $parent_reportico;
+
 		reportico_query_column::__construct(	
 			$query_name,
 			$table_name,
@@ -5468,7 +5495,6 @@ class reportico_criteria_column extends reportico_query_column
 		$this->lookup_query->targets = array();
 		$this->lookup_query->add_target($rep);
 		$this->lookup_query->build_query($in_is_expanding, $this->query_name);
-
 		$this->lookup_query->execute_query($this->query_name);
 		$g_code_area = "";
 	}
@@ -5678,6 +5704,36 @@ class reportico_criteria_column extends reportico_query_column
 		if ( $in_list )
 		{
             $choices = array();
+            if ( $in_list == "{laravelconnections}" )
+            {
+                $choices[] = "Existing Laravel Connection=existingconnection";
+                if (isset($this->parent_reportico) && $this->parent_reportico->available_connections )
+                {
+                    foreach ( $this->parent_reportico->available_connections as $k => $v )
+                        $choices[] = "Database '$k'=byname_$k";
+                }
+
+                //$choices[] = "MySQL=pdo_mysql";
+                //$choices[] = "PostgreSQL with PDO=pdo_pgsql";
+                //$choices[] = "Informix=pdo_informix";
+                //$choices[] = "Oracle without PDO (Beta)=oci8";
+                //$choices[] = "Oracle with PDO (Beta)=pdo_oci";
+                //$choices[] = "Mssql (with DBLIB/MSSQL PDO)=pdo_mssql";
+                //$choices[] = "Mssql (with SQLSRV PDO)=pdo_sqlsrv";
+                //$choices[] = "SQLite3=pdo_sqlite3";
+                //$choices[] = "No Database=none";
+			    $this->criteria_list = $in_list;
+            }
+            else
+            if ( $in_list == "{connections}" )
+            {
+                foreach ( $this->available_connections as $k => $v )
+                {
+                   $choices[] = $k."=".$k;
+                }
+			    $this->criteria_list = $in_list;
+            }
+            else
             if ( $in_list == "{languages}" )
             {
                 $langs = available_languages();

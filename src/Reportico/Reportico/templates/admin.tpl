@@ -327,8 +327,6 @@
 			</TD>
 		</TR>
 {/if}
-{if $PROJECT_ITEMS }
-{/if}
 {if count($PROJECT_ITEMS) > 0 }
 		<TR> 
 			<TD class="swMenuItem" style="width: 30%">{$T_RUN_SUITE}

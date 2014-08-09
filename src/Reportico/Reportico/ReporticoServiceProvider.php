@@ -3,7 +3,6 @@
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Guard;
 
-
 class ReporticoServiceProvider extends ServiceProvider {
 
     public $engine;
@@ -88,7 +87,6 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
-            $this->engine->external_user = ""; //Yii::app()->user->id;
             $this->engine->url_path_to_assets = $this->app["url"]->asset(\Config::get("reportico::path_to_assets"));
 
             // Indicates whether report output should include a refresh button
@@ -151,9 +149,11 @@ class ReporticoServiceProvider extends ServiceProvider {
                         "password" => "unknown",
                         );
 
+            $this->engine->available_connections = \Config::get("database.connections");
             $this->engine->external_connection = \DB::connection()->getPdo();
 
-            // Set Joomla Database Access Config from configuration
+            // Set Laravel Access Config from configuration
+            /*
             if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
             {
 
@@ -193,6 +193,7 @@ class ReporticoServiceProvider extends ServiceProvider {
                 define('SW_FRAMEWORK_DB_HOST',$host);
                 define('SW_FRAMEWORK_DB_DATABASE',$dbname);
             }
+            */
 
             return $this->engine;
         });

@@ -1,6 +1,5 @@
-<?php  namespace Reportico\Reportico;
+<?php namespace Reportico\Reportico;
 use PDO;
-
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2014 Peter Deed
@@ -71,10 +70,12 @@ class reportico_datasource extends reportico_object
 	var $_conn_protocol = SW_DB_PROTOCOL;
 
     var $external_connection = false;
+    var $available_connections = false;
 	
-	function __construct($pdo = false)
+	function __construct(&$pdo = false, $connections = false)
 	{
         $this->external_connection = &$pdo;
+        $this->available_connections = &$connections;
 	}
 
 	function set_details($driver = "mysql", $host_name = "localhost", 
@@ -283,7 +284,7 @@ class reportico_datasource extends reportico_object
         return $found;
     }
 
-	function connect()
+	function connect($ignore_config = false)
 	{
 		$connected = false;
 
@@ -292,7 +293,17 @@ class reportico_datasource extends reportico_object
 			$this->disconnect();
 		}
 
-		if ( SW_DB_CONNECT_FROM_CONFIG )
+		if ( $ignore_config )
+		{
+			$this->_conn_driver = $this->driver;
+			$this->_conn_user_name = $this->user_name;
+			$this->_conn_password = $this->password;
+			$this->_conn_host_name = $this->host_name;
+			$this->_conn_database = $this->database;
+			$this->_conn_server = $this->server;
+			$this->_conn_protocol = $this->protocol;
+		}
+		else if ( SW_DB_CONNECT_FROM_CONFIG )
 		{
 			$this->_conn_driver = SW_DB_DRIVER;
 			if ( !$this->_conn_user_name ) 
@@ -323,12 +334,51 @@ class reportico_datasource extends reportico_object
 		}
 
 
-        if ( $this->external_connection )
+        if ( defined ("SW_DB_TYPE") && SW_DB_TYPE == "existingconnection" && $this->external_connection )
         {
             $this->ado_connection = NewADOConnection("pdo");
 			$this->ado_connection->ConnectExisting($this->external_connection);
 		    $this->connected = true;
 		    return $this->connected;
+        }
+
+        if ( defined ("SW_DB_TYPE") && preg_match ("/^byname_/", SW_DB_TYPE) )
+        {
+            $connection_name = preg_replace("/byname_/", "", SW_DB_TYPE);
+            if ( !isset($this->available_connections[$connection_name] ))
+            {
+				handle_error( "Connection name \"$connection \" not found in framework connection set");
+                return false;
+            }
+            $useConnection = $this->available_connections[$connection_name];
+            switch($useConnection["driver"]) 
+            {
+                case "pgsql":
+                    $this->driver = "pdo_pgsql";
+                    break;
+                case "sqlsrv":
+                    $this->_conn_driver = "pdo_sqlsrv";
+                    break;
+                case "mysql":
+                    $this->_conn_driver = "pdo_mysql";
+                    break;
+                case "sqlite":
+                    $this->_conn_driver = "pdo_sqlite3";
+                    break;
+                default: 
+                    $this->_conn_driver = "unknown";
+            }
+
+            // Extract Yii database elements from connection string 
+            $this->_conn_host_name = "unknown";
+            $this->_conn_database = "unknown";
+            $this->_conn_user_name = "unknown";
+            $this->_conn_password = "unknown";
+
+            if ( isset ( $useConnection["host"] ) ) $this->_conn_host_name = $useConnection["host"];
+            if ( isset ( $useConnection["database"] ) ) $this->_conn_database = $useConnection["database"];
+            if ( isset ( $useConnection["username"] ) ) $this->_conn_user_name = $useConnection["username"];
+            if ( isset ( $useConnection["password"] ) ) $this->_conn_password = $useConnection["password"];
         }
 
 		switch ( $this->_conn_driver )
@@ -509,7 +559,6 @@ class reportico_datasource extends reportico_object
 				break;
 
 			case "pdo_mysql":
-echo "done";
 				if ( class_exists('PDO', false) )
 				{
                     if ( !$this->pdo_driver_exists( "mysql" ) )
@@ -528,8 +577,8 @@ echo "done";
 						        "mysql:".
 						        "host=".$hostarr[0]."; ".
 						        "port=".$hostarr[1]."; ".
-						        "username=".$this->_conn_user_name."; ".
-						        "password=".$this->_conn_password."; ".
+						        //"username=".$this->_conn_user_name."; ".
+						        //"password=".$this->_conn_password."; ".
 						        "dbname=".$this->_conn_database;
                         }
                         else
@@ -537,8 +586,8 @@ echo "done";
 					        $cnstr =
 						        "mysql:".
 						        "host=".$this->_conn_host_name."; ".
-						        "username=".$this->_conn_user_name."; ".
-						        "password=".$this->_conn_password."; ".
+						        //"username=".$this->_conn_user_name."; ".
+						        //"password=".$this->_conn_password."; ".
 						        "dbname=".$this->_conn_database;
                         }
 					    $connected = $this->ado_connection->Connect($cnstr,$this->_conn_user_name,$this->_conn_password);
@@ -634,7 +683,6 @@ echo "done";
 		}
 
 		$this->connected = $connected;
-echo "done";
 		return $this->connected;
 	}
 

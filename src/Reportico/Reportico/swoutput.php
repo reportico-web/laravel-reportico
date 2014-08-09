@@ -770,118 +770,6 @@ class reportico_report_array extends reportico_report
 
 }
 
-/**
- * Class reportico_report_array
- *
- * Allows a reportico data query to send its output to an
- * array. generally used internally for storing data
- * from user criteria selection lists.
- */
-class reportico_report_table extends reportico_report
-{
-	var	$abs_top_margin;
-	var	$abs_bottom_margin;
-	var	$abs_left_margin;
-	var	$abs_right_margin;
-	var	$record_template;
-	var	$target_table = "unknown";
-	
-	function __construct ($in_table="unknown")
-	{
-		$this->target_table = "unknown";
-		$this->page_width = 595;
-		$this->page_height = 842;
-		$this->column_spacing = "2%";
-	}
-
-	function start ()
-	{
-
-		reportico_report::start();
-
-		// Create the target table
-		$ds =& $this->query->datasource->ado_connection;
-
-		$dict = NewDataDictionary($ds);
-		if (!$dict) 
-			die;
-
-		if (!$dict) return;
-
-		$flds = "";
-		$ct=0;
-		foreach ( $this->columns as $col )
-	  	{
-			if ( $ct++ > 0 )
-				$flds = $flds.",";
-
-			$colname = preg_replace('/ /', '_', $col->query_name); 
-			$flds = $flds.$colname." ".$col->column_type;
-			if ( $col->column_length > 0 )
-				$flds = $flds."(".$col->column_length.")";
-       	}
-		
-		$opts = array('REPLACE','mysql' => 'TYPE=ISAM', 'oci8' => 'TABLESPACE USERS');
-		$sqli = ($dict->CreateTableSQL($this->target_table,$flds, $opts));
-			
-		for ($i = 0; $i < count($sqli); $i++)
-		{
-			$sql = $sqli[$i];
-			$sql = preg_replace("/CREATE TABLE/", "CREATE TEMP TABLE",$sql);
-			$result = $ds->Execute($sql) ;
-			echo "<br>";
-		}
-
-		//$ds = $this->query->datasource->ado_connection;
-		$sql = "SELECT * FROM ".$this->target_table." WHERE 0 = 1";
-		$this->record_template = $ds->Execute($sql);
-	}
-
-	function finish ()
-	{
-		reportico_report::finish();
-	}
-
-	function format_column(& $column_item)
-	{
-		if ( !$this->show_column_header($column_item) )
-				return;
-
-		$k =& $column_item->column_value;
-		$padstring = str_pad($k,20);
-	}
-
-	function each_line($val)
-	{
-		reportico_report::each_line($val);
-
-
-		// Get the record template
-		$ds =& $this->query->datasource->ado_connection;
-		$rs = $this->record_template;
-
-		// Set the values for the fields in the record
-		$record = array();
-
-		foreach ( $this->columns as $k => $col )
-	  	{
-			$qn = $this->columns[$k];
-			$colname = preg_replace('/ /', '_', $qn->query_name); 
-			$record[$colname] = $qn->column_value;
-       	}
-		
-		// Pass the empty recordset and the array containing the data to insert
-		// into the GetInsertSQL function. The function will process the data and return
-		// a fully formatted insert sql statement.
-		$insertSQL = $ds->GetInsertSQL($rs, $record);
-
-		// Insert the record into the database
-		$ds->Execute($insertSQL);
-
-	}
-
-}
-
 
 // -----------------------------------------------------------------------------
 // Class reportico_report_pdf
@@ -2876,9 +2764,8 @@ class reportico_report_html_template extends reportico_report
             if ( session_request_item('forward_url_get_parameters', '') )
                 $url .= "&".session_request_item('forward_url_get_parameters', '');
 
-        // Add drilldown namespace normally specified in frameworks
-            if ( $this->query->drilldown_namespace )
-                $url .= '&clear_session=1&reportico_session_name=NS_drilldown';
+            // Add drilldown namespace normally specified in frameworks
+            $url .= '&clear_session=1&reportico_session_name=NS_drilldown';
         }
 
 

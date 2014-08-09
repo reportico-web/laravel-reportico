@@ -1,5 +1,4 @@
-<?php   namespace Reportico\Reportico;
-	
+<?php namespace Reportico\Reportico;
 use DateTime;
 /*
  Reportico - PHP Reporting Tool
@@ -430,6 +429,24 @@ function convert_date_range_defaults_to_dates($in_type, $in_string, &$range_star
     return $retval;
 }
 
+function get_query_column_value( $name, &$arr )
+{
+	$ret = "NONE";
+	foreach($arr as $val)
+	{
+		if ( $val->query_name == $name )
+		{	
+			return $val->column_value;
+		}
+	}
+	
+	//foreach($arr as $val)
+	//{
+		//return $val->column_value;
+	//}
+	//return $name;
+}
+	
 function get_query_column( $name, &$arr )
 {
 	foreach($arr as $k => $val)
@@ -683,9 +700,9 @@ function ErrorHandler($errno, $errstr, $errfile, $errline)
 		"errsource" => $g_code_source,
 		"errct" => 1
 		);
-	echo "<PRE>";
-	var_dump($g_system_errors);
-	echo "</PRE>";
+	//echo "<PRE>";
+	//var_dump($g_system_errors);
+	//echo "</PRE>";
 
     $g_error_status = 1;
 
@@ -775,16 +792,16 @@ function find_file_to_include($file_path, &$new_file_path, &$rel_to_include = ""
 		}
 	}
 	// Turn off Error handling for the following to avoid open_basedir errors
-	$old_error_handler = set_error_handler("Reportico\Reportico\ErrorHandler", 0);
+	$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler", 0);
     foreach ($_path_array as $_include_path) {
         if (file_exists($_include_path . "/" . $file_path)) 
 	    {
                	$new_file_path = $_include_path . "/" . $file_path;
-    			$old_error_handler = set_error_handler("Reportico\Reportico\ErrorHandler");
+    			$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 				return true;
             }
         }
-    $old_error_handler = set_error_handler("Reportico\Reportico\ErrorHandler");
+    $old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 
 	$new_file_path = $file_path;
 	return false;
@@ -1510,24 +1527,6 @@ function reportico_namespace()
 {
     global $g_session_namespace_key;
     return $g_session_namespace_key;
-}
-
-function get_query_column_value( $name, &$arr )
-{
-	$ret = "NONE";
-	foreach($arr as $val)
-	{
-		if ( $val->query_name == $name )
-		{	
-			return $val->column_value;
-		}
-	}
-	
-	//foreach($arr as $val)
-	//{
-		//return $val->column_value;
-	//}
-	//return $name;
 }
 
 /*

@@ -1,4 +1,4 @@
-<?php  namespace Reportico\Reportico;
+<?php namespace Reportico\Reportico;
 
 /**
  * Project:     Smarty: the PHP compiling template engine
@@ -1457,9 +1457,7 @@ class Smarty
         }
 
 
-        //$smarty_compiler = new $this->compiler_class;
-        $smarty_compiler = new Smarty_Compiler();
-        $smarty_compiler->init();
+        $smarty_compiler = new Smarty_Compiler;
 
         $smarty_compiler->template_dir      = $this->template_dir;
         $smarty_compiler->compile_dir       = $this->compile_dir;

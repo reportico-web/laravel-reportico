@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reporitco;
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2013 Peter Deed
@@ -37,17 +37,9 @@ $g_translations = array (
             "Project Name" => "Nom del proyecto",
             "Project Title" => "Título del proyecto",
             "Database Type" => "Tipo de base de datos",
-            "Host Name" => "Nom de Anfitrión",
-            "Database Name" => "Nom de Base de Datos",
-            "User Name" => "Nom de Usuario",
-            "Password" => "Contraseña",
-            "Base URL" => "URL Base",
-            "Server (Informix Only)" => "Servidor (Sóo Informix)",
-            "Protocol (Informix Only)" => "Protocolo (Sóo Informix)",
             "Database Character<br>Encoding" => "Base de datos de <br>codificación de caracteres",
             "Output Character Encoding" => "Salida de la codificación de caracteres",
             "Project Language" => "Lenguaje del Proyecto",
-            "Stylesheet" => "Hoja de estilo",
             "Project Password" => "Proyecto Contraseña",
             "Display Date Format" => "Formato de Fecha",
             "Database Date (for MySql leave as default YYYY-MM-DD)" => "Fecha de la base de datos (MySql para dejarlo como predeterminado AAAA-MM-DD)"

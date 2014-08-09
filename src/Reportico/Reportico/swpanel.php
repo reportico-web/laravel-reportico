@@ -1,4 +1,4 @@
-<?php   namespace Reportico\Reportico;
+<?php namespace Reportico\Reportico;
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2014 Peter Deed
@@ -133,7 +133,6 @@ class reportico_panel
 	function pre_draw_smarty()
 	{
 		$text = "";
-
 		switch($this->panel_type)
 		{
 			case "LOGIN":
@@ -347,7 +346,7 @@ class reportico_panel
 						
 					$this->query->projectitems[] = array (
 						"label" => $this->text,
-						"url" => $this->query->get_action_url()."?".$forward."execute_mode=MENU&project=".$this->program."&amp;session_name=".reportico_session_name()
+						"url" => $this->query->get_action_url()."?".$forward."execute_mode=MENU&project=".$this->program."&amp;reportico_session_name=".reportico_session_name()
 							);
 				}
 				break;
@@ -359,7 +358,7 @@ class reportico_panel
 						
 				$this->query->menuitems[] = array (
 						"label" => $this->text,
-						"url" => $this->query->get_action_url()."?".$forward."execute_mode=PREPARE&xmlin=".$this->program."&amp;session_name=".reportico_session_name()
+						"url" => $this->query->get_action_url()."?".$forward."execute_mode=PREPARE&xmlin=".$this->program."&amp;reportico_session_name=".reportico_session_name()
 							);
 				break;
 
@@ -2244,7 +2243,7 @@ class reportico_xml_reader
 					}
 	
 
-					$updateitem->reportico_assignment(
+					$updateitem->__construct(
 					$updates["AssignName"], $updates["Expression"], $updates["Condition"]);
 					break;
 

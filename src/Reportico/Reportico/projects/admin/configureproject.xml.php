@@ -47,13 +47,19 @@ if ( $_configure_mode != "DELETE" )
 {
     $configparams["SW_PROJECT_PASSWORD"] = $_criteria["projectpassword"]->get_criteria_value("VALUE", false);
     $configparams["SW_DB_TYPE"] = $_criteria["dbtype"]->get_criteria_value("VALUE", false);
-    $configparams["SW_DB_DATABASE"] = $_criteria["database"]->get_criteria_value("VALUE", false);
-    $configparams["SW_DB_HOST"] = $_criteria["host"]->get_criteria_value("VALUE", false);
-    $configparams["SW_DB_SERVER"] = $_criteria["server"]->get_criteria_value("VALUE", false);
-    $configparams["SW_DB_USER"] = $_criteria["user"]->get_criteria_value("VALUE", false);
-    $configparams["SW_DB_PASSWORD"] = $_criteria["password"]->get_criteria_value("VALUE", false);
-    $configparams["SW_DB_PROTOCOL"] = $_criteria["protocol"]->get_criteria_value("VALUE", false);
-    $configparams["SW_HTTP_BASEDIR"] = $_criteria["baseurl"]->get_criteria_value("VALUE", false);
+    $configparams["SW_DB_USER"] = "N/A";
+    $configparams["SW_DB_PASSWORD"] = "N/A";
+    $configparams["SW_DB_HOST"] = "N/A";
+    $configparams["SW_DB_DATABASE"] = "N/A";
+    $configparams["SW_DB_SERVER"] = "N/A";
+    $configparams["SW_DB_PROTOCOL"] = "N/A";
+    if ( isset ( $_criteria["database"] ) ) $configparams["SW_DB_DATABASE"] = $_criteria["database"]->get_criteria_value("VALUE", false);
+    if ( isset ( $_criteria["host"] ) ) $configparams["SW_DB_HOST"] = $_criteria["host"]->get_criteria_value("VALUE", false);
+    if ( isset ( $_criteria["server"] ) ) $configparams["SW_DB_SERVER"] = $_criteria["server"]->get_criteria_value("VALUE", false);
+    if ( isset ( $_criteria["user"] ) ) $configparams["SW_DB_USER"] = $_criteria["user"]->get_criteria_value("VALUE", false);
+    if ( isset ( $_criteria["password"] ) ) $configparams["SW_DB_PASSWORD"] = $_criteria["password"]->get_criteria_value("VALUE", false);
+    if ( isset ( $_criteria["protocol"] ) ) $configparams["SW_DB_PROTOCOL"] = $_criteria["protocol"]->get_criteria_value("VALUE", false);
+    if ( isset ( $_criteria["baseurl"] ) ) $configparams["SW_HTTP_BASEDIR"] = $_criteria["baseurl"]->get_criteria_value("VALUE", false);
     $configparams["SW_PROJECT"] = $_criteria["project"]->get_criteria_value("VALUE", false);
     $configparams["SW_PROJECT_TITLE"] = $_criteria["projtitle"]->get_criteria_value("VALUE", false);
     if ( $_configure_mode == "CREATE" )
@@ -67,36 +73,27 @@ if ( $_configure_mode != "DELETE" )
     $configparams["SW_OUTPUT_ENCODING"] = $_criteria["outputencoding"]->get_criteria_value("VALUE", false);
     $configparams["SW_LANGUAGE"] = $_criteria["language"]->get_criteria_value("VALUE", false);
 
-
     if ( !$configparams["SW_DB_TYPE"] ) { trigger_error ( "Specify Database Type" ); return; }
 
     $test = new reportico_datasource("array", "localhost");
     $test->driver = $configparams["SW_DB_TYPE"];
 
-    if ( $test->driver != "framework" )
-    {
-        if ( !$configparams["SW_DB_DATABASE"] ) { trigger_error ( "Specify Database Name" ); return; }
-        if ( !$configparams["SW_DB_USER"]  && $configparams["SW_DB_TYPE"] != "pdo_sqlite3" ) { trigger_error ( "Specify Database User" ); return; }
-        if ( !$configparams["SW_DB_HOST"] ) { trigger_error ( "Specify Database Host" ); return; }
-    }
+    //if ( $test->driver != "framework" )
+    //{
+        //if ( !$configparams["SW_DB_DATABASE"] ) { trigger_error ( "Specify Database Name" ); return; }
+        //if ( !$configparams["SW_DB_USER"]  && $configparams["SW_DB_TYPE"] != "pdo_sqlite3" ) { trigger_error ( "Specify Database User" ); return; }
+        //if ( !$configparams["SW_DB_HOST"] ) { trigger_error ( "Specify Database Host" ); return; }
+    //}
 
     if ( !$configparams["SW_PROJECT"] ) { trigger_error ( "Specify Project Name" ); return; }
     if ( !$configparams["SW_PROJECT_TITLE"] ) { trigger_error ( "Specify Project Title" ); return; }
-    if ( !$configparams["SW_HTTP_BASEDIR"] ) { trigger_error ( "Specify Base URL" ); return; }
 
     $g_debug_mode = true;
     $g_no_sql = true;
 
 
 
-    $test->user_name = $configparams["SW_DB_USER"];
-    $test->password = $configparams["SW_DB_PASSWORD"];
-    $test->host_name = $configparams["SW_DB_HOST"];
-    $test->database = $configparams["SW_DB_DATABASE"];
-    $test->server = $configparams["SW_DB_SERVER"];
-    $test->protocol = $configparams["SW_DB_PROTOCOL"];
-
-    if ( $test->driver == "framework" )
+    if ( true || $test->driver == "framework" )
     {
         $configparams["SW_DB_USER"] = "N/A";
         $configparams["SW_DB_PASSWORD"] = "N/A";
@@ -104,10 +101,16 @@ if ( $_configure_mode != "DELETE" )
         $configparams["SW_DB_DATABASE"] = "N/A";
         $configparams["SW_DB_SERVER"] = "N/A";
         $configparams["SW_DB_PROTOCOL"] = "N/A";
-
     }
     else
     {
+        $test->user_name = $configparams["SW_DB_USER"];
+        $test->password = $configparams["SW_DB_PASSWORD"];
+        $test->host_name = $configparams["SW_DB_HOST"];
+        $test->database = $configparams["SW_DB_DATABASE"];
+        $test->server = $configparams["SW_DB_SERVER"];
+        $test->protocol = $configparams["SW_DB_PROTOCOL"];
+
         $test->connect(true);
         if ( $test->connected )
             handle_debug("Connection to Database succeeded", 0);

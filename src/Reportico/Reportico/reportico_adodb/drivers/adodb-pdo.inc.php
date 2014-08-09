@@ -285,8 +285,7 @@ class ADODB_pdo extends ADOConnection {
 		if ($this->_errormsg !== false) return $this->_errormsg;
 		if (!empty($this->_stmt)) $arr = $this->_stmt->errorInfo();
 		else if (!empty($this->_connectionID)) $arr = $this->_connectionID->errorInfo();
-		else 
-            return 'No Connection Established';
+		else return 'No Connection Established';
 		
 		
 		if ($arr) {
@@ -476,10 +475,8 @@ class ADOPDOStatement {
 	
 	function Execute($inputArr=false)
 	{
-echo "ex";
 		$savestmt = $this->_connectionID->_stmt;
 		$rs = $this->_connectionID->Execute(array(false,$this->_stmt),$inputArr);
-echo "ex";
 		$this->_connectionID->_stmt = $savestmt;
 		return $rs;
 	}

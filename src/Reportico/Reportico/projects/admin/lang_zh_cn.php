@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reporitco;
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2013 Peter Deed
@@ -37,17 +37,9 @@ $g_translations = array (
             "Project Name" => "项目名称",
             "Project Title" => "项目名称",
             "Database Type" => "数据库类型",
-            "Host Name" => "主机名",
-            "Database Name" => "数据库的名称",
-            "User Name" => "用户名",
-            "Password" => "密码",
-            "Base URL" => "基URL",
-            "Server (Informix Only)" => "服务器（Informix的）",
-            "Protocol (Informix Only)" => "协议（Informix的）",
             "Database<br>Character Encoding" => "数据库字符<BR>编码",
             "Output<br>Character Encoding" => "输出字符编码",
             "Project Language" => "项目语言",
-            "Stylesheet" => "样式表",
             "Project Password" => "项目密码",
             "Display Date Format" => "显示的日期格式",
             "Database Date (for MySql leave as default YYYY-MM-DD)" => "数据库日期（针对MySQL作为默认为YYYY-MM-DD离开）"

@@ -65,7 +65,7 @@ if ( !function_exists("set_project_environment" ) )
  * the current SESSION project is used. If none of these are specified then the default
  * "reports" project is used
  */
-function set_1project_environment()
+function set_project_environment_deprecated()
 {
 	global $g_project;
 	global $g_menu;
@@ -91,7 +91,7 @@ function set_1project_environment()
 		$g_project = false;
 		$g_menu = false;
 		$g_menu_title = "";
-		$old_error_handler = set_error_handler("ErrorHandler");
+		$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 		handle_error("Project Directory $project not found. Check INCLUDE_PATH or project name");
 		return;
 	}
@@ -117,7 +117,7 @@ function set_1project_environment()
 		$g_project = false;
 		$g_menu = false;
 		$g_menu_title = "";
-		$old_error_handler = set_error_handler("ErrorHandler");
+		$old_error_handler = set_error_handler("\Reportico\Reportico\ErrorHandler");
 		handle_error("Configuration Definition file config.php not found in project $project", E_USER_ERROR);
 	}
 
