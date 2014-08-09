@@ -152,49 +152,6 @@ class ReporticoServiceProvider extends ServiceProvider {
             $this->engine->available_connections = \Config::get("database.connections");
             $this->engine->external_connection = \DB::connection()->getPdo();
 
-            // Set Laravel Access Config from configuration
-            /*
-            if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
-            {
-
-                switch($useConnection["driver"]) 
-                {
-                    case "pgsql":
-                        $driver = "pdo_pgsql";
-                        break;
-                    case "sqlsrv":
-                        $driver = "pdo_sqlsrv";
-                        break;
-                    case "mysql":
-                        $driver = "pdo_mysql";
-                        break;
-                    case "sqlite":
-                        $driver = "pdo_sqlite3";
-                        break;
-                    default: 
-                        $driver = "unknown";
-                }
-
-                // Extract Yii database elements from connection string 
-                $host = "unknown";
-                $dbname = "unknown";
-                $user = "unknown";
-                $password = "unknown";
-
-                if ( isset ( $useConnection["host"] ) ) $host = $useConnection["host"];
-                if ( isset ( $useConnection["database"] ) ) $dbname = $useConnection["database"];
-                if ( isset ( $useConnection["username"] ) ) $user = $useConnection["username"];
-                if ( isset ( $useConnection["password"] ) ) $password = $useConnection["password"];
-
-                define('SW_FRAMEWORK_DB_DRIVER', $driver);
-                define('SW_FRAMEWORK_DB_USER', $user);
-                define('SW_FRAMEWORK_DB_PASSWORD', $password);
-
-                define('SW_FRAMEWORK_DB_HOST',$host);
-                define('SW_FRAMEWORK_DB_DATABASE',$dbname);
-            }
-            */
-
             return $this->engine;
         });
 	}
@@ -214,45 +171,12 @@ class ReporticoServiceProvider extends ServiceProvider {
     {
     }
 
-    //function getAssetsUrl()
-    //{
-        //if ($this->_assetsUrl === null)
-            //$this->_assetsUrl = Yii::app()->getAssetManager()->publish(
-                //Yii::getPathOfAlias('application.modules.reportico.assets') );
-//
-        //return $this->_assetsUrl;
-    //}
-
     public function init()
     {
-        // In certain scenarios .. a yii session can be in placed but not started
-        // until it is used .. by accessing the session it will be invoked and then reportico
-        // can make use of this. otherwise no session is found and reportico will statrt its
-        // own one. This has occurred with a CDBHttpSession 
-        //if ( !Yii::app()->session )
-            //$_session_not_started = true;
-
-        // this method is called when the module is being created
-        // you may place code here to customize the module or the application
-        // import the module-level models and components
-        //$this->setImport(array(
-            //'reportico.models.*',
-            //'reportico.components.*',
-            //'reportico.components.reportico',
-        //));
-
-        //$component=Yii::createComponent(
-            //array(
-            ////component details here
-                //'class' => 'reportico',
-                //'peter' => "peter"
-            //));
-        //$this->setComponent("reportico", $component) ;
     }
 
     public function getReporticoEngine()
     {
-        echo "oo";
     }
 
     // Generate output

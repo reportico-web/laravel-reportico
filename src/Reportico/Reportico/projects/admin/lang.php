@@ -21,7 +21,7 @@ A title which will appear at the top of the report suite menu .. i.e. a human-un
 <p> 
 
 <b>Database Type</b><br>
-The type of database you wish to report against. To report against the tables within your Yii site, set this to \"Yii Database\" and do not enter anything for the Host Name, Database name,  User name or Password - these will be picked up from the Yii configuration.
+The type of database you wish to report against. To report against the tables within your Laravel site, set this to \"use Laravel Connection\" and do not enter anything for the Host Name, Database name,  User name or Password - these will be picked up from the Laravel configuration.
 <P> 
 
 <b>Database Character Encoding</b><br>
