@@ -91,9 +91,16 @@ if ( $_configure_mode != "DELETE" )
     $g_debug_mode = true;
     $g_no_sql = true;
 
-
-
-    if ( true || $test->driver == "framework" )
+    if ( $test->driver == "existingconnection" || preg_match("/^byname_/", $test->driver))
+    {
+        $configparams["SW_DB_USER"] = "N/A";
+        $configparams["SW_DB_PASSWORD"] = "N/A";
+        $configparams["SW_DB_HOST"] = "N/A";
+        $configparams["SW_DB_DATABASE"] = "N/A";
+        $configparams["SW_DB_SERVER"] = "N/A";
+        $configparams["SW_DB_PROTOCOL"] = "N/A";
+    }
+    else if ( $test->driver == "framework" )
     {
         $configparams["SW_DB_USER"] = "N/A";
         $configparams["SW_DB_PASSWORD"] = "N/A";
