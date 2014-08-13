@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reportico;
 /******************************************************************************
  * Software: FPDF                                                             *
  * @version  1.52                                                             *
@@ -7,7 +7,7 @@
  * @license - http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL                *
  ******************************************************************************/
 
-if(!class_exists('FPDF', false))
+if(!class_exists('Reportico\Reportico\FPDF', false))
 {
 define('FPDF_VERSION','1.52');
 

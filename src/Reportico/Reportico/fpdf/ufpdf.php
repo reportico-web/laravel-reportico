@@ -1,4 +1,4 @@
-<?php
+<?php namespace Reportico\Reportico;
 /*******************************************************************************
 * Software: UFPDF, Unicode Free PDF generator                                  *
 * Version:  0.1                                                                *
@@ -15,7 +15,7 @@ if(!class_exists('UFPDF', false))
 {
 define('UFPDF_VERSION','0.1');
 
-if ( !class_exists('FPDF', false) )
+if ( !class_exists('Reportico\Reportico\FPDF', false) )
     require_once 'fpdf/fpdf.php';
 
 class UFPDF extends FPDF

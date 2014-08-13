@@ -49,12 +49,12 @@
     'show_hide_navigation_menu' => "show",
     'show_hide_dropdown_menu' => "show",
     'show_hide_report_output_title' => "show",
-    'show_hide_prepare_section_boxes' => "hide",
-    'show_hide_prepare_pdf_button' => "hide",
-    'show_hide_prepare_html_button' => "hide",
+    'show_hide_prepare_section_boxes' => "show",
+    'show_hide_prepare_pdf_button' => "show",
+    'show_hide_prepare_html_button' => "show",
     'show_hide_prepare_print_html_button' => "show",
-    'show_hide_prepare_csv_button' => "hide",
-    'show_hide_prepare_page_style' => "hide",
+    'show_hide_prepare_csv_button' => "show",
+    'show_hide_prepare_page_style' => "show",
 
     // Static Menu definition
     // ======================

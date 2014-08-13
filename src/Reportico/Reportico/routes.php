@@ -6,4 +6,5 @@ Route::get('/reportico/mode/menu', 'ModeController@menu');
 Route::get('/reportico', 'ReporticoController@reportico');
 Route::get('/reportico/graph', 'ReporticoController@graph');
 Route::get('/reportico/dbimage', 'ReporticoController@dbimage');
+Route::get('/reportico/ajax', 'ReporticoController@ajax');
 ?>
