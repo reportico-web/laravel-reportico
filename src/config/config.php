@@ -9,12 +9,18 @@
     // Path relative to public where reportico assets are
     'path_to_assets' => 'packages/reportico/reportico',
 
+    // Path relative to laravel pase or fully where projects will be created
+    'path_to_projects' => storage_path()."/reportico/projects",
+
+    // Path relative to laravel pase or fully where admin project will be stored
+    'path_to_admin' => 'projects',
+
     // Bootstrap Features
     // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
     // If you are embedding reportico and you have already loaded bootstrap then set bootstrap_preloaded equals true so reportico
     // doestnt load it again.
     'bootstrap_styles' => '3',
-    'bootstrap_preloaded' => false,
+    'bootstrap_preloaded' => true,
 
     // In bootstrap enable pages, the bootstrap modal is by default used for the quick edit buttons
     // but they can be ignored and reportico's own modal invoked by setting this to true

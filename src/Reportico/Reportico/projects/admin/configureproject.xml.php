@@ -38,6 +38,7 @@
 // Extract Criteria Options
 $configparams = array();
 
+
 global $g_system_errors;
 
 $g_system_errors = array();
@@ -135,15 +136,22 @@ else
     $configparams["SW_PROJECT_TITLE"] = SW_PROJECT_TITLE;
 }
 
-$proj_parent = find_best_location_in_include_path( "projects" );
+$proj_parent = $this->projects_folder;
+if (  !is_dir($proj_parent) )
+    $proj_parent = find_best_location_in_include_path( $this->projects_folder );
+
+$admin_folder = $this->admin_projects_folder;
+if (  !is_dir($admin_folder) )
+    $admin_folder = find_best_location_in_include_path( $this->admin_projects_folder );
+
 $proj_dir = $proj_parent."/".$configparams["SW_PROJECT"];
 $proj_conf = $proj_dir."/config.php";
 $proj_menu = $proj_dir."/menu.php";
 $proj_lang = $proj_dir."/lang.php";
 
-$proj_template = $proj_parent."/admin/config.template";
-$menu_template = $proj_parent."/admin/menu.template";
-$lang_template = $proj_parent."/admin/lang.template";
+$proj_template = $admin_folder."/admin/config.template";
+$menu_template = $admin_folder."/admin/menu.template";
+$lang_template = $admin_folder."/admin/lang.template";
 
 
 if ( !file_exists ( $proj_parent ) )

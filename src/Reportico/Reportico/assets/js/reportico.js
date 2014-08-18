@@ -131,7 +131,7 @@ reportico_jquery(document).on('click', '.swMiniMaintainSubmit', function(event)
 	var expandpanel = reportico_jquery('#swPrpExpandCell');
     reportico_jquery(loadpanel).addClass("modal-loading");
 
-    forms = reportico_jquery(this).closest('.swMntForm,.swPrpForm,form');
+    forms = reportico_jquery(this).closest('#reportico_container').find(".swPrpForm");
     if (    reportico_jquery.type(reportico_ajax_script) === 'undefined' )
     {
         var ajaxaction = reportico_jquery(forms).prop("action");
@@ -146,15 +146,14 @@ reportico_jquery(document).on('click', '.swMiniMaintainSubmit', function(event)
     params += "&reportico_ajax_called=1";
     params += "&execute_mode=PREPARE";
 
-    //if ( reportico_ajax_mode == 1 )
-        //ajaxaction += "?r=reportico/ajax";
-    //else
-        //ajaxaction += "reportico/ajax";
+    if ( reportico_ajax_mode == 1 )
+        ajaxaction += "?r=reportico/ajax";
+    else
+        ajaxaction += "reportico/ajax";
 
     var cont = this;
     reportico_jquery.ajax({
         type: 'POST',
-        //method: 'GET',
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -165,7 +164,7 @@ reportico_jquery(document).on('click', '.swMiniMaintainSubmit', function(event)
           {
             reportico_jquery('#reporticoModal').modal('hide');
             reportico_jquery('.modal-backdrop').remove();
-            reportico_jquery('.swPrpBody').removeClass('modal-open');
+            reportico_jquery('#reportico_container').closest('body').removeClass('modal-open');
           }
           else
             reportico_jquery('#reporticoModal').hide();
@@ -205,22 +204,18 @@ reportico_jquery(document).on('click', '.swMiniMaintain', function(event)
     else
     {
         ajaxaction = reportico_ajax_script;
-    }		  
+    }
 
     maintainButton = reportico_jquery(this).prop("name"); 
     reportico_jquery(".reportico-modal-title").html(reportico_jquery(this).prop("title")); 
     bits = maintainButton.split("_");
-    params="execute_mode=MAINTAIN&partialMaintain=" + maintainButton + "&partial_template=mini&submit_" + bits[0] + "_SHOW=1";
+	params = forms.serialize();
+    params="&execute_mode=MAINTAIN&partialMaintain=" + maintainButton + "&partial_template=mini&submit_" + bits[0] + "_SHOW=1";
     params += "&reportico_ajax_called=1";
 
-    //if ( reportico_ajax_mode == 1 )
-        //ajaxaction += "?r=reportico/ajax";
-    //else
-        //ajaxaction += "/reportico/ajax";
 
     reportico_jquery.ajax({
         type: 'POST',
-        //method: 'GET',
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -279,11 +274,6 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
             ajaxaction = reportico_ajax_script;
         }
 
-        //if ( reportico_ajax_mode == 1 )
-            //ajaxaction += "?r=reportico/ajax";
-        //else
-            //ajaxaction += "/reportico/ajax";
-
         params = forms.serialize();
            
         maintainButton = reportico_jquery(this).prop("name"); 
@@ -293,7 +283,6 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
 
         reportico_jquery.ajax({
             type: 'POST',
-        //method: 'GET',
             url: ajaxaction,
             data: params,
             dataType: 'html',
@@ -346,10 +335,6 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
 			    ajaxaction = reportico_ajax_script;
             }
 
-            //if ( reportico_ajax_mode == 1 )
-                //ajaxaction += "?r=reportico/ajax";
-            //else
-		        //ajaxaction += "/reportico/ajax";
 
 			params = forms.serialize();
             params += "&" + reportico_jquery(this).prop("name") + "=1";
@@ -371,7 +356,7 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
                 var windowSizeArray = [ "width=200,height=200",
                           "width=300,height=400,scrollbars=yes" ];
 
-                var url = ajaxaction +"&" + params;
+                var url = ajaxaction +"?" + params;
                 var windowName = "popUp";//reportico_jquery(this).prop("name");
                 var windowSize = windowSizeArray[reportico_jquery(this).prop("rel")];
                 window.open(url, windowName, "width=200,height=200");
@@ -384,7 +369,6 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
             var cont = this;
             reportico_jquery.ajax({
                 type: 'POST',
-        //method: 'GET',
                 url: ajaxaction,
                 data: params,
                 dataType: 'html',
@@ -429,16 +413,11 @@ reportico_jquery(document).on('click', '#returnFromExpand', function() {
 
 	forms = reportico_jquery(this).closest('.swMntForm,.swPrpForm,form');
     ajaxaction = reportico_ajax_script;
-    //if ( reportico_ajax_mode == 1 )
-         //ajaxaction += "?r=reportico/reportico/ajax";
-    //else
-         //ajaxaction += "/reportico/ajax";
 
 	fillPoint = reportico_jquery(this).closest('#criteriaform').find('#criteriabody');
 		
     reportico_jquery.ajax({
       type: 'POST',
-        //method: 'GET',
       url: ajaxaction,
       data: params,
       dataType: 'html',
@@ -478,7 +457,6 @@ reportico_jquery(document).on('click', '#returnFromExpand', function() {
 
     reportico_jquery.ajax({
         type: 'POST',
-        //method: 'GET',
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -547,10 +525,6 @@ reportico_jquery(document).on('click', '.swPrintBox,.prepareAjaxExecute,#prepare
     {
         ajaxaction = reportico_ajax_script;
     }
-    //if ( reportico_ajax_mode == 1 )
-         //ajaxaction += "?r=reportico/ajax";
-    //else
-         //ajaxaction += "/reportico/ajax";
 
     var csvpdfoutput = false;
     var htmloutput = false;
@@ -598,7 +572,6 @@ reportico_jquery(document).on('click', '.swPrintBox,.prepareAjaxExecute,#prepare
     var cont = this;
     reportico_jquery.ajax({
         type: 'POST',
-        //method: 'GET',
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -639,7 +612,6 @@ function runreport(url, container)
     reportico_jquery(container).closest("#reportico_container").addClass("loading");
     reportico_jquery.ajax({
         type: "POST",
-        //method: 'GET',
         contentType: "text/html; charset=utf-8",
         url: url,
         dataType: "html",
@@ -756,4 +728,3 @@ function html_print_fix()
         reporticohtmlwindow.resizeOutputTables(reporticohtmlwindow); 
     }
 }
-

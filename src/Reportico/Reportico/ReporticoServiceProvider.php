@@ -89,6 +89,15 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $this->engine->external_user = false;
             $this->engine->url_path_to_assets = $this->app["url"]->asset(\Config::get("reportico::path_to_assets"));
 
+            
+            // Where to store reportco projects
+            $this->engine->projects_folder = \Config::get("reportico::path_to_projects");
+            if ( !is_dir($this->engine->projects_folder) )
+            {
+                \File::makeDirectory($this->engine->projects_folder, 0777, true);
+            }
+            $this->engine->admin_projects_folder = \Config::get("reportico::path_to_admin");
+
             // Indicates whether report output should include a refresh button
             $this->engine->show_refresh_button = \Config::get("reportico::show_refresh_button");
 
