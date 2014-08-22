@@ -12,6 +12,9 @@ class ModeController extends BaseController
 
     function __construct() {
         $this->engine= App::make("getReporticoEngine");
+        $this->engine->bootstrap_styles = "3";
+        $this->engine->bootstrap_preloaded = false;
+        $this->engine->embedded_report = Input::get('reportico_ajax_request');
     }
 
     // Run reportico in admin mode
@@ -42,8 +45,8 @@ class ModeController extends BaseController
     public function menu() {
 
         $project = Input::get('project');
+        //j$this->engine->access_mode = "ALLPROJECTS";  // Run single project menu, with access to other reports in other projects
         $this->engine->access_mode = "ONEPROJECT";
-        $this->engine->access_mode = "ALLPROJECTS";  // Run single project menu, with access to other reports in other projects
         $this->engine->initial_project = $project;
         $this->engine->clear_reportico_session = true;
         $this->engine->execute();

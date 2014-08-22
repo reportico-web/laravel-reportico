@@ -15,6 +15,7 @@ class ReporticoController extends BaseController
 
     public function reportico()
     {
+        $this->engine->bootstrap_preloaded = false;
         $this->engine->clear_reportico_session = true;
         $this->engine->execute();
     }

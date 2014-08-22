@@ -21,7 +21,7 @@ A title which will appear at the top of the report suite menu .. i.e. a human-un
 <p> 
 
 <b>Database Type</b><br>
-The type of database you wish to report against. To report against the tables within your Laravel site, set this to \"use Laravel Connection\" and do not enter anything for the Host Name, Database name,  User name or Password - these will be picked up from the Laravel configuration.
+The type of database you wish to report against. To report against the tables within your Laravel site and using your default laravel database connection, set this to \"use Laravel Connection\". Choose one of the other Laravel databases as defined in the Laravel app/config/database.php file to work a different database connection.
 <P> 
 
 <b>Database Character Encoding</b><br>

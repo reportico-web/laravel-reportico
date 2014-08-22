@@ -19,8 +19,8 @@
     // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
     // If you are embedding reportico and you have already loaded bootstrap then set bootstrap_preloaded equals true so reportico
     // doestnt load it again.
-    'bootstrap_styles' => '3',
-    'bootstrap_preloaded' => true,
+    'bootstrap_styles' => "3",
+    'bootstrap_preloaded' => false,
 
     // In bootstrap enable pages, the bootstrap modal is by default used for the quick edit buttons
     // but they can be ignored and reportico's own modal invoked by setting this to true
@@ -34,10 +34,6 @@
 
     'bootstrap_styles' => "3",
     'bootstrap_preloaded' => false,
-
-    // In bootstrap enable pages, the bootstrap modal is by default used for the quick edit buttons
-    // but they can be ignored and reportico's own modal invoked by setting this to true
-    'force_reportico_mini_maintains' => true,
 
     // Engine to use for charts .. 
     // HTML reports can use javascript charting, PDF reports must use PCHART
