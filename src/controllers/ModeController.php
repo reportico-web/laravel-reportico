@@ -14,6 +14,16 @@ class ModeController extends BaseController
         $this->engine= App::make("getReporticoEngine");
         $this->engine->bootstrap_styles = "3";
         $this->engine->bootstrap_preloaded = false;
+        $bootstrap_styles = Input::get('reportico_bootstrap_styles');
+        if ( $bootstrap_styles )
+        {
+            if ( $bootstrap_styles == "none" )
+                $this->engine->bootstrap_styles = false;
+            else
+                $this->engine->bootstrap_styles = $bootstrap_styles;
+        }
+        $this->engine->bootstrap_preloaded = Input::get('reportico_bootstrap_preloaded');
+        $this->engine->jquery_preloaded = Input::get('reportico_jquery_preloaded');
         $this->engine->embedded_report = Input::get('reportico_ajax_request');
     }
 

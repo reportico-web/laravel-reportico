@@ -237,15 +237,15 @@ div.modal-loading {
     padding: 2px !important;
 }
 
-a:link {
+/*a:link {
     color: #101010;
     text-decoration: none;
-}
+}*/
 
-a:visited
+/*a:visited
 {
     color: #303030;
-}
+}*/
 
 /* Style for Menu Header */
 .swMenuItemHeader
