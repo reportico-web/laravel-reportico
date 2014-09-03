@@ -43,6 +43,27 @@ class ReporticoController extends BaseController
 
     public function dbimage()
     {
-	    include(__DIR__."/../Reportico/Reportico/imageget.php");
+        $this->engine->set_project_environment($this->engine->initial_project, $this->engine->projects_folder, $this->engine->admin_projects_folder);
+
+        $datasource = new Reportico\Reportico\reportico_datasource($this->engine->external_connection);
+        $datasource->connect();
+
+        $imagesql = $_REQUEST["imagesql"];
+
+        if ( !preg_match("/^select/i", $imagesql ) )
+            return;
+
+        $rs = $datasource->ado_connection->Execute($imagesql) 
+            or die("Query failed : " . $ado_connection->ErrorMsg());
+        $line = $rs->FetchRow();
+
+        //header('Content-Type: image/gif');
+        foreach ( $line as $col )
+        {
+            $data = $col;
+            break;
+        }
+        echo $data;
+        return;
     }
 }

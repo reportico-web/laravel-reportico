@@ -1875,6 +1875,16 @@ class reportico extends reportico_object
 			return $loggedon;
 		}
 
+        $matches=array();
+        if ( preg_match("/_drilldown(.*)/", reportico_namespace(), $matches) )
+        {
+            $parent_session = $matches[1];
+            if ( isset ( $_SESSION[$parent_session]['project_password'] ) )
+            {
+                set_reportico_session_param('project_password', $_SESSION[$parent_session]['project_password']);
+            }
+        }
+
 		if ( 
 			( !defined ('SW_PROJECT_PASSWORD') ) || 
 			( SW_PROJECT_PASSWORD == '' ) ||
@@ -2887,6 +2897,9 @@ class reportico extends reportico_object
 
         // If full ajax mode is requested but no ajax url is passed then defalt the ajax url to the default reportico runner
         register_session_param("reportico_ajax_script_url", $this->reportico_ajax_script_url);
+
+        if ( $this->reportico_ajax_mode )
+            return;
         $this->reportico_ajax_script_url = get_reportico_session_param("reportico_ajax_script_url");
         if ( $this->reportico_ajax_script_url && !$this->reportico_ajax_mode)
             $this->reportico_ajax_mode = true;
@@ -4346,17 +4359,25 @@ class reportico extends reportico_object
 		{
 			$nsql = reportico_assignment::reportico_lookup_string_to_php($sql);
             $recordSet = false;
+            $errorCode = false;
+            $errorMessage = false;
             try {
-			    $recordSet = $conn->Execute($sql) ;
+			    $recordSet = $conn->Execute($nsql) ;
             }
             catch ( \PDOException $ex)
             {
+                $errorCode = $ex->getCode();
+                $errorMessage = $ex->getMessage();
             }
             if ( !$recordSet )
             {
-			    handle_error("Query Failed<BR><BR>".$sql."<br><br>" . 
-			    "Status ".$conn->ErrorNo()." - ".
-			    $conn->ErrorMsg());
+                if ( $errorMessage )
+			        handle_error("Query Failed<BR><BR>".$nsql."<br><br>" . 
+			        $errorMessage);
+                else
+			        handle_error("Query Failed<BR><BR>".$nsql."<br><br>" . 
+			        "Status ".$conn->ErrorNo()." - ".
+			        $conn->ErrorMsg());
             }
 		}
 
@@ -4440,15 +4461,26 @@ class reportico extends reportico_object
 			$nsql = reportico_assignment::reportico_meta_sql_criteria($this, $sql, true);
 			handle_debug("Pre-SQL".$nsql, SW_DEBUG_LOW);
             $recordSet = false;
+            $errorCode = false;
+            $errorMessage = false;
             try {
 			    $recordSet = $conn->Execute($nsql) ;
             }
             catch ( \PDOException $ex)
             {
+                $errorCode = $ex->getCode();
+                $errorMessage = $ex->getMessage();
             }
             if ( !$recordSet )
-				handle_error("Pre-Query Failed<BR>$nsql<br><br>" . 
-						$conn->ErrorMsg());
+            {
+                if ( $errorMessage )
+			        handle_error("Pre-Query Failed<BR><BR>".$nsql."<br><br>" . 
+			        $errorMessage);
+                else
+			        handle_error("Pre-Query Failed<BR><BR>".$nsql."<br><br>" . 
+			        "Status ".$conn->ErrorNo()." - ".
+			        $conn->ErrorMsg());
+            }
 			$g_code_area = "";
 		}
 
@@ -4533,20 +4565,27 @@ $code = "namespace Reportico\Reportico;". $code;
 
 
         $recordSet = false;
+        $errorCode = false;
+        $errorMessage = false;
         try {
 		    if ( !$g_error_status && $conn != false )
 			    $recordSet = $conn->Execute($this->query_statement) ;
         }
         catch ( \PDOException $ex)
         {
+            $errorCode = $ex->getCode();
+            $errorMessage = $ex->getMessage();
             $g_error_status = 1;
         }
-
         if ( $conn && !$recordSet )
         {
-			handle_error("Query Failed<BR><BR>".$this->query_statement."<br><br>" . 
-			"Status ".$conn->ErrorNo()." - ".
-			$conn->ErrorMsg());
+            if ( $errorMessage )
+                handle_error("Query Failed<BR><BR>".$this->query_statement."<br><br>" . 
+                $errorMessage);
+            else
+                handle_error("Query Failed<BR><BR>".$this->query_statement."<br><br>" . 
+                "Status ".$conn->ErrorNo()." - ".
+                $conn->ErrorMsg());
         }
 
 		if ( $conn != false )
@@ -5336,7 +5375,7 @@ function save_admin_password($password1, $password2, $language)
 	if ( strlen($password1) == 0 )
 		return sw_translate("The password may not be blank");
 
-	$proj_parent = find_best_location_in_include_path( $this->admin_projects_folder );
+	$proj_parent = find_best_location_in_include_path( $this->admin_projects_folder);
 	$proj_dir = $proj_parent."/admin";
 	$proj_conf = $proj_dir."/config.php";
 	$proj_template = $proj_dir."/adminconfig.template";
