@@ -23,7 +23,7 @@ class ReporticoServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 
-		$this->package('reportico/reportico');
+		$this->package('reportico/laravel-reportico');
         require __DIR__ .'/routes.php';
         $this->init();
 	}

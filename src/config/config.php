@@ -7,7 +7,7 @@
     'framework_type' => 'laravel',
 
     // Path relative to public where reportico assets are
-    'path_to_assets' => 'packages/reportico/reportico',
+    'path_to_assets' => 'packages/reportico/laravel-reportico',
 
     // Path relative to laravel pase or fully where projects will be created
     'path_to_projects' => storage_path()."/reportico/projects",
