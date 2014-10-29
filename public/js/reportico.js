@@ -29,7 +29,15 @@ function setupDynamicGrids()
 function setupDatePickers()
 {
     reportico_jquery(".swDateField").each(function(){
-        reportico_jquery(this).datepicker({dateFormat: reportico_datepicker_language});
+        reportico_jquery(this).datepicker({dateFormat: reportico_datepicker_language,
+            beforeShow: function()
+            {
+                setTimeout(function()
+                {
+                    $(".ui-datepicker").css("z-index", 999999);
+                }, 10); 
+            }
+            });
     });
 }
 
@@ -110,6 +118,14 @@ reportico_jquery(document).ready(function()
     resizeTables();
     setupDynamicGrids();
 });
+
+function reportico_initialise_page()
+{
+    setupDatePickers();
+    setupDropMenu();
+    resizeTables();
+    setupDynamicGrids();
+};
 
 reportico_jquery(document).on('click', '.reportico-bootstrap-modal-close', function(event) 
 {
