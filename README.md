@@ -3,7 +3,7 @@ laravel-reportico
 
 Reportico Module for Laravel.
 
-Reportico for Laravel allows you design reports which can be embedded or linked to within your Laravel web site all accessed through a dedicated controller.
+Reportico for Laravel allows you design reports using the Reportico report designer. These can be run as a report suite and embedded or linked to within your Laravel web site all accessed through a dedicated controller.
 
 As well as the standard Reportico features the module offers the following :-
 
