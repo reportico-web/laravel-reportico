@@ -38,8 +38,8 @@ class ReporticoServiceProvider extends ServiceProvider {
         $app = $this->app;
         $this->app["router"]->get("reportico", function() use ($app)
         {
-            //return View::make('reportico::reportico');
-            return $this->app["view"]->make('reportico::reportico');
+            //return View::make('laravel-reportico::reportico');
+            return $this->app["view"]->make('laravel-reportico::reportico');
         });
 
         $this->app["router"]->post("reportico/ajax", function() use ($app)
@@ -81,70 +81,70 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             $this->engine->embedded_report = true;
             $this->engine->allow_debug = true;
-            $this->engine->framework_parent = \Config::get("reportico::framework_type");
+            $this->engine->framework_parent = \Config::get("laravel-reportico::framework_type");
 
             if ( \Auth::user() )
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
-            $this->engine->url_path_to_assets = $this->app["url"]->asset(\Config::get("reportico::path_to_assets"));
+            $this->engine->url_path_to_assets = $this->app["url"]->asset(\Config::get("laravel-reportico::path_to_assets"));
 
             
             // Where to store reportco projects
-            $this->engine->projects_folder = \Config::get("reportico::path_to_projects");
+            $this->engine->projects_folder = \Config::get("laravel-reportico::path_to_projects");
             if ( !is_dir($this->engine->projects_folder) )
             {
                 \File::makeDirectory($this->engine->projects_folder, 0777, true);
             }
-            $this->engine->admin_projects_folder = \Config::get("reportico::path_to_admin");
+            $this->engine->admin_projects_folder = \Config::get("laravel-reportico::path_to_admin");
 
             // Indicates whether report output should include a refresh button
-            $this->engine->show_refresh_button = \Config::get("reportico::show_refresh_button");
+            $this->engine->show_refresh_button = \Config::get("laravel-reportico::show_refresh_button");
 
             // Jquery already included?
-            $this->engine->jquery_preloaded = \Config::get("reportico::jquery_preloaded");
+            $this->engine->jquery_preloaded = \Config::get("laravel-reportico::jquery_preloaded");
 
             // Bootstrap Features
             // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
             // If you are embedding reportico and you have already loaded bootstrap then set bootstrap_preloaded equals true so reportico
             // doestnt load it again.
-            $this->engine->bootstrap_styles = \Config::get("reportico::bootstrap_styles");
-            $this->engine->bootstrap_preloaded = \Config::get("reportico::bootstrap_preloaded");
+            $this->engine->bootstrap_styles = \Config::get("laravel-reportico::bootstrap_styles");
+            $this->engine->bootstrap_preloaded = \Config::get("laravel-reportico::bootstrap_preloaded");
 
             // In bootstrap enable pages, the bootstrap modal is by default used for the quick edit buttons
             // but they can be ignored and reportico's own modal invoked by setting this to true
-            $this->engine->force_reportico_mini_maintains = \Config::get("reportico::force_reportico_maintain_modals");
+            $this->engine->force_reportico_mini_maintains = \Config::get("laravel-reportico::force_reportico_maintain_modals");
 
             // Engine to use for charts .. 
             // HTML reports can use javascript charting, PDF reports must use PCHART
-            $this->engine->charting_engine = \Config::get("reportico::charting_engine");
-            $this->engine->charting_engine_html = \Config::get("reportico::charting_engine_html");
+            $this->engine->charting_engine = \Config::get("laravel-reportico::charting_engine");
+            $this->engine->charting_engine_html = \Config::get("laravel-reportico::charting_engine_html");
 
             // Whether to turn on dynamic grids to provide searchable/sortable reports
-            $this->engine->dynamic_grids = \Config::get("reportico::dynamic_grids");
-            $this->engine->dynamic_grids_sortable = \Config::get("reportico::dynamic_grids_sortable");
-            $this->engine->dynamic_grids_searchable = \Config::get("reportico::dynamic_grids_searchable");
-            $this->engine->dynamic_grids_paging = \Config::get("reportico::dynamic_grids_paging");
-            $this->engine->dynamic_grids_page_size = \Config::get("reportico::dynamic_grids_page_size");
+            $this->engine->dynamic_grids = \Config::get("laravel-reportico::dynamic_grids");
+            $this->engine->dynamic_grids_sortable = \Config::get("laravel-reportico::dynamic_grids_sortable");
+            $this->engine->dynamic_grids_searchable = \Config::get("laravel-reportico::dynamic_grids_searchable");
+            $this->engine->dynamic_grids_paging = \Config::get("laravel-reportico::dynamic_grids_paging");
+            $this->engine->dynamic_grids_page_size = \Config::get("laravel-reportico::dynamic_grids_page_size");
 
             // Show or hide various report elements
-            $this->engine->output_template_parameters["show_hide_navigation_menu"] = \Config::get("reportico::show_hide_navigation_menu");
-            $this->engine->output_template_parameters["show_hide_dropdown_menu"] = \Config::get("reportico::show_hide_dropdown_menu");
-            $this->engine->output_template_parameters["show_hide_report_output_title"] = \Config::get("reportico::show_hide_report_output_title");
-            $this->engine->output_template_parameters["show_hide_prepare_section_boxes"] = \Config::get("reportico::show_hide_prepare_section_boxes");
-            $this->engine->output_template_parameters["show_hide_prepare_pdf_button"] = \Config::get("reportico::show_hide_prepare_pdf_button");
-            $this->engine->output_template_parameters["show_hide_prepare_html_button"] = \Config::get("reportico::show_hide_prepare_html_button");
-            $this->engine->output_template_parameters["show_hide_prepare_print_html_button"] = \Config::get("reportico::show_hide_prepare_print_html_button");
-            $this->engine->output_template_parameters["show_hide_prepare_csv_button"] = \Config::get("reportico::show_hide_prepare_csv_button");
-            $this->engine->output_template_parameters["show_hide_prepare_page_style"] = \Config::get("reportico::show_hide_prepare_page_style");
+            $this->engine->output_template_parameters["show_hide_navigation_menu"] = \Config::get("laravel-reportico::show_hide_navigation_menu");
+            $this->engine->output_template_parameters["show_hide_dropdown_menu"] = \Config::get("laravel-reportico::show_hide_dropdown_menu");
+            $this->engine->output_template_parameters["show_hide_report_output_title"] = \Config::get("laravel-reportico::show_hide_report_output_title");
+            $this->engine->output_template_parameters["show_hide_prepare_section_boxes"] = \Config::get("laravel-reportico::show_hide_prepare_section_boxes");
+            $this->engine->output_template_parameters["show_hide_prepare_pdf_button"] = \Config::get("laravel-reportico::show_hide_prepare_pdf_button");
+            $this->engine->output_template_parameters["show_hide_prepare_html_button"] = \Config::get("laravel-reportico::show_hide_prepare_html_button");
+            $this->engine->output_template_parameters["show_hide_prepare_print_html_button"] = \Config::get("laravel-reportico::show_hide_prepare_print_html_button");
+            $this->engine->output_template_parameters["show_hide_prepare_csv_button"] = \Config::get("laravel-reportico::show_hide_prepare_csv_button");
+            $this->engine->output_template_parameters["show_hide_prepare_page_style"] = \Config::get("laravel-reportico::show_hide_prepare_page_style");
 
             // Static Menu definition
             // ======================
-            $this->engine->static_menu = \Config::get("reportico::static_menu");
+            $this->engine->static_menu = \Config::get("laravel-reportico::static_menu");
 
             // Dropdown Menu definition
             // ========================
-            $this->engine->dropdown_menu = \Config::get("reportico::dropdown_menu");
+            $this->engine->dropdown_menu = \Config::get("laravel-reportico::dropdown_menu");
 
             $defaultconnection = \Config::get("database.default");
             $useConnection = false;
