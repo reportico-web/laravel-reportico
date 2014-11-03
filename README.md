@@ -18,7 +18,13 @@ Installation
 
 Install with composer 
 
-composer require "reportico/laravel-reportico"  "dev-master"
+composer require "reportico/laravel-reportico"  "dev-master" 
+
+then add to your app.php in the providers section :--
+
+'Reportico\Reportico\ReporticoServiceProvider',
+
+then follow the instructions in the link below
 
 Quickstart and Documentation
 ============================
