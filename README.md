@@ -21,6 +21,7 @@ Install with composer
 composer require "reportico/laravel-reportico": "dev-master"
 
 Quickstart and Documentation
+============================
 
 To get going with the module go to :-
 
