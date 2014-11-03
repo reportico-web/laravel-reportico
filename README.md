@@ -18,7 +18,7 @@ Installation
 
 Install with composer 
 
-composer require "reportico/laravel-reportico": "dev-master"
+composer require "reportico/laravel-reportico"  "dev-master"
 
 Quickstart and Documentation
 ============================
