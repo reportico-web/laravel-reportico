@@ -120,6 +120,9 @@ class ReporticoServiceProvider extends ServiceProvider {
             $this->engine->charting_engine = \Config::get("laravel-reportico::charting_engine");
             $this->engine->charting_engine_html = \Config::get("laravel-reportico::charting_engine_html");
 
+            // Engine to use for PDF reports .. 
+            $this->engine->pdf_engine = \Config::get("laravel-reportico::pdf_engine");
+
             // Whether to turn on dynamic grids to provide searchable/sortable reports
             $this->engine->dynamic_grids = \Config::get("laravel-reportico::dynamic_grids");
             $this->engine->dynamic_grids_sortable = \Config::get("laravel-reportico::dynamic_grids_sortable");

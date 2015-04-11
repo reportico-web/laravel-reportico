@@ -1,4 +1,5 @@
 <?php namespace Reportico\Reportico;
+
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2014 Peter Deed
@@ -106,16 +107,20 @@ class reportico_object
 
 	function & get_attribute ( $attrib_name )
 		{
-			if ( $this->attributes[$attrib_name] )
-			{
-				$val = check_for_default($attrib_name, $this->attributes[$attrib_name]);
-				return $val;
-			}
-			else
-			{
-				$val = check_for_default($attrib_name, $this->attributes[$attrib_name]);
-				return $val;
-			}
+            $val = false;
+            if ( isset ( $this->attributes[$attrib_name] ) )
+			    if ( $this->attributes[$attrib_name] )
+			    {
+				    $val = check_for_default($attrib_name, $this->attributes[$attrib_name]);
+				    return $val;
+			    }
+			    else
+			    {
+				    $val = check_for_default($attrib_name, $this->attributes[$attrib_name]);
+				    return $val;
+			    }
+            else
+                return $val;
 		}
 		
 	// Parses a Reportico value ( e.g. criteria default, criteria value )
@@ -262,6 +267,8 @@ class reportico extends reportico_object
 	var $delete_project_url;
 	var $create_report_url;
 
+	var $version = "4.3";
+
 	var $name;
 	var $rowselection="all";
 	var $parent_query=false;
@@ -343,6 +350,8 @@ class reportico extends reportico_object
 
 	var $charting_engine = "PCHART";
 	var $charting_engine_html = "NVD3";
+	var $pdf_engine = "tcpdf";
+	var $pdf_engine_file = "reportico_report_fpdf";
 
     var $projects_folder = "projects";
     var $admin_projects_folder = "projects";
@@ -361,8 +370,8 @@ class reportico extends reportico_object
 			"pdfFontSize" => "",
 			"PreExecuteCode" =>  "NONE",
 			"formBetweenRows" => "solidline",
-			"bodyDisplay" => "show",
-			"graphDisplay" => "show",
+			//"bodyDisplay" => "show",
+			//"graphDisplay" => "show",
 			"gridDisplay" => ".DEFAULT",
 			"gridSortable" => ".DEFAULT",
 			"gridSearchable" => ".DEFAULT",
@@ -381,6 +390,7 @@ class reportico extends reportico_object
     // Output control 
     var $output_skipline = false;
     var $output_allcell_styles = false;
+    var $output_criteria_styles = false;
     var $output_header_styles = false;
     var $output_hyperlinks = false;
     var $output_images = false;
@@ -388,11 +398,13 @@ class reportico extends reportico_object
     var $output_page_styles = false;
     var $output_before_form_row_styles = false;
     var $output_after_form_row_styles = false;
+    var $output_group_header_styles = false;
     var $output_group_header_label_styles = false;
     var $output_group_header_value_styles = false;
     var $output_group_trailer_styles = false;
     var $output_reportbody_styles = false;
 	var $admin_accessible = true;
+
 
     // Template Parameters
     var $output_template_parameters = array(
@@ -469,6 +481,12 @@ class reportico extends reportico_object
     // Path to frameworks assets folder
     var $url_path_to_assets = false;
 
+    // Path to public reportico site for help
+    var $url_doc_site = "http://www.reportico.org/documentation/";
+
+    // Path to public reportico site
+    var $url_site = "http://www.reportico.org/";
+
     // Path to calling script for form actions
     // In standalone mode will be the reportico runner, otherwise the
     // script in which reportico is embedded
@@ -519,6 +537,10 @@ class reportico extends reportico_object
     // In bootstrap enabled pages, the bootstrap modal is by default used for the quick edit buttons
     // but they can be ignored and reportico's own modal invoked by setting this to true
     var $force_reportico_mini_maintains = false;
+
+    // Array to hold plugins
+    var $plugins = array();
+
 
 	function __construct()
 	{ 	
@@ -1019,6 +1041,8 @@ class reportico extends reportico_object
 	function set_page_header_attribute($query_name, $attrib_name, $attrib_value)
 	{
 
+        if ( !$query_name )
+            $query_name = count($this->page_headers) - 1;
 		$this->check_page_header_name("set_page_header_attribute", $query_name);
 		if ( array_key_exists($query_name, $this->page_headers) )
 		{
@@ -1033,6 +1057,8 @@ class reportico extends reportico_object
 	function set_page_footer_attribute($query_name, $attrib_name, $attrib_value)
 	{
 
+        if ( !$query_name )
+            $query_name = count($this->page_footers) - 1;
 		$this->check_page_footer_name("set_page_footer_attribute", $query_name);
 		if ( array_key_exists($query_name, $this->page_footers) )
 		{
@@ -1724,9 +1750,18 @@ class reportico extends reportico_object
 			
 		if ( array_key_exists("target_format", $_REQUEST) && $execute_mode == "EXECUTE" && count($this->targets) == 0)
 		{	
-		
-			require_once("swoutput.php");
 			$tf = $_REQUEST["target_format"];
+            if ( isset ( $_GET["target_format"] ) )
+			    $tf = $_GET["target_format"];
+			$this->target_format = strtolower($tf);
+
+            if ( $this->target_format == "pdf" )
+            {
+                $this->pdf_engine_file = "reportico_report_{$this->pdf_engine}.php";
+			    require_once($this->pdf_engine_file);
+            }
+            else
+			    require_once("reportico_report_".$this->target_format.".php");
 			$this->target_format = strtoupper($tf);
 			switch ( $tf )
 			{
@@ -1748,16 +1783,13 @@ class reportico extends reportico_object
 
 				case "html" :
 				case "HTML" :
-					//$rep = new reportico_report_html_template();
-			        require_once("swoutput.php");
-					$rep = new reportico_report_html_template();
+					$rep = new reportico_report_html();
 					$this->add_target($rep);
 					$rep->set_query($this);
 					break;
 
 				case "htmlgrid" :
 				case "HTMLGRID" :
-			        require_once("swoutput_grid.php");
 					$rep = new reportico_report_html_grid_template();
 					$this->add_target($rep);
 					$rep->set_query($this);
@@ -1765,7 +1797,10 @@ class reportico extends reportico_object
 
 				case "pdf" :
 				case "PDF" :
-					$rep = new reportico_report_pdf();
+                    if ( $this->pdf_engine == "tcpdf" )
+					    $rep = new reportico_report_tcpdf();
+                    else
+					    $rep = new reportico_report_fpdf();
 					$rep->page_length = 80;
 					$this->add_target($rep);
 					$rep->set_query($this);
@@ -2384,6 +2419,8 @@ class reportico extends reportico_object
 			$page_header_text
 			)
 	{
+        if ( !$page_header_name )
+            $page_header_name = count($this->page_headers);
 		$this->page_headers[$page_header_name] = new reportico_page_end($line, $page_header_text);
 	}			
 
@@ -2396,6 +2433,8 @@ class reportico extends reportico_object
 			$page_footer_text
 			)
 	{
+        if ( !$page_footer_name )
+            $page_footer_name = count($this->page_footers);
 		$this->page_footers[$page_footer_name] = new reportico_page_end($line, $page_footer_text);
 	}			
 
@@ -2416,7 +2455,7 @@ class reportico extends reportico_object
 	// -----------------------------------------------------------------------------
 	// Function : create_group_trailer
 	// -----------------------------------------------------------------------------
-	function create_group_trailer( $query_name, $trailer_column, $value_column )
+	function create_group_trailer( $query_name, $trailer_column, $value_column, $trailer_custom = false )
 	{
 		$this->check_group_name("create_group_trailer", $query_name);
 		//$this->check_column_name("create_group_trailer", $trailer_column);
@@ -2425,7 +2464,7 @@ class reportico extends reportico_object
 		$grp = get_group_column($query_name, $this->groups );
 		$qc = get_query_column($value_column, $this->columns );
 		//$trl = get_query_column($trailer_column, $this->columns )) )
-		$grp->add_trailer($trailer_column, $qc);
+		$grp->add_trailer($trailer_column, $qc, $trailer_custom);
 	}
 
 	// -----------------------------------------------------------------------------
@@ -2447,24 +2486,19 @@ class reportico extends reportico_object
 		$updtr = false;
 		foreach ( $grp->trailers as $k => $v )
 		{
-			foreach ( $v as $k2 => $v2 )
-			{
-				if ( $ct == $tn )
-				{
-					array_splice($grp->trailers[$k], $k2, 1 );
-					break;
-				}
-				$ct++;
-			}
 			if ( $ct == $tn )
-				break;
+			{
+				array_splice($grp->trailers, $k, 1 );
+				return;
+			}
+			$ct++;
 		}
 				
 	}
 	// -----------------------------------------------------------------------------
 	// Function : set_group_trailer_by_number
 	// -----------------------------------------------------------------------------
-	function set_group_trailer_by_number( $query_name, $trailer_number, $trailer_column, $value_column )
+	function set_group_trailer_by_number( $query_name, $trailer_number, $trailer_column, $value_column, $trailer_custom = false )
 	{
 		$tn = (int)$trailer_number;
 		if ( !$this->check_group_name_r("create_group_trailer", $query_name) )
@@ -2485,9 +2519,15 @@ class reportico extends reportico_object
 			return;
 		}
 
+
 		//$grp =& $this->groups[$query_name] ;
 		$grp = get_group_column($query_name, $this->groups );
 		$col = get_query_column($value_column, $this->columns );
+
+        $trailer = array();
+        $trailer["GroupTrailerValueColumn"] = $col;
+        $trailer["GroupTrailerDisplayColumn"] = $trailer_column;
+        $trailer["GroupTrailerCustom"] = $trailer_custom;
 
 		$ct = 0;
 		$k = false;
@@ -2496,19 +2536,11 @@ class reportico extends reportico_object
 
 		foreach ( $grp->trailers as $k => $v )
 		{
-			foreach ( $v as $k2 => $v2 )
+			if ( $k == $tn )
 			{
-				if ( $ct == $tn )
-				{
-					array_splice ( $grp->trailers[$k], $k2, 1 );
-					$grp->trailers[$trailer_column][] =& $col;
-					$looping = false;
-					break;
-				}
-				$ct++;
+                   $grp->trailers[$k] = $trailer;
+				return;
 			}
-			if ( !$looping )
-				break;
 		}
 				
 	}
@@ -2516,24 +2548,21 @@ class reportico extends reportico_object
 	// -----------------------------------------------------------------------------
 	// Function : create_group_header
 	// -----------------------------------------------------------------------------
-	function create_group_header ( $query_name, $header_column )
+	function create_group_header ( $query_name, $header_column, $header_custom = false )
 	{
 		$this->check_group_name("create_group_header", $query_name);
 		$this->check_column_name("create_group_header", $header_column);
 
 		$grp = get_group_column($query_name, $this->groups );
 		$col = get_query_column($header_column, $this->columns );
-		//$trl = get_query_column($trailer_column, $this->columns );
-		//$trl =& $this->columns[$trailer_column] ;
-		$grp->add_header($col);
+		$grp->add_header($col, $header_custom);
 	}
 
 	// -----------------------------------------------------------------------------
 	// Function : set_group_header_by_number
 	// -----------------------------------------------------------------------------
-	function set_group_header_by_number ( $query_name, $header_number, $header_column )
+	function set_group_header_by_number ( $query_name, $header_number, $header_column, $header_custom )
 	{
-
 		$hn = (int)$header_number;
 		if ( !$this->check_group_name_r("create_group_header", $query_name) )
 		{	
@@ -2549,7 +2578,11 @@ class reportico extends reportico_object
 
 		$grp = get_group_column($query_name, $this->groups );
 		$col = get_query_column($header_column, $this->columns );
-		$grp->headers[$hn] =& $col;
+		$header = array();
+        $header["GroupHeaderColumn"] = $col;
+        $header["GroupHeaderCustom"] = $header_custom;
+		$grp->headers[$hn] = $header;
+		//$this->headers[] = $header;
 	}
 
 	// -----------------------------------------------------------------------------
@@ -2715,7 +2748,7 @@ class reportico extends reportico_object
 				$cn1 = 0;
 				foreach ( $v->trailers as $k1 => $v1 )
 				{
-					if ( $k1 == $query_name )
+					if ( $v1["GroupTrailerDisplayColumn"] == $query_name )
 					{
 						array_splice ( $this->groups[$k]->trailers, $cn1, 1 );
 						$deleting = true;
@@ -2931,13 +2964,14 @@ class reportico extends reportico_object
 		$smarty->compile_dir = find_best_location_in_include_path( "templates_c" );
 
 		$dummy="";
-		$version = "4.0";
+		$version = $this->version;
 
 		$forward_url_params = session_request_item('forward_url_get_parameters', $this->forward_url_get_parameters);
 		$forward_url_params_graph = session_request_item('forward_url_get_parameters_graph', $this->forward_url_get_parameters_graph);
 		$forward_url_params_dbimage = session_request_item('forward_url_get_parameters_dbimage', $this->forward_url_get_parameters_dbimage);
 
 		$smarty->assign('REPORTICO_VERSION', $version);
+		$smarty->assign('REPORTICO_SITE', $this->url_site);
 
         // Assign user parameters to template
         if ( $this->user_parameters && is_array($this->user_parameters) )
@@ -3569,12 +3603,22 @@ class reportico extends reportico_object
 		}
 
 
+        // apply default customized reportico actions if not using xml text in session
+        $do_defaults = true;
+
 		if ( $this->sqlinput )
         {
             $this->importSQL($this->sqlinput);
         }
 		else if ( $this->xmlinput || $this->xmlintext )
 		{
+            if ( $this->get_execute_mode() == "MAINTAIN" )
+            {
+                $do_defaults = false;
+            }
+            //else if ( $this->xmlintext )
+                //$do_defaults = false;
+
 			$this->xmlin = new reportico_xml_reader($this, $this->xmlinput, $this->xmlintext);
 			$this->xmlin->xml2query();
 		}
@@ -3583,6 +3627,19 @@ class reportico extends reportico_object
 			$this->xmlin = new reportico_xml_reader($this, false, "");
 			$this->xmlin->xml2query();
 		}
+
+        // Custom query stuff
+        if ( $do_defaults)
+        {
+            $custom_functions = array();
+
+            if ( file_exists(__DIR__."/projects/".$this->projects_folder."/reportico_defaults.php" ))
+                include_once(__DIR__."/projects/".$this->projects_folder."/reportico_defaults.php");
+            else if ( file_exists(__DIR__."/reportico_defaults.php" ))
+                include_once(__DIR__."/reportico_defaults.php");
+            if ( function_exists("reportico_defaults") )
+                reportico_defaults($this);
+        }
 
 	}
 
@@ -3655,6 +3712,9 @@ class reportico extends reportico_object
 
         // If new session, we need to use initial project, report etc, otherwise ignore them
 	    $this->handle_initial_settings();
+
+        // load plugins
+        $this->load_plugins();
 
         // Fetch project config
 		$this->set_project_environment($this->initial_project, $this->projects_folder, $this->admin_projects_folder);
@@ -4738,17 +4798,27 @@ $code = "namespace Reportico\Reportico;". $code;
 	}
 
 	// -----------------------------------------------------------------------------
-	// Function : add_assignment
+	// Function : dd_assignment
 	// -----------------------------------------------------------------------------
 	function add_assignment
 		(
 			$query_name,
 			$expression,
-			$criteria
+			$criteria,
+            $atstart = false
 		)
 		{
-			//print("Added assign $query_name, $expression, $criteria\n");
-			$this->assignment[] = new reportico_assignment
+			//print("Added assign $query_name, $expression, $criteria<BR>");
+            if ( $atstart )
+                array_unshift($this->assignment, new reportico_assignment
+                (  
+                    $query_name,
+                    $expression,
+                    $criteria
+                    )
+                );
+            else
+			    $this->assignment[] = new reportico_assignment
 				(
 					$query_name,
 					$expression,
@@ -4826,6 +4896,25 @@ $code = "namespace Reportico\Reportico;". $code;
 			    return $val->column_value;
 		    }
 	    }
+
+        // Extract criteria item
+        if ( substr($name, 0, 1) == "?" || substr($name, 0, 1) == "=" )
+        {
+            $field = substr($name, 1);
+            $bits=explode(",", $field);
+            if ( isset($this->lookup_queries[$bits[0]] ))
+            {
+                if ( !isset($bits[1] ) )
+                    $bits[1] = "VALUE";
+                if ( !isset($bits[2] ) )
+                    $bits[2] = false;
+                if ( $bits[1] != "RANGE1" && $bits[1] != "RANGE2" && $bits[1] != "FULL" && $bits[1] != "VALUE" )
+                    $bits[1] = "VALUE";
+
+			    $x = $this->lookup_queries[$bits[0]]->get_criteria_value($bits[1], $bits[2]);
+                return $x;
+            }
+        }
     }
 
 	// -----------------------------------------------------------------------------
@@ -4951,6 +5040,8 @@ $code = "namespace Reportico\Reportico;". $code;
 	{
         if ( $item_type == "ALLCELLS" )
             $this->output_allcell_styles[$style_type] = $style_value;
+        if ( $item_type == "CRITERIA" )
+            $this->output_criteria_styles[$style_type] = $style_value;
         if ( $item_type == "ROW" )
             $this->output_row_styles[$style_type] = $style_value;
         if ( $item_type == "CELL" )
@@ -4961,6 +5052,8 @@ $code = "namespace Reportico\Reportico;". $code;
             $this->output_reportbody_styles[$style_type] = $style_value;
         if ( $item_type == "COLUMNHEADERS" )
             $this->output_header_styles[$style_type] = $style_value;
+        if ( $item_type == "GROUPHEADER" )
+            $this->output_group_header_styles[$style_type] = $style_value;
         if ( $item_type == "GROUPHEADERLABEL" )
             $this->output_group_header_label_styles[$style_type] = $style_value;
         if ( $item_type == "GROUPHEADERVALUE" )
@@ -5657,6 +5750,95 @@ function set_project_environment($initial_project = false, $project_folder = "pr
 
 	return $project;
 }
+	// -----------------------------------------------------------------------------
+	// Function : load_plugins
+	//
+	// Scan plugins folder for custom plugin functions and load them into plugins array
+	// -----------------------------------------------------------------------------
+	function load_plugins()
+	{
+		$plugin_dir = find_best_location_in_include_path( "plugins" );
+
+        if (is_dir($plugin_dir)) 
+        {
+            if ($dh = opendir($plugin_dir)) 
+            {
+                while (($file = readdir($dh)) !== false) 
+                {
+                    $plugin = $plugin_dir."/".$file;
+                    if (is_dir($plugin)) 
+                    {
+                        $plugin_file = $plugin."/global.php";
+                        if (is_file($plugin_file)) 
+                        {
+                            require_once($plugin_file);
+                        }
+                        $plugin_file = $plugin."/".strtolower($this->execute_mode).".php";
+                        if (is_file($plugin_file)) 
+                        {
+                            require_once($plugin_file);
+                        }
+					}
+                }
+            }
+        }
+
+        // Call any plugin initialisation
+        $this->apply_plugins("initialize", $this);
+    }
+
+	// -----------------------------------------------------------------------------
+	// Function : load_plugins
+	//
+	// Scan plugins folder for custom plugin functions and load them into plugins array
+	// -----------------------------------------------------------------------------
+	function apply_plugins($section, $params)
+	{
+		foreach ( $this->plugins as $k => $plugin )
+        {
+            if ( isset ( $plugin[$section] ) )
+            {
+                if ( isset ( $plugin[$section]["function"] ) )
+                {
+                    return $plugin[$section]["function"]($params);
+                }
+                else if ( isset ( $plugin[$section]["file"] ) )
+                {
+                    require_once($plugin["file"]);
+                }
+            }
+        }
+    }
+
+    function apply_styleset($type, $styles, $column = false, $mode = false, $condition = false)
+    {
+        $txt = "";
+        $usecolumn = false;
+		foreach ( $this->columns as $k => $col )
+		{
+            if ( !$column || $column == $col->query_name )
+            {
+                $usecolumn = $col->query_name;
+                break;
+            }
+		}
+        if ( !$usecolumn )
+        {
+            //echo "Apply Styleset Column $column not found<BR>";
+            return;
+        }
+        foreach ( $styles as $element => $style )
+        {
+            $txt .= "apply_style('$type', '$element', '$style');";
+        }
+        if ( $condition && $mode )
+            $condition = "$condition && {TARGET_FORMAT} == '$mode'";
+        else if ( $mode )
+            $condition = "{TARGET_FORMAT} == '$mode'";
+
+        $this->add_assignment($usecolumn, $txt, $condition, true);
+        
+    }
 
 }
 // -----------------------------------------------------------------------------
@@ -5673,7 +5855,9 @@ class reportico_page_end extends reportico_object
 	var $attributes = array (
 		"ColumnStartPDF" => false,
 		"justify" => "center",
-		"ColumnWidthPDF" => false
+		"ColumnWidthPDF" => false,
+		"ShowInPDF" => "yes",
+		"ShowInHTML" => "no",
 		);
 
 	function __construct($line, $text)
@@ -5698,6 +5882,7 @@ class reportico_group extends reportico_object
 	var 	$group_column;
 	var 	$headers = array();
 	var 	$trailers = array();
+	var 	$trailers_by_column = array();
 	var 	$trailer_level_ct = 0;
 	var 	$max_level = 0;
 	var	$attributes = array(
@@ -5722,21 +5907,44 @@ class reportico_group extends reportico_object
 				);
 	}
 
-	function add_header(&$in_value_column)
+	function add_header(&$in_value_column, $in_value_custom = false)
 	{
-		$this->headers[] = $in_value_column;
+		$header = array();
+        $header["GroupHeaderColumn"] = $in_value_column;
+        $header["GroupHeaderCustom"] = $in_value_custom;
+		$this->headers[] = $header;
+        
 	}			
 
-	function add_trailer($in_trailer_column, &$in_value_column)
+	function add_trailer($in_trailer_column, &$in_value_column, $in_custom)
 	{
-		if ( !array_key_exists($in_trailer_column, $this->trailers) )
-		{
-			$this->trailers[$in_trailer_column] =  array();
-		}
-		$this->trailers[$in_trailer_column][] =& $in_value_column;
-		$level = count($this->trailers[$in_trailer_column]) - 1;
-		if ( $this->max_level < $level )
-			$this->max_level = $level;
+        $trailer = array();
+        $trailer["GroupTrailerDisplayColumn"] = $in_trailer_column;
+        $trailer["GroupTrailerValueColumn"] = $in_value_column;
+        $trailer["GroupTrailerCustom"] = $in_custom;
+		$this->trailers[] =& $trailer;
+		$level = count($this->trailers);
+        if ( $this->max_level < $level )
+            $this->max_level = $level;
+	}			
+
+	function organise_trailers_by_display_column()
+	{
+        foreach ( $this->trailers as $trailer )
+        {
+            if ( !isset($this->trailers_by_column[$trailer["GroupTrailerDisplayColumn"]] ) )
+                $this->trailers_by_column[$trailer["GroupTrailerDisplayColumn"]] = array();
+
+            $this->trailers_by_column[$trailer["GroupTrailerDisplayColumn"]][] = $trailer;
+        }
+        // Calculate number of levels
+        $this->max_level = 0;
+        foreach ( $this->trailers_by_column as $k => $trailergroup )
+        {
+            $level = count($trailergroup);
+            if ( $this->max_level < $level )
+                $this->max_level = $level;
+        }
 	}			
 
 }
@@ -5759,6 +5967,7 @@ class reportico_criteria extends reportico
  * information. Holds database query parameters to criteria selection
  * lists can be generated from the database when the criteria type is LOOKUP
  */
+
 class reportico_criteria_column extends reportico_query_column
 {
 	var $defaults = array();
@@ -5833,7 +6042,7 @@ class reportico_criteria_column extends reportico_query_column
 	function execute_criteria_lookup($in_is_expanding = false)
 	{
 		global $g_code_area;
-		require_once("swoutput.php");
+		require_once("reportico_report_array.php");
 
 		$g_code_area = "Criteria ".$this->query_name;
 		$rep = new reportico_report_array();
@@ -5909,6 +6118,7 @@ class reportico_criteria_column extends reportico_query_column
 
 		$manual_params = array();
 		if ( ! array_key_exists("EXPANDED_".$this->query_name, $_REQUEST) )
+        {
 			if ( array_key_exists("MANUAL_".$this->query_name, $_REQUEST) )
 			{
 				$manual_params = explode(',',$_REQUEST["MANUAL_".$this->query_name]);
@@ -5916,8 +6126,11 @@ class reportico_criteria_column extends reportico_query_column
 				{
 					$hidden_params = $manual_params;
 					$manual_override = true;
+                    $this->criteria_summary .= "-";
+                    $value_string = $_REQUEST["MANUAL_".$this->query_name];
 				}
 			}
+        }
 
 		$expanded_params = array();
 		if ( array_key_exists("EXPANDED_".$this->query_name, $_REQUEST) )
@@ -7568,7 +7781,6 @@ class reportico_assignment extends reportico_object
 			{
 				$crit = $matches[1];
 				$first = substr($crit, 0, 1);
-
 				$critexp = $crit;
 				if ( $first == "=" )
 				{
@@ -7628,12 +7840,19 @@ class reportico_assignment extends reportico_object
 						}
 					}
 					else if ( $cl = get_query_column($crit, $in_query->columns ) )
+                    {
 							if ( $prev_col_value )
 								$clause = $cl->old_column_value;
 							else
 								$clause = $cl->column_value;
+					}
+					//else if ( strtoupper($crit) == "REPORT_TITLE" )
+					//{
+                        //$clause = "go";
+					//}
 					else
 					{
+						echo "Unknown Criteria Item $crit in Query $in_string";
 						//handle_error( "Unknown Criteria Item $crit in Query $in_string");
 						return $in_string;
 					}
@@ -7655,7 +7874,6 @@ class reportico_assignment extends reportico_object
 			}
 			else
 				$looping = false;
-
 		}
 	
 

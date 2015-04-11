@@ -40,6 +40,10 @@
     'charting_engine' => "PCHART",
     'charting_engine_html' => "NVD3",
 
+    // Engine to use for pdf .. 
+    // fpdf is faster but tcpdf offers borders, backgorunds, images, headers footers etc
+    'pdf_engine' => "tcpdf",
+
     // Whether to turn on dynamic grids to provide searchable/sortable reports
     'dynamic_grids' => false,
     'dynamic_grids_sortable' => true,

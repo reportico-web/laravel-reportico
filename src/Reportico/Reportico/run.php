@@ -173,7 +173,7 @@
     // $q->clear_reportico_session = true;
 
     // Specify an alternative AJAX runner from the stanfdard run.php
-    //$q=>reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"];
+    //$q->reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"];
 
 
     // If you want to connect to a reporting database whose connection information is available in the calling
@@ -226,6 +226,9 @@
     //$q->output_template_parameters["show_hide_prepare_csv_button"] = "show";
     //$q->output_template_parameters["show_hide_prepare_page_style"] = "show";
 
+    // Label for criteria section if required
+    // $q->criteria_block_label = "Report Criteria:";
+
     // Static Menu definition
     // ======================
     // identifies the items that will show in the middle of the project menu page.
@@ -250,6 +253,9 @@
     
     // To hide the static report menu
     //$q->static_menu = array ();
+
+    // Required PDF Engine set -- to tcpdf ( default ) or fpdf 
+    //$q->pdf_engine = "tcpdf";
 
     // Dropdown Menu definition
     // ========================
@@ -282,4 +288,5 @@
 	$q->execute();
 
 	//ob_end_flush();
+
 ?>
