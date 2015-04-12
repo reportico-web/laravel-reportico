@@ -39,7 +39,7 @@
  */
 
 /**
- * @class Reportico\Reportico\TCPDF_FONTS
+ * @class TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
  * @version 1.0.013
@@ -2576,7 +2576,7 @@ class TCPDF_FONTS {
 		return $size;
 	}
 
-} // END OF Reportico\Reportico\TCPDF_FONTS CLASS
+} // END OF TCPDF_FONTS CLASS
 
 //============================================================+
 // END OF FILE
