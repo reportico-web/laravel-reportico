@@ -39,13 +39,13 @@
  */
 
 /**
- * @class TCPDF_FONTS
+ * @class Reportico\Reportico\TCPDF_FONTS
  * Font methods for TCPDF library.
  * @package com.tecnick.tcpdf
  * @version 1.0.013
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF_FONTS {
+class Reportico\Reportico\TCPDF_FONTS {
 
 	/**
 	 * Static cache used for speed up uniord performances
@@ -1604,9 +1604,9 @@ class TCPDF_FONTS {
 	 */
 	public static function UTF8ArrayToUniArray($ta, $isunicode=true) {
 		if ($isunicode) {
-			return array_map(array('TCPDF_FONTS', 'unichrUnicode'), $ta);
+			return array_map(array('Reportico\Reportico\TCPDF_FONTS', 'unichrUnicode'), $ta);
 		}
-		return array_map(array('TCPDF_FONTS', 'unichrASCII'), $ta);
+		return array_map(array('Reportico\Reportico\TCPDF_FONTS', 'unichrASCII'), $ta);
 	}
 
 	/**
@@ -1883,7 +1883,7 @@ class TCPDF_FONTS {
 		if ($isunicode) {
 			// requires PCRE unicode support turned on
 			$chars = TCPDF_STATIC::pregSplit('//','u', $str, -1, PREG_SPLIT_NO_EMPTY);
-			$carr = array_map(array('TCPDF_FONTS', 'uniord'), $chars);
+			$carr = array_map(array('Reportico\Reportico\TCPDF_FONTS', 'uniord'), $chars);
 		} else {
 			$chars = str_split($str);
 			$carr = array_map('ord', $chars);
@@ -2576,7 +2576,7 @@ class TCPDF_FONTS {
 		return $size;
 	}
 
-} // END OF TCPDF_FONTS CLASS
+} // END OF Reportico\Reportico\TCPDF_FONTS CLASS
 
 //============================================================+
 // END OF FILE
