@@ -45,7 +45,7 @@
  * @version 1.0.013
  * @author Nicola Asuni - info@tecnick.com
  */
-class Reportico\Reportico\TCPDF_FONTS {
+class TCPDF_FONTS {
 
 	/**
 	 * Static cache used for speed up uniord performances
