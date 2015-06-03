@@ -33,7 +33,7 @@
  * @version : reportico.php,v 1.58 2013/04/24 22:03:22 peter Exp $
  */
 
-$compare="ar_ar";
+$compare="zh_cn";
 $tmp=array("prepare", "admin", "maintain", "execute", "menu", "languages");
 
 foreach ( $tmp as $template )
