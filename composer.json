@@ -11,7 +11,7 @@
     "license": "GPL-3.0",
     "require": {
         "php": ">=5.4.0",
-        "laravel/framework": "5.*.*"
+        "laravel/framework": "5.1.*"
     },
     "autoload": {
         "classmap": [
