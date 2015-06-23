@@ -19,6 +19,7 @@ Installation
 Install with composer 
 
 For Laravel 4
+-------------
 
 composer require "reportico/laravel-reportico"  "4.3" 
 
@@ -36,6 +37,7 @@ http://laravel_url/public/index.php/reportico
 
 
 For Laravel 5
+-------------
 
 composer require "reportico/laravel-reportico"  "~5.1" 
 
