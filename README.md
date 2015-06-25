@@ -49,12 +49,29 @@ then publish the config and the assets with:-
 
 php artisan vendor:publish
 
+then you need to exclude reportico from session token validation by editing:-
+
+```
+app/Http/Middleware/VerifyCsrfToken.php
+```
+
+and adding into the $except array:-
+
+    protected $except = [
+        //
+        ...
+        'reportico/*',
+    ];
+```
+
 and point your browser at
 
 http://laravel_url/public/index.php/reportico
 
 
-then follow the instructions in the link below
+
+
+then follow the instructions in the link below :-
 
 Quickstart and Documentation
 ============================
