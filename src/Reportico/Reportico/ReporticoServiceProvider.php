@@ -46,6 +46,14 @@ class ReporticoServiceProvider extends ServiceProvider {
             return $this->app["view"]->make('reportico::reportico');
         });
 
+        $this->app["router"]->get("reportico/ajax", function() use ($app)
+        {
+            //return View::make('reportico::reportico');
+            //$engine= App::make("getReporticoEngine");
+            $engine = $app["app"]->make('getReporticoEngine');
+            $engine->execute();
+        });
+
         $this->app["router"]->post("reportico/ajax", function() use ($app)
         {
             //return View::make('reportico::reportico');
