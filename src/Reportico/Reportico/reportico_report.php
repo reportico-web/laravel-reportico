@@ -99,9 +99,11 @@ class reportico_report extends reportico_object
 				if ( $first == "=" )
 				{
 					$crit = substr ( $match, 1 );
+                    $label = "";
+                    $value = "";
+                    $this->query->lookup_queries[$crit]->criteria_summary_text($label, $value);
 					$out_string = preg_replace("/\{$match\}/", 
-							$this->query->lookup_queries[$crit]->
-										get_criteria_clause(false,false,true),
+										$value,
 										$out_string);
 				}
 				if ( preg_match("/^session_/", $match ) )
@@ -568,7 +570,7 @@ class reportico_report extends reportico_object
 		if ( get_reportico_session_param("target_show_group_trailers") )
 		    $this->after_group_trailers();
 //echo "each line $this->inOverflow<BR>";
-		    $this->before_group_headers();
+        $this->before_group_headers();
 
 		$this->page_line_count++;
 		$this->line_count++;
