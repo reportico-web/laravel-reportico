@@ -219,12 +219,14 @@
     //$q->output_template_parameters["show_hide_navigation_menu"] = "show";
     //$q->output_template_parameters["show_hide_dropdown_menu"] = "show";
     //$q->output_template_parameters["show_hide_report_output_title"] = "show";
-    //$q->output_template_parameters["show_hide_prepare_section_boxes"] = "show";
+    //$q->output_template_parameters["show_hide_prepare_section_boxes"] = "hide";
     //$q->output_template_parameters["show_hide_prepare_pdf_button"] = "show";
     //$q->output_template_parameters["show_hide_prepare_html_button"] = "show";
     //$q->output_template_parameters["show_hide_prepare_print_html_button"] = "show";
     //$q->output_template_parameters["show_hide_prepare_csv_button"] = "show";
     //$q->output_template_parameters["show_hide_prepare_page_style"] = "show";
+    //$q->output_template_parameters["show_hide_prepare_go_buttons"] = "hide";
+    //$q->output_template_parameters["show_hide_prepare_reset_buttons"] = "hide";
 
     // Label for criteria section if required
     // $q->criteria_block_label = "Report Criteria:";
@@ -255,7 +257,14 @@
     //$q->static_menu = array ();
 
     // Required PDF Engine set -- to tcpdf ( default ) or fpdf 
-    //$q->pdf_engine = "tcpdf";
+    //$q->pdf_engine = "fpdf";
+
+    // How CSV, PDF out is delivered to the browser ( TCPDF output only )
+    // either as
+    // "DOWNLOAD_SAME_WINDOW" - downloaded as attachment from within the current browser window ( default )
+    // "INLINE" - shown inside a new  browser window making use of any existing browser PDF plugin (if not will download)
+    // "DOWNLOAD_NEW_WINDOW" - downloaded as attachment from winthin the current browser window
+    //$q->pdf_delivery_mode = "DOWNLOAD_SAME_WINDOW";
 
     // Dropdown Menu definition
     // ========================

@@ -38,7 +38,7 @@ $locale_arr = array (
         "T_PROJECT_MENU" => "Project Menu",
         "T_ADMIN_MENU" => "Admin Menu",
         "T_DESIGN_REPORT" => "Design Report",
-        "T_EXPAND" => ">>",
+        "T_EXPAND" => " ",
         "T_LOGIN" => "Log In",
         "T_LOGOFF" => "Log Off",
         "T_GO" => "Go",
@@ -58,8 +58,6 @@ $locale_arr = array (
         "T_DEBUG_MEDIUM" => "Medium",
         "T_DEBUG_HIGH" => "High",
         "T_ENTER_PROJECT_PASSWORD" => "Enter the project password.",
-        "T_EXPAND" => ">>",
-        "T_LOGIN" => "Log In",
         "T_DEFAULT_REPORT_DESCRIPTION" =>
                 "&nbsp<br>".
                 "Enter Your Report Criteria Here. To enter criteria use the appropriate expand key.".
@@ -72,7 +70,7 @@ $locale_arr = array (
         "T_Create A New Project" => "Create A New Project",
         "T_Configure Project" => "Configure Project",
         "T_Configure Tutorials" => "Configure Tutorials",
-        "T_PRINTABLE" => "Printable HTML",
+        "T_PRINTABLE" => "Generate HTML report in new browser window",
         "T_PRINT_XML" => "Generate XML Output",
         "T_PRINT_HTML" => "Generate HTML Report",
         "T_PRINT_PDF" => "Generate PDF Report",
@@ -90,11 +88,18 @@ $locale_arr = array (
         "T_EDITPAGEFOOTERS" => "Page Footers",
         "T_EDITGROUPHEADERS" => "Group Headers",
         "T_EDITGROUPTRAILERS" => "Group Trailers",
+        "T_EDITPRESQLS" => "Pre-SQLs",
         "T_EDITTITLE" => "Title",
         "T_EDITSQL" => "SQL",
         "T_EDITCRITERIA" => "Criteria",
         "T_EDITCOLUMNS" => "Columns",
         "T_EDIT" => "Edit",
+        "T_NOTICE" => "Notice",
+        "T_SHOW_CONTENT" => "Show Content",
+        "T_SAVE" => "Save",
+        "T_REPORT_FILE" => "Report File",
+        "T_NEW_REPORT" => "New Report",
+
         ),
         );
 ?>

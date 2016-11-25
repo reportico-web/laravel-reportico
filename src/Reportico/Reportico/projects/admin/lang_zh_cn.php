@@ -1,4 +1,4 @@
-<?php namespace Reportico\Reporitco;
+<?php namespace Reportico\Reportico;
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2013 Peter Deed

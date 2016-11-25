@@ -99,8 +99,8 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
-            $this->engine->url_path_to_assets = $this->app["url"]->asset(config("reportico.path_to_assets"));
 
+            $this->engine->url_path_to_assets = $this->app["url"]->asset(config("reportico.path_to_assets"));
             
             // Where to store reportco projects
             $this->engine->projects_folder = config("reportico.path_to_projects");
@@ -175,6 +175,12 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             $this->engine->available_connections = config("database.connections");
             $this->engine->external_connection = \DB::connection()->getPdo();
+
+            // Set CSRF Token
+            if ( !csrf_token() )
+                $this->engine->csrfToken = "unknown_csrf";
+            else
+                $this->engine->csrfToken = csrf_token() ;
 
             return $this->engine;
         });

@@ -137,7 +137,10 @@ class reportico_panel
 		switch($this->panel_type)
 		{
 			case "LOGIN":
-				$this->smarty->assign('SHOW_LOGIN', true);
+                if ( defined ('SW_ADMIN_PASSWORD') && SW_ADMIN_PASSWORD == "__OPENACCESS__" )
+				    $this->smarty->assign('SHOW_OPEN_LOGIN', true);
+                else
+				    $this->smarty->assign('SHOW_LOGIN', true);
 				break;
 
 			case "LOGOUT":
@@ -185,6 +188,7 @@ class reportico_panel
 				$ct = 0;
 				// Build Select Column List
 				$this->query->expand_col = false;
+                $lastdisplaygroup = "";
 				foreach ( $this->query->lookup_queries as $k => $col )
 				{
 					if ( $col->criteria_type )
@@ -214,6 +218,15 @@ class reportico_panel
 							$crittitle = $col->derive_attribute("column_title", $col->query_name);
 
 						$critsel = $col->format_form_column();
+                        if ( $col->hidden == "yes" )
+                            $crithidden = true;
+                        else
+                            $crithidden = false;
+                        $critdisplaygroup = $col->display_group;
+                        if ( $col->required == "yes" )
+                            $critrequired = true;
+                        else
+                            $critrequired = false;
 						$critexp = false;
 
 						if ( $col->expand_display && $col->expand_display != "NOINPUT" )
@@ -223,8 +236,16 @@ class reportico_panel
 									"name" => $col->query_name,
 									"title" => sw_translate($crittitle),
 									"entry" => $critsel,
-									"expand" => $critexp
+									"entry" => $critsel,
+									"hidden" => $crithidden,
+									"last_display_group" => $lastdisplaygroup,
+									"display_group" => $critdisplaygroup,
+									"display_group_class" => preg_replace("/ /", "_", $critdisplaygroup),
+									"required" => $critrequired,
+									"expand" => $critexp,
+                                    "tooltip" => sw_translate($col->criteria_help)
 									);
+                        $lastdisplaygroup = $critdisplaygroup;
 					}
 					$this->smarty->assign("CRITERIA_ITEMS", $dispcrit);
 				}
@@ -344,10 +365,15 @@ class reportico_panel
 					$forward = session_request_item('forward_url_get_parameters', '');
 					if ( $forward )
 						$forward .= "&";
+
+                    if ( preg_match("/\?/", $this->query->get_action_url()) )
+                        $url_join_char = "&";
+                    else
+                        $url_join_char = "?";
 						
 					$this->query->projectitems[] = array (
 						"label" => $this->text,
-						"url" => $this->query->get_action_url()."?".$forward."execute_mode=MENU&project=".$this->program."&amp;reportico_session_name=".reportico_session_name()
+						"url" => $this->query->get_action_url().$url_join_char.$forward."execute_mode=MENU&project=".$this->program."&amp;reportico_session_name=".reportico_session_name()
 							);
 				}
 				break;
@@ -356,10 +382,20 @@ class reportico_panel
 				$forward = session_request_item('forward_url_get_parameters', '');
 				if ( $forward )
 					$forward .= "&";
+                if ( preg_match("/\?/", $this->query->get_action_url()) )
+                    $url_join_char = "&";
+                else
+                    $url_join_char = "?";
 						
-				$this->query->menuitems[] = array (
+                if ( $this->text == "TEXT" )
+				    $this->query->menuitems[] = array (
 						"label" => $this->text,
-						"url" => $this->query->get_action_url()."?".$forward."execute_mode=PREPARE&xmlin=".$this->program."&amp;reportico_session_name=".reportico_session_name()
+						"url" => $this->program
+							);
+                else
+				    $this->query->menuitems[] = array (
+						"label" => $this->text,
+						"url" => $this->query->get_action_url().$url_join_char.$forward."execute_mode=PREPARE&xmlin=".$this->program."&amp;reportico_session_name=".reportico_session_name()
 							);
 				break;
 
@@ -459,10 +495,8 @@ class reportico_panel
 			case "STATUS":
 
 				$msg = "";
-
 				if ( $this->query->status_message )
 					$this->smarty->assign('STATUSMSG', $this->query->status_message );
-
 				global $g_system_debug;
 				if ( !$g_system_debug )
 					$g_system_debug = array();
@@ -488,12 +522,14 @@ class reportico_panel
 				$duptypect = 0;
 				if ( !$g_system_errors )
 					$g_system_errors = array();
+                $ct = 0;
 				foreach ( $g_system_errors as $val )
 				{
 
-					if ( $val["errno"] == E_USER_ERROR ||  $val["errno"] == E_USER_WARNING )
+					if ( $val["errno"] == E_USER_ERROR ||  $val["errno"] == E_USER_WARNING || $val["errno"] == E_USER_NOTICE )
 					{
-						$msg .= "<HR>";
+                        if ( $ct++ > 0 )
+						    $msg .= "<HR>";
   						if ( $val["errarea"] ) $msg .= $val["errarea"]." - ";
 						if ( $val["errtype"] ) $msg .= $val["errtype"].": ";
 						$msg .= $val["errstr"];
@@ -504,16 +540,14 @@ class reportico_panel
 					else
 					{
 						// Dont keep repeating Assignment errors
-						$msg .= "<HR>";
-						//if ( $val["errct"] > 1 ) $msg .= $val["errct"]." occurrences of ";
-						// PPP Change $msg .= $val["errarea"]." - ".$val["errtype"].": ".$val["errstr"].
-						//" at line ".$val["errline"]." in ".$val["errfile"].$val["errsource"];
-						//"\n";
+                        if ( $ct++ > 0 )
+						    $msg .= "<HR>";
+
 						if ( $val["errarea"] ) $msg .= $val["errarea"]." - ";
 						if ( $val["errtype"] ) $msg .= $val["errtype"].": ";
+                        if ( isset($val["errstr"]) && $val["errstr"] ) 
+                            $msg .= "{$val["errfile"]} Line {$val["errline"]} - ";
 						$msg .= $val["errstr"];
-						//$msg .= " at line ".$val["errline"]." in ".$val["errfile"].$val["errsource"];
-						"\n";
 						$duptypect = 0;
 					}
 					$lastval = $val;
@@ -521,10 +555,38 @@ class reportico_panel
 				if ( $duptypect > 0 )
 					$msg .= "<BR>$duptypect more errors like this<BR>";
 
-				if ( $msg )
+				$debugmsg = "";
+				if ( $this->query->status_message )
+					$this->smarty->assign('STATUSMSG', $this->query->status_message );
+				global $g_system_debug;
+				if ( !$g_system_debug )
+					$g_system_debug = array();
+				foreach ( $g_system_debug as $val )
 				{
-					$msg = "<B>".template_xlate("UNABLE_TO_CONTINUE").":</B>".$msg;
+
+					$debugmsg .= "<hr>".$val["dbgarea"]." - ".$val["dbgstr"]."\n";
 				}
+
+				if ( $debugmsg )
+				{
+					$debugmsg = "<BR><B>".template_xlate("INFORMATION")."</B>".$debugmsg;
+				}
+
+
+                if ( false && $msg && $this->query->reportico_ajax_called )
+                {
+                    header("HTTP/1.0 500 Not Found", true);
+                    $response_array = array();
+                    $response_array["errno"] = 100;
+                    $response_array["errmsg"] = "<div class=\"swError\">$msg</div>$debugmsg";
+                    echo json_encode($response_array);
+                    die;
+                }
+                else
+                {
+                    if ( $msg )
+					    $msg = "</B><div class=\"swError\">$msg</div>$debugmsg";
+                }
 
 				$this->smarty->assign('ERRORMSG', $msg );
 				set_reportico_session_param('latestRequest',"");
@@ -726,8 +788,8 @@ class reportico_xml_reader
 
 					"DetailStyle" => array ( "Title" => "DETAILSTYLE" ),
 
-                    "GroupHeaderCustom" => array ( "Title" => "GROUPHEADERCUSTOM", "Type" => "TEXTBOX", "WizardLink" => true, "HasChangeComparator" => true, "DocId" => "group_header_custom_text" ),
-                    "GroupTrailerCustom" => array ( "Title" => "GROUPTRAILERCUSTOM", "Type" => "TEXTBOX", "WizardLink" => true, "HasChangeComparator" => true, "DocId" => "group_trailer_custom_text" ),
+                    "GroupHeaderCustom" => array ( "Title" => "GROUPHEADERCUSTOM", "Type" => "TEXTBOXNARROW", "WizardLink" => true, "HasChangeComparator" => true, "DocId" => "group_header_custom_text" ),
+                    "GroupTrailerCustom" => array ( "Title" => "GROUPTRAILERCUSTOM", "Type" => "TEXTBOXNARROW", "WizardLink" => true, "HasChangeComparator" => true, "DocId" => "group_trailer_custom_text" ),
 
 					"AssignStyleLocType" => array ( "Title" => "ASSIGNSTYLELOCTYPE", "Type" => "STYLELOCTYPES", "XlateOptions" => true, "DocId" => "apply_style_to"),
 					"AssignStyleFgColor" => array ( "Title" => "ASSIGNSTYLEFGCOLOR", "Validate" => "HTMLCOLOR", "DocId" => "text_colour" ),
@@ -794,6 +856,13 @@ class reportico_xml_reader
 					"XLabelColumn" => array ( "Title" => "XLABELCOLUMN", "Type" => "QUERYCOLUMNS", "DocId" => "column_for_x_labels"),
 					//"YLabelColumn" => array ( "Title" => "YLABELCOLUMN", "Type" => "HIDE"),
 					"ReturnColumn" => array ( "Title" => "RETURNCOLUMN", "HelpPage" => "criteria", "Type" => "QUERYCOLUMNS", "DocId" => "return_column"),
+					"CriteriaDisplayGroup" => array ( "Title" => "CRITERIADISPLAYGROUP", "HelpPage" => "criteria", "DocId" => "display_group"),
+					"CriteriaHidden" => array ( "Title" => "CRITERIAHIDDEN", "Type" => "DROPDOWN",  "XlateOptions" => true,
+												"Values" => array(".DEFAULT", "yes", "no"), "HelpPage" => "criteria", "DocId" => "criteria_hidden" ),
+					"CriteriaRequired" => array ( "Title" => "CRITERIAREQUIRED", "Type" => "DROPDOWN",  "XlateOptions" => true,
+												"Values" => array(".DEFAULT", "yes", "no"), "HelpPage" => "criteria", "DocId" => "criteria_required" ),
+					"CriteriaHelp" => array ( "Title" => "CRITERIAHELP", "Type" => "TEXTBOXSMALL", "DocId" => "criteria_help" ),
+					"MatchColumn" => array ( "Title" => "MATCHCOLUMN", "HelpPage" => "criteria", "Type" => "QUERYCOLUMNS", "DocId" => "match_column"),
 					"MatchColumn" => array ( "Title" => "MATCHCOLUMN", "HelpPage" => "criteria", "Type" => "QUERYCOLUMNS", "DocId" => "match_column"),
 					"DisplayColumn" => array ( "Title" => "DISPLAYCOLUMN", "HelpPage" => "criteria", "Type" => "QUERYCOLUMNS", "DocId" => "display_column"),
 					"OverviewColumn" => array ( "Title" => "OVERVIEWCOLUMN", "HelpPage" => "criteria", "Type" => "QUERYCOLUMNS", "DocId" => "overview_column"),
@@ -879,15 +948,14 @@ class reportico_xml_reader
 					"CriteriaList" => array ( "Title" => "CRITERIALIST", "HelpPage" => "criteria", "DocId" => "list_values" ),
 					"CriteriaType" => array ( "Title" => "CRITERIATYPE", "HelpPage" => "criteria", "Type" => "DROPDOWN", 
 					    "Values" => array("TEXTFIELD", "LOOKUP", "DATE", "DATERANGE", "LIST", "SQLCOMMAND" ), "XlateOptions" => true, "DocId" => "criteria_type" ),
-					"CriteriaHelp" => array ( "Type" => "HIDE", "Title" => "CRITERIAHELP" ),
 					"Use" => array ( "Title" => "USE", "HelpPage" => "criteria", "Type" => "DROPDOWN", 
                                         "Values" => array("DATA-FILTER","SHOW/HIDE", "SHOW/HIDE-and-GROUPBY") ),
 					"LinkToReport" => array ( "Type" => "TEXTFIELDREADONLY", "Title" => "LINKTOREPORT" ),
 					"LinkToReportItem" => array ( "Type" => "TEXTFIELDREADONLY", "Title" => "LINKTOREPORTITEM" ),
 					"CriteriaDisplay" => array ( "Title" => "CRITERIADISPLAY", "Type" => "DROPDOWN", "HelpPage" => "criteria", "XlateOptions" => true, 
-												"Values" => array("NOINPUT", "TEXTFIELD", "DROPDOWN", "MULTI", "CHECKBOX", "RADIO", ), "DocId" => "criteria_display" ),
+												"Values" => array("NOINPUT", "TEXTFIELD", "DROPDOWN", "MULTI", "SELECT2SINGLE", "SELECT2MULTIPLE", "CHECKBOX", "RADIO", ), "DocId" => "criteria_display" ),
 					"ExpandDisplay" => array ( "Title" => "EXPANDDISPLAY", "Type" => "DROPDOWN", "HelpPage" => "criteria", "XlateOptions" => true, 
-												"Values" => array("NOINPUT", "TEXTFIELD", "DROPDOWN", "MULTI", "CHECKBOX", "RADIO", ), "DocId" => "expand_display" ),
+												"Values" => array("NOINPUT", "TEXTFIELD", "DROPDOWN", "MULTI", "SELECT2SINGLE", "SELECT2MULTIPLE", "CHECKBOX", "RADIO", ), "DocId" => "expand_display" ),
 					"DatabaseType" => array ( "Title" => "DATABASETYPE", "Type" => "DROPDOWN", 
 												"Values" => array("informix", "mysql", "sqlite-2", "sqlite-3", "none" ) ),
 					"justify" => array ( "Title" => "JUSTIFY", "Type" => "DROPDOWN",  "XlateOptions" => true,
@@ -2083,7 +2151,7 @@ class reportico_xml_reader
         if ( $invalid )
         {
             $updates[$k] = false;
-            trigger_error ( template_xlate("INVALIDENTRY")."'".$current_value."' ". template_xlate("FORFIELD")." ". template_xlate( $this->field_display[$current_key]["Title"])." - ".template_xlate( $this->field_display[$current_key]["Validate"] ));
+            trigger_error ( template_xlate("INVALIDENTRY")."'".$current_value."' ". template_xlate("FORFIELD")." ". template_xlate( $this->field_display[$current_key]["Title"])." - ".template_xlate( $this->field_display[$current_key]["Validate"] ), E_USER_NOTICE);
 
         }
     }
@@ -2266,6 +2334,7 @@ class reportico_xml_reader
 					{
 							$this->query->drilldown_report = $updates["DrilldownReport"];
 							$q = new reportico();
+                            $q->projects_folder = $this->query->projects_folder;
 							global $g_project;
 							$q->reports_path = $q->projects_folder."/".$g_project;
 							$reader = new reportico_xml_reader($q, $updates["DrilldownReport"], false);
@@ -2384,7 +2453,10 @@ class reportico_xml_reader
 					$updateitem->criteria_list = $updates["CriteriaList"];
 					$updateitem->criteria_display = $updates["CriteriaDisplay"];
 					$updateitem->expand_display = $updates["ExpandDisplay"];
-
+					$updateitem->required = $updates["CriteriaRequired"];
+                    //var_dump($updates);
+					$updateitem->hidden = $updates["CriteriaHidden"];
+					$updateitem->display_group = $updates["CriteriaDisplayGroup"];
 					if ( array_key_exists("ReturnColumn", $updates) )
 					{
 						$updateitem->lookup_query->set_lookup_return($updates["ReturnColumn"]);
@@ -2393,8 +2465,13 @@ class reportico_xml_reader
 						$updateitem->lookup_query->set_lookup_expand_match(
 								$updates["MatchColumn"]);
 					}
+					$updateitem->set_criteria_required($updates["CriteriaRequired"]);
+					$updateitem->set_criteria_hidden($updates["CriteriaHidden"]);
+					$updateitem->set_criteria_display_group($updates["CriteriaDisplayGroup"]);
 					$updateitem->set_criteria_defaults(
 								$updates["CriteriaDefaults"]);
+					$updateitem->set_criteria_help(
+								$updates["CriteriaHelp"]);
 					$updateitem->set_criteria_list(
 								$updates["CriteriaList"]);
 					break;
@@ -2436,7 +2513,7 @@ class reportico_xml_reader
 					$updateitem =& $anal["item"];
 					$gr =& $anal["group"];
 					$anal["quer"]->set_group_header_by_number 
-							( $anal["groupname"], $anal["number"], $updates["GroupHeaderColumn"], $updates["GroupHeaderCustom"] );
+							( $anal["groupname"], $anal["number"], $updates["GroupHeaderColumn"], $updates["GroupHeaderCustom"], $updates["ShowInHTML"],$updates["ShowInPDF"] );
 					break;
 
 				case "gtrl":
@@ -2456,7 +2533,7 @@ class reportico_xml_reader
 							( $anal["groupname"], $anal["number"], 
 										$updates["GroupTrailerDisplayColumn"],
 										$updates["GroupTrailerValueColumn"],
-										$updates["GroupTrailerCustom"]
+										$updates["GroupTrailerCustom"], $updates["ShowInHTML"],$updates["ShowInPDF"]
 							   	);
 					break;
 
@@ -2668,6 +2745,19 @@ class reportico_xml_reader
 					$xmlsavefile = $this->query->xmloutfile;
                     if ( !$xmlsavefile )
 			            trigger_error ( template_xlate("UNABLE_TO_SAVE").template_xlate("SPECIFYXML"), E_USER_ERROR );
+					break; 
+
+				case "PREPARESAVE":
+					$xmlsavefile = $this->query->xmloutfile;
+				    set_reportico_session_param("execute_mode","PREPARE");
+                    
+                    if ( !$xmlsavefile )
+                    {
+                        header("HTTP/1.0 404 Not Found", true);
+                            echo '<div class="swError">'.template_xlate("UNABLE_TO_SAVE").template_xlate("SPECIFYXML")."</div>";
+                            die;
+                    }
+
 					break; 
 
 				case "DELETEREPORT":
@@ -2930,9 +3020,9 @@ class reportico_xml_reader
             // Draw report criteria items we can link to
             $q =  load_existing_report ( $this->query->reportlink_report, $this->query->projects_folder );
             if ( !$q )
-                trigger_error ( template_xlate("NOOPENLINK").$this->query->reportlink_report );
+                trigger_error ( template_xlate("NOOPENLINK").$this->query->reportlink_report , E_USER_NOTICE);
             else if ( !$q->lookup_queries || count($q->lookup_queries) == 0 )
-                trigger_error ( template_xlate("NOCRITLINK").$this->query->reportlink_report );
+                trigger_error ( template_xlate("NOCRITLINK").$this->query->reportlink_report , E_USER_NOTICE);
             else
             {
                 if ( $link_or_import == "LINK" )
@@ -3039,7 +3129,7 @@ class reportico_xml_reader
             }
         }
         else
-            trigger_error ( template_xlate("NOOPENDIR").$this->query->reports_path );
+            trigger_error ( template_xlate("NOOPENDIR").$this->query->reports_path , E_USER_NOTICE);
 
         $text = $this->draw_array_dropdown($fieldtype."_".$this->id.$showtag, $keys, $preselectedvalue, true, false);
         return $text;
@@ -3292,9 +3382,9 @@ class reportico_xml_reader
 						$text .= '<TD colspan="2">';
 						$text .= '&nbsp;&nbsp;'.template_xlate('PROJECT').$g_project.'&nbsp;&nbsp;&nbsp;&nbsp;';
                         if ( $this->query->xmloutfile == "configureproject" )
-						    $text .= template_xlate('REPORT_FILE').' <input type="text" name="xmlout" value="">';
+						    $text .= template_xlate('REPORT_FILE').' <input style="display: inline" type="text" name="xmlout" value="">';
                         else
-						    $text .= template_xlate('REPORT_FILE').' <input type="text" name="xmlout" value="'.$this->query->xmloutfile.'">';
+						    $text .= template_xlate('REPORT_FILE').' <input type="text" style="display: inline" name="xmlout" value="'.$this->query->xmloutfile.'">';
 						$text .= '&nbsp;&nbsp;<input class="'.$this->query->getBootstrapStyle('button_admin').'swLinkMenu reporticoSubmit" type="submit" name="submit_xxx_SAVE" value="'.template_xlate("SAVE").'">';
 						$text .= '&nbsp;&nbsp;<input class="'.$this->query->getBootstrapStyle('button_admin').'swLinkMenu reporticoSubmit" type="submit" name="submit_maintain_NEW" value="'.template_xlate("NEW_REPORT").'">';
 						$text .= '<input class="'.$this->query->getBootstrapStyle('button_delete').'swLinkMenu reporticoSubmit" style="margin-left: 80px" type="submit" name="submit_xxx_DELETEREPORT" value="'.template_xlate("DELETE_REPORT").'">';
@@ -4400,6 +4490,15 @@ class reportico_xml_reader
 				$text .= '</textarea>';
 				break;
 
+			case "TEXTBOXNARROW":
+				$readonly = "";
+				if ( $edit_mode == "SAFE" && ( $this->query->allow_maintain == "SAFE" || $this->query->allow_maintain == "DEMO" || SW_SAFE_DESIGN_MODE ) )
+					$readonly = "readonly";
+				$text .= '<textarea class="'.$this->query->getBootstrapStyle('textfield').' swMntTextBoxNarrow" '.$readonly.' cols="70" rows="20" name="set_'.$this->id."_".$showtag.$shadow.'" >';
+				$text .= htmlspecialchars($val);
+				$text .= '</textarea>';
+				break;
+
 			case "TEXTBOXSMALL":
 				$readonly = "";
 				if ( $edit_mode == "SAFE" && ( $this->query->allow_maintain == "SAFE" || $this->query->allow_maintain == "DEMO" || SW_SAFE_DESIGN_MODE ) )
@@ -4455,7 +4554,7 @@ class reportico_xml_reader
     				}
 				}
 				else
-                    trigger_error ( template_xlate("NOOPENDIR").$this->query->reports_path );
+                    trigger_error ( template_xlate("NOOPENDIR").$this->query->reports_path , E_USER_NOTICE);
 
 				$text .= $this->draw_array_dropdown("set_".$this->id."_".$showtag.$shadow, $keys, $val, false, $translateoptions);
 
@@ -4489,7 +4588,7 @@ class reportico_xml_reader
     				}
 				}
 				else
-                    trigger_error ( template_xlate("NOOPENDIR").$this->query->reports_path );
+                    trigger_error ( template_xlate("NOOPENDIR").$this->query->reports_path, E_USER_NOTICE );
 
                 if( !in_array($val, $keys) )
                     $keys[] = $val;
@@ -4917,6 +5016,7 @@ class reportico_xml_reader
 		if ( $this->query->drilldown_report )
 		{
 				$q = new reportico();
+                $q->projects_folder = $this->query->projects_folder;
 				global $g_project;
 				$q->reports_path = $q->projects_folder."/".$g_project;
 				$reader = new reportico_xml_reader($q, $this->query->drilldown_report, false);
@@ -5245,7 +5345,12 @@ class reportico_xml_reader
 							{
                                     if ( !isset($val["GroupHeaderCustom"]) )
                                         $val["GroupHeaderCustom"] = false;
-									$this->query->create_group_header($gpname, $val["GroupHeaderColumn"],$val["GroupHeaderCustom"]);
+                                    if ( !isset($val["ShowInHTML"]) )
+                                        $val["ShowInHTML"] = "yes";
+                                    if ( !isset($val["ShowInPDF"]) )
+                                        $val["ShowInPDF"] = "yes";
+                                        
+									$this->query->create_group_header($gpname, $val["GroupHeaderColumn"],$val["GroupHeaderCustom"],$val["ShowInHTML"],$val["ShowInPDF"]);
 							}
 
 						if ( ($gp =& $this->get_array_element($phi,"GroupTrailers")) )
@@ -5253,9 +5358,13 @@ class reportico_xml_reader
 							{
                                     if ( !isset($val["GroupTrailerCustom"]) )
                                         $val["GroupTrailerCustom"] = false;
+                                    if ( !isset($val["ShowInHTML"]) )
+                                        $val["ShowInHTML"] = "yes";
+                                    if ( !isset($val["ShowInPDF"]) )
+                                        $val["ShowInPDF"] = "yes";
 									$this->query->create_group_trailer($gpname, $val["GroupTrailerDisplayColumn"], 
 																	$val["GroupTrailerValueColumn"],
-																	$val["GroupTrailerCustom"]);
+																	$val["GroupTrailerCustom"],$val["ShowInHTML"],$val["ShowInPDF"]);
 							}
 					}
 				}
@@ -5372,12 +5481,15 @@ class reportico_xml_reader
 				$crittp = $this->get_array_element($ci, "CriteriaType") ;
 				$critlt = $this->get_array_element($ci, "CriteriaList") ;
 				$crituse = $this->get_array_element($ci, "Use") ;
-				//$crithelp = $this->get_array_element($ci, "CriteriaHelp") ;
 				$critds = $this->get_array_element($ci, "CriteriaDisplay") ;
 				$critexp = $this->get_array_element($ci, "ExpandDisplay") ;
 				$critmatch = $this->get_array_element($ci, "MatchColumn") ;
 				$critdefault = $this->get_array_element($ci, "CriteriaDefaults") ;
+				$crithelp = $this->get_array_element($ci, "CriteriaHelp") ;
 				$crittitle = $this->get_array_element($ci, "Title") ;
+				$crit_required = $this->get_array_element($ci, "CriteriaRequired");
+				$crit_hidden = $this->get_array_element($ci, "CriteriaHidden");
+				$crit_display_group = $this->get_array_element($ci, "CriteriaDisplayGroup");
 				$crit_lookup_return = $this->get_array_element($ci, "ReturnColumn");
 				$crit_lookup_display = $this->get_array_element($ci, "DisplayColumn");
 				$crit_criteria_display = $this->get_array_element($ci, "OverviewColumn");
@@ -5469,11 +5581,17 @@ class reportico_xml_reader
 				$this->query->set_criteria_lookup($critnm, $critquery, $crittb, $critcl);
 				$this->query->set_criteria_input($critnm, $crittp, $critds, $critexp, $crituse);
 				$this->query->set_criteria_link_report($critnm, $linked_report, $linked_report_item);
+//echo "SET $critnm $crit_required<BR>";
 				$this->query->set_criteria_list($critnm, $critlt);
+                //var_dump($crit_required);
+				$this->query->set_criteria_required($critnm, $crit_required);
+				$this->query->set_criteria_hidden($critnm, $crit_hidden);
+				$this->query->set_criteria_display_group($critnm, $crit_display_group);
 				//$this->query->set_criteria_help($critnm, $crithelp);
 				$this->query->set_criteria_attribute($critnm, "column_title", $crittitle);
 				
 				$this->query->set_criteria_defaults($critnm, $critdefault);
+				$this->query->set_criteria_help($critnm, $crithelp);
 					
 			} // End Criteria Item
 
@@ -5669,9 +5787,13 @@ class reportico_xml_writer
 			$el =& $ci->add_xmlval ( "CriteriaType", $lq->criteria_type );
 			if ( defined("SW_DYNAMIC_ORDER_GROUP" ) )
 				$el =& $ci->add_xmlval ( "Use", $lq->_use );
-			//$el =& $ci->add_xmlval ( "CriteriaHelp", $lq->criteria_help );
+			$el =& $ci->add_xmlval ( "CriteriaHelp", $lq->criteria_help );
 			$el =& $ci->add_xmlval ( "CriteriaDisplay", $lq->criteria_display );
 			$el =& $ci->add_xmlval ( "ExpandDisplay", $lq->expand_display );
+//echo "XML $lq->query_name $lq->criteria_display $lq->required $lq->criteria_list<BR>";
+			$el =& $ci->add_xmlval ( "CriteriaRequired", $lq->required );
+			$el =& $ci->add_xmlval ( "CriteriaHidden", $lq->hidden );
+			$el =& $ci->add_xmlval ( "CriteriaDisplayGroup", $lq->display_group );
 			$el =& $ci->add_xmlval ( "ReturnColumn", $lookup_return_col );
 			$el =& $ci->add_xmlval ( "DisplayColumn", $lookup_display_col );
 			$el =& $ci->add_xmlval ( "OverviewColumn", $lookup_abbrev_col );
@@ -5793,6 +5915,8 @@ class reportico_xml_writer
                         $val2["GroupHeaderCustom"] = false;
 					$el =& $gphi->add_xmlval ( "GroupHeaderColumn", $val2["GroupHeaderColumn"]->query_name );
 					$el =& $gphi->add_xmlval ( "GroupHeaderCustom", $val2["GroupHeaderCustom"]);
+					$el =& $gphi->add_xmlval ( "ShowInHTML", $val2["ShowInHTML"]);
+					$el =& $gphi->add_xmlval ( "ShowInPDF", $val2["ShowInPDF"]);
 				}
 
 				$gpt =& $gpi->add_xmlval ( "GroupTrailers" );
@@ -5806,6 +5930,8 @@ class reportico_xml_writer
 					    $el =& $gpti->add_xmlval ( "GroupTrailerDisplayColumn", $val2["GroupTrailerDisplayColumn"] );
 					    $el =& $gpti->add_xmlval ( "GroupTrailerValueColumn", $val2["GroupTrailerValueColumn"]->query_name );
 					    $el =& $gpti->add_xmlval ( "GroupTrailerCustom", $val2["GroupTrailerCustom"]);
+					    $el =& $gpti->add_xmlval ( "ShowInHTML", $val2["ShowInHTML"]);
+					    $el =& $gpti->add_xmlval ( "ShowInPDF", $val2["ShowInPDF"]);
                     }
 				}
 			}
@@ -5891,7 +6017,7 @@ class reportico_xml_writer
 
 		if ( !preg_match( "/(.*)\.xml/", $in_report, $matches ) )
 		{
-				trigger_error ( template_xlate("XMLCONFILE")." $in_report ".template_xlate("XMLFORM") );
+				trigger_error ( template_xlate("XMLCONFILE")." $in_report ".template_xlate("XMLFORM") , E_USER_NOTICE);
 				return;
 		}
 

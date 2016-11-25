@@ -7,9 +7,9 @@
 <LINK id="reportico_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEET}">
 {if $BOOTSTRAP_STYLES}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 {$OUTPUT_ENCODING}
@@ -20,9 +20,9 @@
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 {/if}
@@ -41,15 +41,18 @@
 {literal}
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/reportico.js"></script>
 {/literal}
+{if $REPORTICO_CSRF_TOKEN}
+<script type="text/javascript">var reportico_csrf_token = "{$REPORTICO_CSRF_TOKEN}";</script>
+{/if}
 {/if}
 
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 
 {if $BOOTSTRAP_STYLES == "2"}
-<script type="text/javascript" src="{$JSPATH}/bootstrap2/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap2/js/bootstrap.min.js"></script>
 {else}
-<script type="text/javascript" src="{$JSPATH}/bootstrap3/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap3/js/bootstrap.min.js"></script>
 {/if}
 {/if}
 {/if}
@@ -72,9 +75,11 @@
 <script type="text/javascript">var reportico_ajax_script = "{/literal}{$REPORTICO_AJAX_RUNNER}{literal}";</script>
 {/literal}
 {if $REPORTICO_BOOTSTRAP_MODAL}
+<script type="text/javascript">var reportico_bootstrap_styles = "{$BOOTSTRAP_STYLES}";</script>
 <script type="text/javascript">var reportico_bootstrap_modal = true;</script>
 {else}
 <script type="text/javascript">var reportico_bootstrap_modal = false;</script>
+<script type="text/javascript">var reportico_bootstrap_styles = false;</script>
 {/if}
 {literal}
 <script type="text/javascript">var reportico_ajax_mode = "{/literal}{$REPORTICO_AJAX_MODE}{literal}";</script>
@@ -103,9 +108,11 @@
 {/if}
 {if !$REPORTICO_AJAX_PRELOADED}
 {literal}
-<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.dataTables.js"></script>
 {/literal}
-<LINK id="PRP_StyleSheet" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
+<LINK id="PRP_StyleSheet_s2" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/select2/css/select2.min.css">
+<LINK id="PRP_StyleSheet_dt" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
 {/if}
 {if $REPORTICO_CHARTING_ENGINE == "NVD3" }
 {if !$REPORTICO_AJAX_PRELOADED}
@@ -117,6 +124,14 @@
 {/if}
 {/if}
 <div id="reportico_container">
+    <script>
+        reportico_criteria_items = [];
+{if isset($CRITERIA_ITEMS)}
+{section name=critno loop=$CRITERIA_ITEMS}
+        reportico_criteria_items.push("{$CRITERIA_ITEMS[critno].name}");
+{/section}
+{/if}
+    </script>
 <FORM class="swMntForm" name="topmenu" method="POST" action="{$SCRIPT_SELF}">
 <H1 class="swTitle">{$TITLE}</H1>
 {if strlen($STATUSMSG)>0} 

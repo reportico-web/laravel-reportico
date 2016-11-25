@@ -451,7 +451,7 @@ class reportico_datasource extends reportico_object
                     }
                     else
                     {   
-                        trigger_error("PDO driver for mssql not found. Drivers \"dblib\" and \"mssql\" not found. Available drivers are ".$this->pdo_drivers_as_string());
+                        trigger_error("PDO driver for mssql not found. Drivers \"dblib\" and \"mssql\" not found. Available drivers are ".$this->pdo_drivers_as_string(), E_USER_NOTICE);
                     }
 				}
 				else
@@ -501,7 +501,7 @@ class reportico_datasource extends reportico_object
 				{
                     if ( !$this->pdo_driver_exists( "oci" ) )
                     {   
-                        trigger_error("PDO driver \"oci\" not found. Available drivers are ".$this->pdo_drivers_as_string());
+                        trigger_error("PDO driver \"oci\" not found. Available drivers are ".$this->pdo_drivers_as_string(), E_USER_NOTICE);
                     }
                     else
                     {
@@ -526,7 +526,7 @@ class reportico_datasource extends reportico_object
 				{
                     if ( !$this->pdo_driver_exists( "pgsql" ) )
                     {   
-                        trigger_error("PDO driver \"pgsql\" not found. Available drivers are ".$this->pdo_drivers_as_string());
+                        trigger_error("PDO driver \"pgsql\" not found. Available drivers are ".$this->pdo_drivers_as_string(), E_USER_NOTICE);
                     }
                     else
                     {
@@ -569,7 +569,7 @@ class reportico_datasource extends reportico_object
 				{
                     if ( !$this->pdo_driver_exists( "mysql" ) )
                     {   
-                        trigger_error("PDO driver \"mysql\" not found. Available drivers are ".$this->pdo_drivers_as_string());
+                        trigger_error("PDO driver \"mysql\" not found. Available drivers are ".$this->pdo_drivers_as_string(), E_USER_NOTICE);
                     }
                     else
                     {

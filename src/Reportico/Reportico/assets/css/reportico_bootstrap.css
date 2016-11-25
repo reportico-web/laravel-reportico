@@ -45,18 +45,34 @@
 #reportico_container
 {
     background-color: #ffffff;
+    position: relative;
 }
 
 .swPrpToolbarPane input
 {
     float: right;
     font-weight: 700;
-    margin: 10px 5px 0px 0px;
-    border: 1px solid #888888;
+    margin: 0px 5px 0px 0px;
+    border: 0px solid #888888;
     text-decoration: none;
     background-color: #ffffff;
-    height: 32px !important;
+    height: 42px !important;
     cursor: pointer;
+}
+
+.swDisplayGroupLine td
+{
+    background-color: #eeeeff;
+}
+
+#swPrpSaveFile
+{
+    display: inline !important;
+}
+
+.reportico_bootstrap2_checkbox
+{
+    margin:0px 0px 0px 5px !important;
 }
 
 #swPrpSubmitPane input
@@ -85,7 +101,7 @@
 .swPrpCritExpandSel input
 {
     float: left;
-    margin: 10px 2px 0px 20px !important;
+    margin: 3px 2px 0px 20px !important;
     padding: 5px 2px 2px 2px !important;
     background: #ffffff;
     border: 5px solid #d0ccc9;
@@ -93,6 +109,10 @@
     position: relative;
     color: #505050;
     cursor: pointer;
+    background: url('../images/search.png') no-repeat;   
+    background-color: #ffffff;
+    height: 22px; 
+    width: 22px !important;
 }
 
 .swPrpTopMenuCell input {
@@ -279,6 +299,12 @@ div.modal-loading {
     text-decoration: none;
 }
 
+.reporticoSubmit:hover 
+{
+    background-color: #0f3e12 !important;
+    color: #fff !important;
+}
+
 .swMenuItemLink:hover 
 {
     background-color: inherit !important;
@@ -299,6 +325,20 @@ div.modal-loading {
     text-decoration: none;
 }
 
+.swToggleCriteria, .swToggleCriteria:link, .swToggleCriteria:visited
+{ 
+    padding-right: 5px;
+    padding-left: 5px;
+    margin-right: 5px;
+    text-align: center;
+    background-color: #337ab7;
+    color: #ffffff;
+    font-size: larger;
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+}
+
 .swAdminButton2
 { 
     line-height: inherit !important;
@@ -310,6 +350,19 @@ input.swAdminButton2
     margin-top: 8px;
     margin-left: 2px;
     margin-right: 2px;
+
+}
+
+.swAdminButton2:hover 
+{
+    background-color: #0f3e12 !important;
+    color: #fff !important;
+}
+
+.swLinkMenu2:hover 
+{
+    background-color: #0f3e12 !important;
+    color: #fff !important;
 }
 
 .swAdminButton 
@@ -327,6 +380,7 @@ input.swAdminButton2
     padding-bottom: 5px;
 }
 
+/*
 .swLinkMenu 
 { 
     padding-right: 10px;
@@ -336,17 +390,18 @@ input.swAdminButton2
     color: #000000;
     text-decoration: none;
     border: 1px solid #D0CCC9;
-    background-color: #EFEFEF;
+    /*background-color: #EFEFEF;*/
     padding-top: 5px;
     padding-bottom: 5px;
 }
+*/
 
-.swLinkMenu:hover
+/*.swLinkMenu:hover
 {
     border: solid thin #000000;	
     color: #000000 !important;
     background-color: #F2F2f2 !important;
-}
+}*/
 
 /* ------------------------------------------------------------------------------------*/
 /* -----------------------------Styles for Prepare Execute Mode -----------------------*/
@@ -367,6 +422,14 @@ input.swAdminButton2
     margin-left: 0%;
     width: 100%;
     border: solid 1px #AAAAAA;
+}
+
+.swMenuForm .navbar,
+.swMntForm .navbar,
+.swRepForm .navbar,
+.swPrpForm .navbar
+{ 
+    border: none 1px #aaa !important;
 }
 
 .swPrpTopMenu
@@ -396,8 +459,8 @@ input.swAdminButton2
     text-align: center;
     border-bottom: 1px solid #d0ccc9;
     margin: 0px !important;
-    padding-bottom: 10px;
-    padding-top: 20px;
+    padding-bottom: 2px;
+    padding-top: 10px;
     padding-left: 20px;
 }
 
@@ -520,9 +583,9 @@ input.swAdminButton2
 /* Style for Criteria Entry Screen Buttons */
 .swPrpSubmit
 { 
-    background-color: #EFEFEF;
+    /*background-color: #EFEFEF;
     border: 1px solid #d0ccc9;
-    color: #000000;
+    color: #000000;*/
     border-size: 0;
     text-align: center;
     margin-top: 4px;
@@ -724,8 +787,8 @@ input.swAdminButton2
 
 .swCSVBox, .swHTMLBox, .swPDFBox, .swPrintBox, .swXMLBox, .swJSONBox
 {
-    width: 30px !important;
-    height: 30px !important;
+    width: 42px !important;
+    height: 42px !important;
     text-align: left;
     padding: 0px;
     margin-bottom: 5px !important;
@@ -756,14 +819,11 @@ input.swAdminButton2
 }
 .swMiniMaintain { background-image: url(../images/icons/pencil-2x.png) !important; }
 
-.swRepRefreshBox,
-.swRepPrintBox,
-.swRepBackBox
+.swRepButtons
 {
-    width: 38px !important;
+    width: 100%;
     height: 38px;
     margin: 0px 0px 0px 0px;
-    float: left;
 }
 
 .swRepPrintBox .swLinkMenu,
@@ -778,9 +838,9 @@ input.swAdminButton2
     float: left;
 }
 
-.swRepPrintBox .swLinkMenu { height: 32px !important; background-image: url(../images/printer.png); }
-.swRepRefreshBox .swLinkMenu { height: 32px !important; background-image: url(../images/refreshbutton.png); }
-.swRepBackBox .swLinkMenu { height: 32px !important; background-image: url(../images/backbutton.png); }
+.swRepPrintBox .swLinkMenu { height: 32px !important; border: none; background-image: url(../images/printer.png); background-color: #ffffff;}
+.swRepRefreshBox .swLinkMenu { height: 32px !important; border: none; background-image: url(../images/refreshbutton.png); }
+.swRepBackBox .swLinkMenu { height: 32px !important; border: none; background-image: url(../images/backbutton.png); }
 
 .swRepBackButton:hover 
 {
@@ -874,7 +934,7 @@ input.swAdminButton2
 
 .swMntMidSection
 {
-    width: 280px;
+    width: 200px;
     background-color: #eeeeff;
     border-right: solid black 1px;
 }
@@ -979,7 +1039,8 @@ input.swAdminButton2
     padding: 5px;
     background-color: inherit;
     color: #555;
-    width: 220px !important;
+    /*width: 160px !important;*/
+    max-width: 72% !important;
     text-align: left;
     
 }
@@ -991,17 +1052,20 @@ input.swAdminButton2
     padding: 5px;
     background-color: inherit;
     color: #555;
-    width: 220px !important;
+    /*width: 160px !important;*/
+    max-width: 72% !important;
     text-align: left;
 }
 
 .swMntVertTabMenuCellSel
 { 
+    /*width: 115px !important;*/
 }
 
 .swMntVertTabMenuCellUnsel
 { 
     border: 1px solid #bbb;
+    /*width: 115px !important;*/
 }
 
 .swMntVertTabMenuCellSel a
@@ -1065,6 +1129,12 @@ input.swAdminButton2
 {
     font-size: 10pt;
     width: auto !important;
+    max-width:480px;
+}
+
+.swMntTextBoxNarrow 
+{
+    max-width:380px !important;
 }
 
 .swMntHelpLink
@@ -1078,6 +1148,7 @@ input.swAdminButton2
 .swMntHelpImage
 { 
     border-style: none;
+    display: inline !important;
 }
 
 .swMntHelp
@@ -1098,7 +1169,7 @@ input.swAdminButton2
 .swStatus
 {
     width:          98%;
-    border: groove thin;
+    border: none;
     border-color : #DDFFDD;
     font-style:	    bold;
     margin-left: 1%;
@@ -1121,14 +1192,70 @@ input.swAdminButton2
 }
 
 /* -------------------------- Printed Output Styles ----------------------------------*/
+.swPageHeaderBlock { display: block; width: 100%; position: relative; }
+.swNewPageHeaderBlock { display: none; }
+/*.swPageFooterBlock { display: none; width: 100%; position: absolute; bottom: 300px; }*/
+.swPageFooterBlock { display: none; width: 100%; position: absolute; bottom: -200px;}
+.swFirstPageFooterBlock { display: none; width: 100%; position: absolute; top: 100px; }
+.swLastPageFooterBlock { display: none; width: 100%; position: absolute; bottom: -200px; }
+/*.swPageFooterBlock { display: block; width: 100%; position: relative; bottom: 100%; }*/
+/*.swPageFooterBlock { display: block; width: 100%; }*/
+/*.swPageBlock { display: block; width: 100%; position: relative; margin: 0 0 100px 0 }*/
+.swPageHeader { position: absolute; }
+
+@page {
+    @top {
+        content: element(pageHeader);
+    }
+}
+
+#pageHeader {
+    background-color: #ff3333;
+    position: running(pageHeader);
+}
+
+
+/*@media screen {
+    .swPageHeaderBlock { display: none; }
+}*/
 
 @media print {
 
+    -webkit-print-color-adjust: exact;
+
+    print { position: fixed; top: 0; left: 0; z-index -1; }
+
     body { font-size: 10pt }
-    .swLinkMenu { display: none; }
+
+    /*.swPageHeader { display: block; position: fixed; top: 0; }*/
+    .swPageHeader { display: block; }
+    .swRepButtons { display: none; }
+    .prepareAjaxExecuteIgnore { display: none; }
     .swRepForm { border: none; }
     .swRepBody { width: 100%; margin: 0; border: none; }
-/* Column Header Label  */
+
+    .swLastPageFooterBlock { display: block; }
+    .swNewPageHeaderBlock { display: block; } 
+    .swPageBlock { padding-bottom: 200px }
+    /*.sswPageFooterBlock { display: block; width: 100%; position: fixed; bottom: 0; }
+    .swPageFooterBlock { position: fixed; bottom: 0;}
+    .swPageBlock { padding-bottom: 200px }*/
+
+   #whiteBg {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1; //to send it to the background
+   } 
+   #wrapper {
+      padding-bottom: (the size of the footer, to make footer visible on last page).
+   }
+   #footer {
+     position: relative;
+     bottom: 0;
+   }
+
     .swRepColHdrRow td,
     .swRepColHdrRow th
     {
@@ -1139,10 +1266,24 @@ input.swAdminButton2
         color : #000000;
     }
 
-    .swNewPage { page-break-before: always; }
+    .swNewPageHeaderBlock { page-break-before: always; }
+    /*.swNewPage { page-break-before: always; }*/
 
     .swRepTitle { font-size: 18pt; text-align: center; margin-top: 0px; border: none;}
     .swMntForm { text-align: left; margin-left: 0%; background-color: #ffffff; border: none; }
+    .swRepResultLine td a
+    {
+        text-decoration: underline;
+        color: #ff0000;
+    }
+
+    a[href]:after {
+          content: none !important;
+    }
+
+    .swRepResultGraph {
+        page-break-inside: avoid;
+    }
 }
 
 
@@ -1208,7 +1349,7 @@ text-shadow: 0 1px 0 #fff;
 opacity: .2;
 }
 
-.reportico-modal
+.reportico-modal, .reportico-notice-modal
 {
 display: none;
 overflow: auto;
@@ -1223,7 +1364,7 @@ outline: 0;
 display: none;
 }
 
-.reportico-modal-header
+.reportico-modal-header, .reportico-notice-modal-header
 {
 padding: 15px;
 border-bottom: 1px solid #e5e5e5;
@@ -1233,20 +1374,20 @@ line-height: 1.42857143;
 color: #333;
 }
 
-.reportico-modal-dialog
+.reportico-modal-dialog, .reportico-notice-modal-dialog 
 {
 margin: 30px auto;
 position: relative;
 width: 900px;
 }
 
-.reportico-modal-body
+.reportico-modal-body, .reportico-notice-modal-body
 {
     position: relative;
     padding: 20px;
 }
 
-.reportico-modal-content
+.reportico-modal-content, .reportico-notice-modal-content
 {
 position: relative;
 background-color: #fff;
@@ -1259,10 +1400,16 @@ background-clip: padding-box;
 outline: none;
 }
 
-.reportico-modal-footer
+.reportico-modal-footer, .reportico-notice-modal-footer
 {
 margin-top: 15px;
 padding: 19px 20px 20px;
 text-align: right;
 border-top: 1px solid #e5e5e5;
 }
+
+#reporticoNoticeModalBody
+{
+    padding: 15px !important;
+}
+

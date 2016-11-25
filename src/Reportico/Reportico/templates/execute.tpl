@@ -21,9 +21,9 @@
 {/if}
 {if $BOOTSTRAP_STYLES}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 <LINK id="PRP_StyleSheet" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEET}">
@@ -31,9 +31,9 @@
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/js/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/js/bootstrap.min.css">
 {/if}
 {/if}
 {/if}
@@ -41,7 +41,7 @@
 {/if}
 {if $AJAX_ENABLED}
 {if !$REPORTICO_AJAX_PRELOADED}
-{if !$REPORTICO_JQUERY_PRELOADED}
+{if !$REPORTICO_JQUERY_PRELOADED || $REPORTICO_STANDALONE_WINDOW}
 {literal}
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.js"></script>
 {/literal}
@@ -50,15 +50,19 @@
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/ui/jquery-ui.js"></script>
 {/literal}
 {literal}
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/download.js"></script>
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/reportico.js"></script>
 {/literal}
+{/if}
+{if $REPORTICO_CSRF_TOKEN}
+<script type="text/javascript">var reportico_csrf_token = "{$REPORTICO_CSRF_TOKEN}";</script>
 {/if}
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<script type="text/javascript" src="{$JSPATH}/bootstrap2/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap2/js/bootstrap.min.js"></script>
 {else}
-<script type="text/javascript" src="{$JSPATH}/bootstrap3/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap3/js/bootstrap.min.js"></script>
 {/if}
 {/if}
 {/if}
@@ -79,11 +83,14 @@
 <script type="text/javascript">var reportico_datepicker_language = "{/literal}{$AJAX_DATEPICKER_FORMAT}{literal}";</script>
 <script type="text/javascript">var reportico_this_script = "{/literal}{$SCRIPT_SELF}{literal}";</script>
 <script type="text/javascript">var reportico_ajax_script = "{/literal}{$REPORTICO_AJAX_RUNNER}{literal}";</script>
+<script type="text/javascript">var pdf_delivery_mode = "{/literal}{$PDF_DELIVERY_MODE}{literal}";</script>
 {/literal}
 {if $REPORTICO_BOOTSTRAP_MODAL}
+<script type="text/javascript">var reportico_bootstrap_styles = "{$BOOTSTRAP_STYLES}";</script>
 <script type="text/javascript">var reportico_bootstrap_modal = true;</script>
 {else}
 <script type="text/javascript">var reportico_bootstrap_modal = false;</script>
+<script type="text/javascript">var reportico_bootstrap_styles = false;</script>
 {/if}
 {literal}
 <script type="text/javascript">var reportico_ajax_mode = "{/literal}{$REPORTICO_AJAX_MODE}{literal}";</script>
@@ -102,7 +109,7 @@
 {literal}
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/nvd3/d3.min.js"></script>
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/nvd3/nv.d3.js"></script>
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{/literal}{$JSPATH}{literal}/nvd3/nv.d3.css">
+<LINK id="nvd3_css" REL="stylesheet" TYPE="text/css" HREF="{/literal}{$JSPATH}{literal}/nvd3/nv.d3.css">
 {/literal}
 {/if}
 {/if}
@@ -110,7 +117,7 @@
 {literal}
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.dataTables.min.js"></script>
 {/literal}
-<LINK id="PRP_StyleSheet" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
+<LINK id="datatable_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
 {/if}
 {if $PRINTABLE_HTML}
 {literal}
@@ -150,8 +157,27 @@ function resizeOutputTables(window)
 {/literal}
 {/if}
 <div id="reportico_container">
+    <script>
+        reportico_criteria_items = [];
+{if isset($CRITERIA_ITEMS)}
+{section name=critno loop=$CRITERIA_ITEMS}
+        reportico_criteria_items.push("{$CRITERIA_ITEMS[critno].name}");
+{/section}
+{/if}
+    </script>
 <div class="swRepForm">
 {if strlen($ERRORMSG)>0}
+            <div id="reporticoEmbeddedError">
+                {$ERRORMSG}
+            </div>
+{literal}
+            <script>
+                reportico_jquery(document).ready(function()
+                {
+                    showParentNoticeModal(reportico_jquery("#reporticoEmbeddedError").html());
+                });
+            </script>
+{/literal}
             <TABLE class="swError">
                 <TR>
                     <TD>{$ERRORMSG}</TD>
@@ -198,7 +224,6 @@ function resizeOutputTables(window)
 {/if}
 {$CONTENT}
 </div>
-</div>
 {if !$REPORTICO_AJAX_CALLED}
 {if !$EMBEDDED_REPORT}
 </BODY>
@@ -206,3 +231,45 @@ function resizeOutputTables(window)
 {/if}
 {/if}
 
+{if $REPORTICO_BOOTSTRAP_MODAL}
+{if $BOOTSTRAP_STYLES == "3" }
+<div class="modal fade" id="reporticoNoticeModal" tabindex="-1" role="dialog" aria-labelledby="reporticoNoticeModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+{else}
+<div class="modal fade" style="width: 500px; margin-left: -450px" id="reporticoNoticeModal" tabindex="-1" role="dialog" aria-labelledby="reporticoModal" aria-hidden="true">
+    <div class="modal-dialog">
+{/if}
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" data-dismiss="modal" class="close" aria-hidden="true">&times;</button>
+            <h4 class="modal-title reportico-modal-title" id="reporticoNoticeModalLabel">{$T_NOTICE}</h4>
+            </div>
+            <div class="modal-body" style="padding: 0px" id="reporticoNoticeModalBody">
+                <h3>Modal Body</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <!--button type="button" class="btn btn-primary" >Close</button-->
+        </div>
+    </div>
+  </div>
+</div>
+{else}
+<div id="reporticoModal" tabindex="-1" class="reportico-modal">
+    <div class="reportico-modal-dialog">
+        <div class="reportico-modal-content">
+            <div class="reportico-modal-header">
+            <button type="button" class="reportico-modal-close">&times;</button>
+            <h4 class="reportico-modal-title" id="reporticoModalLabel">Set Parameter</h4>
+            </div>
+            <div class="reportico-modal-body" style="padding: 0px" id="swMiniMaintain">
+                <h3>Modal Body</h3>
+            </div>
+            <div class="reportico-modal-footer">
+                <!--button type="button" class="btn btn-default" data-dismiss="modal">Close</button-->
+                <button type="button" class="swMiniMaintainSubmit" >Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+{/if}

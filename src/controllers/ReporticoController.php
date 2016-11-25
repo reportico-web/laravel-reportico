@@ -4,7 +4,7 @@
 ** Controllers for base reportico functions like graphs and dbimages
 ** - Admin
 */
-class ReporticoController extends Controller
+class ReporticoController extends BaseController
 {
     public $engine = false;
     public $partialRender = false;

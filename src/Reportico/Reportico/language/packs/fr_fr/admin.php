@@ -50,7 +50,7 @@ $locale_arr = array (
         "T_SET_ADMIN_PASSWORD" => "Définir mot de passe Admin",
         "T_RUN_SUITE" => "Exécuter le rapport du projet Suite:",
         "T_CREATE_REPORT" => "Créer un rapport dans le projet:",
-        "T_CONFIG_PARAM" => "Configurer les paramètres pour le projet:",
+        "T_CONFIG_PARAM" => "Configurer le projet:",
         "T_DELETE_PROJECT" => "Delete Project :",
         "T_DOCUMENTATION" => "Documentation",
         "T_CHOOSE_LANGUAGE" => "Choisir la langue",
@@ -61,6 +61,8 @@ $locale_arr = array (
         "T_LINE" => "LINE",
         "T_Create A New Project" => "Créer un Nouveau Projet",
         "T_Configure Tutorials" => "Configurer Tutoriaux",
+        "T_OPEN_LOGIN" => "Entrer en mode design",
+        "T_OPEN_LOGOFF" => "Mode Design Quitter",
 ),
 );
 ?>

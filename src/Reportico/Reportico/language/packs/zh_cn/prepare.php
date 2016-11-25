@@ -51,7 +51,7 @@ $locale_arr = array (
 		"T_DEBUG_MEDIUM" => "中等",
 		"T_DEBUG_HIGH" => "高",
 		"T_ENTER_PROJECT_PASSWORD" => "进入该项目的密码。",
-        "T_EXPAND" => ">>",
+        "T_EXPAND" => " ",
         "T_DEFAULT_REPORT_DESCRIPTION" =>
 "&nbsp<br>".
 "在这里输入你的报告标准。进入标准的适当扩大key.When的使用，你是乐意选择适当的输出格式，然后单击确定。",
@@ -88,11 +88,17 @@ $locale_arr = array (
         "T_EDITPAGEFOOTERS" => "页面页脚",
         "T_EDITGROUPHEADERS" => "组头",
         "T_EDITGROUPTRAILERS" => "集团拖车",
+        "T_EDITPRESQLS" => "Pre-SQLs",
         "T_EDITTITLE" => "称号",
         "T_EDITSQL" => "SQL",
         "T_EDITCRITERIA" => "标准",
         "T_EDITCOLUMNS" => "列",
         "T_EDIT" => "编辑",
+        "T_NOTICE" => "通知",
+		"T_SAVE" => "保存",
+		"T_REPORT_FILE" => "报告文件",
+		"T_NEW_REPORT" => "新的报告",
+        "T_SHOW_CONTENT" => "展示内容",
 
 ),
 );

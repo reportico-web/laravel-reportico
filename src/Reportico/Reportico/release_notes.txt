@@ -1,6 +1,9 @@
 Reportico Open Source PHP Report Designer
 =========================================
 
+4.6 - November 2016
+
+
 4.3 - 28th May 2015
 -------------------
 Default styles and properties for all reports or in a project

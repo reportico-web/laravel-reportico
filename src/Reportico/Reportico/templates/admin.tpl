@@ -7,9 +7,9 @@
 <LINK id="reportico_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEET}">
 {if $BOOTSTRAP_STYLES}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 {$OUTPUT_ENCODING}
@@ -19,9 +19,9 @@
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 {/if}
@@ -38,15 +38,19 @@
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/ui/jquery-ui.js"></script>
 {/literal}
 {literal}
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/download.js"></script>
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/reportico.js"></script>
 {/literal}
+{/if}
+{if $REPORTICO_CSRF_TOKEN}
+<script type="text/javascript">var reportico_csrf_token = "{$REPORTICO_CSRF_TOKEN}";</script>
 {/if}
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<script type="text/javascript" src="{$JSPATH}/bootstrap2/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap2/js/bootstrap.min.js"></script>
 {else}
-<script type="text/javascript" src="{$JSPATH}/bootstrap3/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap3/js/bootstrap.min.js"></script>
 {/if}
 {/if}
 {/if}
@@ -69,9 +73,11 @@
 <script type="text/javascript">var reportico_ajax_script = "{/literal}{$REPORTICO_AJAX_RUNNER}{literal}";</script>
 {/literal}
 {if $REPORTICO_BOOTSTRAP_MODAL}
+<script type="text/javascript">var reportico_bootstrap_styles = "{$BOOTSTRAP_STYLES}";</script>
 <script type="text/javascript">var reportico_bootstrap_modal = true;</script>
 {else}
 <script type="text/javascript">var reportico_bootstrap_modal = false;</script>
+<script type="text/javascript">var reportico_bootstrap_styles = false;</script>
 {/if}
 {literal}
 <script type="text/javascript">var reportico_ajax_mode = "{/literal}{$REPORTICO_AJAX_MODE}{literal}";</script>
@@ -100,9 +106,11 @@
 {/if}
 {if !$REPORTICO_AJAX_PRELOADED}
 {literal}
-<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.dataTables.js"></script>
 {/literal}
-<LINK id="PRP_StyleSheet" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
+<LINK id="PRP_StyleSheet_s2" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/select2/css/select2.min.css">
+<LINK id="PRP_StyleSheet_dt" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
 {/if}
 {if $REPORTICO_CHARTING_ENGINE == "NVD3" }
 {if !$REPORTICO_AJAX_PRELOADED}
@@ -114,6 +122,14 @@
 {/if}
 {/if}
 <div id="reportico_container">
+    <script>
+        reportico_criteria_items = [];
+{if isset($CRITERIA_ITEMS)}
+{section name=critno loop=$CRITERIA_ITEMS}
+        reportico_criteria_items.push("{$CRITERIA_ITEMS[critno].name}");
+{/section}
+{/if}
+    </script>
 
 <FORM class="swMenuForm" name="topmenu" method="POST" action="{$SCRIPT_SELF}">
 <div style="height: 78px" class="swAdminBanner">
@@ -142,21 +158,35 @@
 {/if}
 {if $SHOW_LOGOUT}
 			<TD width="15%" align="right" class="swPrpTopMenuCell">
-				<input class="{$BOOTSTRAP_STYLE_ADMIN_BUTTON}swPrpSubmit reporticoSubmit" type="submit" name="adminlogout" value="{$T_LOGOFF}">
+				<input class="{$BOOTSTRAP_STYLE_PRIMARY_BUTTON}swPrpSubmit reporticoSubmit" type="submit" name="adminlogout" value="{$T_LOGOFF}">
 			</TD>
 {/if}
-{if $SHOW_LOGIN}
+{if $SHOW_OPEN_LOGIN}
 			<TD width="50%"></TD>
-			<TD width="35%" align="right" class="swPrpTopMenuCell">
-{$T_ADMIN_INSTRUCTIONS}
-				<br><input class="{$BOOTSTRAP_STYLE_TEXTFIELD}" type="password" name="admin_password" value="">
-				<input class="{$BOOTSTRAP_STYLE_ADMIN_BUTTON}swPrpSubmit reporticoSubmit" type="submit" name="login" value="{$T_LOGIN}">
+			<TD width="98%" align="right" class="swPrpTopMenuCell">
+{$T_OPEN_ADMIN_INSTRUCTIONS}
+				<br><input class="{$BOOTSTRAP_STYLE_TEXTFIELD} inline" style="display: none" type="password" name="admin_password" value="__OPENACCESS__">
+				<input class="{$BOOTSTRAP_STYLE_PRIMARY_BUTTON}swPrpSubmit reporticoSubmit" type="submit" name="login" value="{$T_OPEN_LOGIN}">
 {if strlen($ADMIN_PASSWORD_ERROR) > 0}
 				<div style="color: #ff0000;">{$T_ADMIN_PASSWORD_ERROR}</div>
 {/if}
 			</TD>
 			<TD width="15%" align="right" class="swPrpTopMenuCell">
 			</TD>
+{else}
+{if $SHOW_LOGIN}
+			<TD width="50%"></TD>
+			<TD width="35%" align="right" class="swPrpTopMenuCell">
+{$T_ADMIN_INSTRUCTIONS}
+				<br><input style="display: inline !important" class="{$BOOTSTRAP_STYLE_TEXTFIELD}" type="password" name="admin_password" value="">
+				<input class="{$BOOTSTRAP_STYLE_PRIMARY_BUTTON}swPrpSubmit reporticoSubmit" type="submit" name="login" value="{$T_LOGIN}">
+{if strlen($ADMIN_PASSWORD_ERROR) > 0}
+				<div style="color: #ff0000;">{$T_ADMIN_PASSWORD_ERROR}</div>
+{/if}
+			</TD>
+			<TD width="15%" align="right" class="swPrpTopMenuCell">
+			</TD>
+{/if}
 {/if}
 		</TR>
 	</TABLE>
@@ -180,7 +210,7 @@
 <br>
 <br>
 {if count($LANGUAGES) > 0 }
-				{$T_CHOOSE_LANGUAGE}
+				<span style="text-align:right;width: 230px; display: inline-block">{$T_CHOOSE_LANGUAGE}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_language">
 {section name=menuitem loop=$LANGUAGES}
 {strip}
@@ -207,7 +237,7 @@
 {if !$SHOW_SET_ADMIN_PASSWORD}
 {if count($LANGUAGES) > 0 }
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_CHOOSE_LANGUAGE}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_CHOOSE_LANGUAGE}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_language">
 {section name=menuitem loop=$LANGUAGES}
 {strip}
@@ -226,7 +256,7 @@
 {/if}
 {if count($PROJECT_ITEMS) > 0 }
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_RUN_SUITE}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_RUN_SUITE}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_menu_project">
 {section name=menuitem loop=$PROJECT_ITEMS}
 {strip}
@@ -234,14 +264,14 @@
 {/strip}
 {/section}
 				</select>
-				<input class="{$BOOTSTRAP_STYLE_ADMIN_BUTTON}swMntButton reporticoSubmit" type="submit" name="submit_menu_project" value="{$T_GO}">
+				<input class="{$BOOTSTRAP_STYLE_GO_BUTTON}swMntButton reporticoSubmit" type="submit" name="submit_menu_project" value="{$T_GO}">
 			</TD>
 		</TR>
 {/if}
 {/if}
 {if count($PROJECT_ITEMS) > 0 }
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_CREATE_REPORT}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_CREATE_REPORT}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_design_project">
 {section name=menuitem loop=$PROJECT_ITEMS}
 {strip}
@@ -253,7 +283,7 @@
 			</TD>
 		</TR>
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_CONFIG_PARAM}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_CONFIG_PARAM}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_configure_project">
 {section name=menuitem loop=$PROJECT_ITEMS}
 {strip}
@@ -265,7 +295,7 @@
 			</TD>
 		</TR>
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_DELETE_PROJECT}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_DELETE_PROJECT}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_delete_project">
 {section name=menuitem loop=$PROJECT_ITEMS}
 {strip}
@@ -307,7 +337,7 @@
 {if !$SHOW_SET_ADMIN_PASSWORD}
 {if count($LANGUAGES) > 1 }
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_CHOOSE_LANGUAGE}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_CHOOSE_LANGUAGE}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_language">
 {section name=menuitem loop=$LANGUAGES}
 {strip}
@@ -326,7 +356,7 @@
 {/if}
 {if count($PROJECT_ITEMS) > 0 }
 		<TR> 
-			<TD class="swMenuItem" style="width: 30%">{$T_RUN_SUITE}
+			<TD class="swMenuItem" style="width: 30%"><span style="text-align:right;width: 230px; display: inline-block">{$T_RUN_SUITE}</span>
 				<select class="{$BOOTSTRAP_STYLE_DROPDOWN}swPrpDropSelectRegular" name="jump_to_menu_project">
 {section name=menuitem loop=$PROJECT_ITEMS}
 {strip}

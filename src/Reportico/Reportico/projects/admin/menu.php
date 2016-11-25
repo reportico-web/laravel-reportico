@@ -1,4 +1,5 @@
 <?php  namespace Reportico\Reportico;
+
 /*
  Reportico - PHP Reporting Tool
  Copyright (C) 2010-2013 Peter Deed
@@ -36,6 +37,6 @@ $menu_title = template_xlate(SW_PROJECT_TITLE);
 $menu = array (
         array ( "language" => "en_gb", "report" => "", "title" => "BLANKLINE" ),
 	array ( "language" => "en_gb", "report" => "createproject.xml", "title" => "Create A New Project" ),
-	//array ( "language" => "en_gb", "report" => "createtutorials.xml", "title" => "Configure Tutorials" ),
+	array ( "language" => "en_gb", "report" => "createtutorials.xml", "title" => "Configure Tutorials" ),
 	);
 ?>

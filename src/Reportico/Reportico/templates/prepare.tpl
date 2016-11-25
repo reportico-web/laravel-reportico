@@ -7,9 +7,9 @@
 <LINK id="reportico_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEET}">
 {if $BOOTSTRAP_STYLES}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 {$OUTPUT_ENCODING}
@@ -20,9 +20,9 @@
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap2/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap2/css/bootstrap.min.css">
 {else}
-<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/bootstrap3/bootstrap.min.css">
+<LINK id="bootstrap_css" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/bootstrap3/css/bootstrap.min.css">
 {/if}
 {/if}
 {/if}
@@ -50,15 +50,19 @@
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/ui/jquery-ui.js"></script>
 {/literal}
 {literal}
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/download.js"></script>
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/reportico.js"></script>
 {/literal}
+{/if}
+{if $REPORTICO_CSRF_TOKEN}
+<script type="text/javascript">var reportico_csrf_token = "{$REPORTICO_CSRF_TOKEN}";</script>
 {/if}
 {if $BOOTSTRAP_STYLES}
 {if !$REPORTICO_BOOTSTRAP_PRELOADED}
 {if $BOOTSTRAP_STYLES == "2"}
-<script type="text/javascript" src="{$JSPATH}/bootstrap2/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap2/js/bootstrap.min.js"></script>
 {else}
-<script type="text/javascript" src="{$JSPATH}/bootstrap3/bootstrap.min.js"></script>
+<script type="text/javascript" src="{$JSPATH}/bootstrap3/js/bootstrap.min.js"></script>
 {/if}
 {/if}
 {/if}
@@ -80,10 +84,13 @@
 <script type="text/javascript">var reportico_ajax_script = "{/literal}{$REPORTICO_AJAX_RUNNER}{literal}";</script>
 {/literal}
 {if $REPORTICO_BOOTSTRAP_MODAL}
+<script type="text/javascript">var reportico_bootstrap_styles = "{$BOOTSTRAP_STYLES}";</script>
 <script type="text/javascript">var reportico_bootstrap_modal = true;</script>
 {else}
 <script type="text/javascript">var reportico_bootstrap_modal = false;</script>
+<script type="text/javascript">var reportico_bootstrap_styles = false;</script>
 {/if}
+
 {if $REPORTICO_DYNAMIC_GRIDS}
 <script type="text/javascript">var reportico_dynamic_grids = true;</script>
 {if $REPORTICO_DYNAMIC_GRIDS_SORTABLE}
@@ -108,9 +115,11 @@
 {/if}
 {if !$REPORTICO_AJAX_PRELOADED}
 {literal}
+<script type="text/javascript" src="{/literal}{$JSPATH}{literal}/select2/js/select2.min.js"></script>
 <script type="text/javascript" src="{/literal}{$JSPATH}{literal}/jquery.dataTables.js"></script>
 {/literal}
-<LINK id="PRP_StyleSheet" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
+<LINK id="PRP_StyleSheet_s2" REL="stylesheet" TYPE="text/css" HREF="{$JSPATH}/select2/css/select2.min.css">
+<LINK id="PRP_StyleSheet_dt" REL="stylesheet" TYPE="text/css" HREF="{$STYLESHEETDIR}/jquery.dataTables.css">
 {/if}
 {if $REPORTICO_CHARTING_ENGINE == "NVD3" }
 {if !$REPORTICO_AJAX_PRELOADED}
@@ -122,14 +131,25 @@
 {/if}
 {/if}
 <div id="reportico_container">
+    <script>
+        reportico_criteria_items = [];
+{if isset($CRITERIA_ITEMS)}
+{section name=critno loop=$CRITERIA_ITEMS}
+        reportico_criteria_items.push("{$CRITERIA_ITEMS[critno].name}");
+{/section}
+{/if}
+    </script>
 
+
+<script type="text/javascript">var reportico_pdf_delivery_mode = "{$PDF_DELIVERY_MODE}";</script>
 <script type="text/javascript">var reportico_datepicker_language = "{$AJAX_DATEPICKER_FORMAT}";</script>
 <script type="text/javascript">var reportico_ajax_mode = "{$REPORTICO_AJAX_MODE}";</script>
 <FORM class="swPrpForm" id="criteriaform" name="topmenu" method="POST" action="{$SCRIPT_SELF}">
 <input type="hidden" name="reportico_session_name" value="{$SESSION_ID}" />
 
+
 {if $BOOTSTRAP_STYLES}
-{if $BOOTSTRAP_STYLES == "2" || $BOOTSTRAP_STYLES == "3" }
+{if $BOOTSTRAP_STYLES == "2" || $BOOTSTRAP_STYLES == "3" || $BOOTSTRAP_STYLES == "joomla3" }
 <!-- BOOTSTRAP VERSION -->
 {if $SHOW_HIDE_NAVIGATION_MENU == "show" || $SHOW_HIDE_DROPDOWN_MENU == "show"}
     <div class="navbar navbar-default" role="navigation">
@@ -169,7 +189,7 @@
               <ul class="dropdown-menu reportico-dropdown">
 {section name=menuitem loop=$DROPDOWN_MENU_ITEMS[menu].items}
 {if isset($DROPDOWN_MENU_ITEMS[menu].items[menuitem].reportname)}
-<li ><a class="reportico-dropdown-item" href="{$RUN_REPORT_URL}&project={$DROPDOWN_MENU_ITEMS[menu].project}&xmlin={$DROPDOWN_MENU_ITEMS[menu].items[menuitem].reportfile}">{$DROPDOWN_MENU_ITEMS[menu].items[menuitem].reportname}</a></li>
+<li ><a class="reportico-dropdown-item" href="{$RUN_REPORT_URL}&project={$DROPDOWN_MENU_ITEMS[menu].items[menuitem].project}&xmlin={$DROPDOWN_MENU_ITEMS[menu].items[menuitem].reportfile}">{$DROPDOWN_MENU_ITEMS[menu].items[menuitem].reportname}</a></li>
 {/if}
 {/section}
 
@@ -268,7 +288,9 @@
 {/if}
 		<TR>
 			<TD style="width: 50%; text-align:left">
+{if $SHOW_HIDE_PREPARE_GO_BUTTONS == "show"}
     				<input type="submit" style="width: 0px; color: transparent; background-color: transparent; border-color: transparent; cursor: default;" class="prepareAjaxExecute swHTMLGoBox" id="prepareAjaxExecute" name="submitPrepare" value="{$T_GO}">
+{/if}
 {if ($SHOW_ADMIN_BUTTON)}
 {if strlen($ADMIN_MENU_URL)>0} 
                 <a class="{$BOOTSTRAP_STYLE_ADMIN_BUTTON}swLinkMenu" href="{$ADMIN_MENU_URL}">{$T_ADMIN_MENU}</a>
@@ -333,6 +355,9 @@
         <div class="container" style="width: 100%">
             <div class="nav-collapse collapse in" id="reportico-bootstrap-collapse">
                 <ul class="nav navbar-nav pull-right navbar-right">
+    				    <li style="margin-right: 40px">
+{$T_REPORT_FILE} <input type="text" name="xmlout" id="swPrpSaveFile" value="{$XMLFILE}"> <input type="submit" class="{$BOOTSTRAP_STYLE_PRIMARY_BUTTON} swPrpSaveButton" type="submit" name="submit_xxx_SAVE" value="{$T_SAVE}">
+                        </li>
     				    <li><input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareMiniMaintain swMiniMaintain" style="margin-top: 10px; margin-right: 30px" title="{$T_EDIT} {$T_EDITSQL}" id="submit_mainquerqury_SHOW" value="{$T_EDITSQL}" name="mainquerqurysqlt_QuerySql"></li>
     				    <li><input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareMiniMaintain swMiniMaintain" style="margin-top: 10px; margin-right: 30px" title="{$T_EDIT} {$T_EDITCOLUMNS}" id="submit_mainquerquryqcol_SHOW" value="{$T_EDITCOLUMNS}" name="mainquerquryqcol_ANY"></li>
     				    <li><input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareMiniMaintain swMiniMaintain" style="margin-top: 10px; margin-right: 30px" title="{$T_EDIT} {$T_EDITASSIGNMENT}" id="submit_mainquerassg" value="{$T_EDITASSIGNMENT}" name="mainquerassg_ANY"></li>
@@ -342,6 +367,7 @@
                             <ul class="dropdown-menu reportico-dropdown">
     				            <li><input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="{$T_EDIT} {$T_EDITPAGEHEADERS}" id="submit_mainqueroutppghd0000form" value="{$T_EDITPAGEHEADERS}" name="mainqueroutppghd0000form_ANY"></li>
     				            <li><input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareMiniMaintain swMiniMaintain" style="margin-right: 30px" title="{$T_EDIT} {$T_EDITPAGEFOOTERS}" id="submit_mainqueroutppgft0000form" value="{$T_EDITPAGEFOOTERS}" name="mainqueroutppgft0000form_ANY"></li>
+    				            <li><input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareMiniMaintain swMiniMaintain" style="margin-top: 10px; margin-right: 30px" title="{$T_EDIT} {$T_EDITPRESQLS}" id="submit_mainquerqurypsql_SHOW" value="{$T_EDITPRESQLS}" name="mainquerqurypsql_ANY"></li>
                             </ul>
                         </li>
                 </ul>
@@ -368,28 +394,40 @@
 											<INPUT type="radio" id="rpt_format_pdf" name="target_format" value="PDF" {$OUTPUT_TYPES[1]}>PDF
 											<INPUT type="radio" id="rpt_format_csv" name="target_format" value="CSV" {$OUTPUT_TYPES[2]}>CSV
 {if $SHOW_DESIGN_BUTTON}
-											<INPUT type="radio" id="rpt_format_xml" name="target_format" value="XML" {$OUTPUT_TYPES[3]}>XML
-											<INPUT type="radio" id="rpt_format_json" name="target_format" value="JSON" {$OUTPUT_TYPES[4]}>JSON
+											<!--INPUT type="radio" id="rpt_format_xml" name="target_format" value="XML" {$OUTPUT_TYPES[3]}>XML-->
+											<!--INPUT type="radio" id="rpt_format_json" name="target_format" value="JSON" {$OUTPUT_TYPES[4]}>JSON-->
 {/if}
    
     </div>
 	<TABLE class="swPrpCritBox" id="critbody">
-{if $SHOW_OUTPUT}
+{if $SHOW_OUTPUT && !$IS_ADMIN_SCREEN}
         <TR>
             <td>  
 {if $SHOW_HIDE_PREPARE_PAGE_STYLE == "show"}
-			<div style="width: 20%; padding-top: 15px;float: left;vertical-align: bottom;text-align: center">
+			<div style="padding: 10px 15px; float: left;vertical-align: bottom;text-align: center; border-right: solid 1px #bbb">
 {else}
 			<div style="display:none; width: 20%; padding-top: 15px;float: left;vertical-align: bottom;text-align: center">
 {/if}
                 <b>{$T_REPORT_STYLE}</b>
-                <INPUT type="radio" id="rpt_style_detail" name="target_style" value="TABLE" {$OUTPUT_STYLES[0]}>{$T_TABLE}
-                <INPUT type="radio" id="rpt_style_form" name="target_style" value="FORM" {$OUTPUT_STYLES[1]}>{$T_FORM}
+
+{if $BOOTSTRAP_STYLES}
+<div class="btn-group" data-toggle="buttons">
+  <label class="btn btn-primary active" style="padding: 2px 4px">
+    <input type="radio" name="target_style" id="rpt_style_detail" autocomplete="off" value="TABLE" {$OUTPUT_STYLES[0]}>{$T_TABLE}
+  </label>
+  <label class="btn btn-primary" style="padding: 2px 4px">
+    <input type="radio" name="target_style" id="rpt_style_form" autocomplete="off" value="FORM" {$OUTPUT_STYLES[1]}>{$T_FORM}
+  </label>
+</div>
+{else}
+<INPUT type="radio" id="rpt_style_detail" name="target_style" value="TABLE" {$OUTPUT_STYLES[0]}>{$T_TABLE}
+<INPUT type="radio" id="rpt_style_form" name="target_style" value="FORM" {$OUTPUT_STYLES[1]}>{$T_FORM}
+{/if}
 			</div>
-			<div class="swPrpToolbarPane" style="width: 30%; float: left; vertical-align: bottom;text-align: right">
+			<div class="swPrpToolbarPane" style="padding: 0px 5px; float: left;vertical-align: bottom;text-align: center; border-right: solid 1px #bbb">
 {if $SHOW_DESIGN_BUTTON}
-    				<input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareAjaxExecute swJSONBox" title="{$T_PRINT_JSON}" id="prepareAjaxExecute" name="submitPrepare" value="">
-    				<input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareAjaxExecute swXMLBox" style="margin-left: 20px" title="{$T_PRINT_XML}" id="prepareAjaxExecute" name="submitPrepare" value="">
+    				<!--input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareAjaxExecute swJSONBox" title="{$T_PRINT_JSON}" id="prepareAjaxExecute" name="submitPrepare" value=""-->
+    				<!--input type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareAjaxExecute swXMLBox" style="margin-left: 20px" title="{$T_PRINT_XML}" id="prepareAjaxExecute" name="submitPrepare" value=""-->
 {/if}
 
 {if $SHOW_HIDE_PREPARE_CSV_BUTTON == "show"}
@@ -413,47 +451,117 @@
     				<input style="display:none" type="submit" class="{$BOOTSTRAP_STYLE_TOOLBAR_BUTTON}prepareAjaxExecute swPrintBox" style="margin-right: 30px" title="{$T_PRINTABLE}" id="prepareAjaxExecute" name="submitPrepare" value="">
 {/if}
 			</div>
-{if $SHOW_HIDE_PREPARE_SECTION_BOXES == "show"}
-			<div style="width: 50%; padding-top: 15px;float: left;vertical-align: bottom;text-align: center">
-{else}
-			<div style="display:none; width: 50%; padding-top: 15px;float: left;vertical-align: bottom;text-align: center">
+
+{if !$OUTPUT_SHOW_SHOWGRAPH}
+                                        <input style="display:none" type="checkbox" name="target_show_graph" value="1" {$OUTPUT_SHOWGRAPH}>
 {/if}
-                                  <b>{$T_SHOW}</b>
+{if $BOOTSTRAP_STYLES }
 				<INPUT type="checkbox" style="display:none" name="user_criteria_entered" value="1" checked="1">
-{if $BOOTSTRAP_STYLES}
+            <div class="container" style="width: 100%">
 {if $BOOTSTRAP_STYLES == "2" }
-				<label style="display:inline-block" class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_criteria" value="1" {$OUTPUT_SHOWCRITERIA}>{$T_SHOW_CRITERIA}</label>
-				<label style="display:inline-block" class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_group_headers" value="1" {$OUTPUT_SHOWGROUPHEADERS}>{$T_SHOW_GRPHEADERS}</label>
-				<label style="display:inline-block" class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_detail" value="1" {$OUTPUT_SHOWDETAIL}>{$T_SHOW_DETAIL}</label>
-				<label style="display:inline-block" class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_group_trailers" value="1" {$OUTPUT_SHOWGROUPTRAILERS}>{$T_SHOW_GRPTRAILERS}</label>
-				<label style="display:inline-block" class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_column_headers" value="1" {$OUTPUT_SHOWCOLHEADERS}>{$T_SHOW_COLHEADERS}</label>
-{if $OUTPUT_SHOW_SHOWGRAPH}
-				<label style="display:inline-block" class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_graph" value="1" {$OUTPUT_SHOWGRAPH}>{$T_SHOW_GRAPH}</label>
-{/if}
+                <div class= "nav-collapse collapse" id="reportico-bootstrap-collapse">
 {else}
-				<label class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_criteria" value="1" {$OUTPUT_SHOWCRITERIA}>{$T_SHOW_CRITERIA}</label>
-				<label class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_group_headers" value="1" {$OUTPUT_SHOWGROUPHEADERS}>{$T_SHOW_GRPHEADERS}</label>
-				<label class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_detail" value="1" {$OUTPUT_SHOWDETAIL}>{$T_SHOW_DETAIL}</label>
-				<label class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_group_trailers" value="1" {$OUTPUT_SHOWGROUPTRAILERS}>{$T_SHOW_GRPTRAILERS}</label>
-				<label class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_column_headers" value="1" {$OUTPUT_SHOWCOLHEADERS}>{$T_SHOW_COLHEADERS}</label>
-{if $OUTPUT_SHOW_SHOWGRAPH}
-				<label class="{$BOOTSTRAP_STYLE_CHECKBOX_BUTTON}"><INPUT type="checkbox" name="target_show_graph" value="1" {$OUTPUT_SHOWGRAPH}>{$T_SHOW_GRAPH}</label>
+                <div class="nav-collapse collapse in" id="reportico-bootstrap-collapse">
 {/if}
-{/if}
+{if $BOOTSTRAP_STYLES == "2" }
+                    <ul style="margin: 10px 0px 0px 20px" class="nav navbar-nav pull-left navbar-right">
 {else}
+                    <ul class="nav navbar-nav pull-right navbar-right">
+{/if}
+                            <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">{$T_SHOW}<span class="caret"></span></a>
+                                <ul class="dropdown-menu reportico-dropdown" style="padding-top:0px; padding-bottom:0px">
+    				                <li>
+{if $BOOTSTRAP_STYLES == "2"}
+                                        <input class="reportico_bootstrap2_checkbox" type="checkbox" name="target_show_criteria" value="1" {$OUTPUT_SHOWCRITERIA}>
+                                        <label style="display:inline">{$T_SHOW_CRITERIA}</label>
+{else}
+                                        <div class="input-group" style="margin-bottom: 0px; ; float: right">
+                                            <label style="width:200px" class="form-control" aria-label="Text input with checkbox">{$T_SHOW_CRITERIA}</label>
+                                            <span class="input-group-addon">
+                                                <input type="checkbox" name="target_show_criteria" value="1" {$OUTPUT_SHOWCRITERIA}>
+                                            </span>
+                                        </div>
+{/if}
+                                    </li>
+                                    <li>
+{if $BOOTSTRAP_STYLES == "2"}
+                                        <input class="reportico_bootstrap2_checkbox" type="checkbox" name="target_show_detail" value="1" {$OUTPUT_SHOWDETAIL}>
+                                        <label style="display:inline">{$T_SHOW_DETAIL}</label>
+{else}
+                                        <div class="input-group" style="margin-bottom: 0px; ; float: right">
+                                            <label class="form-control" aria-label="Text input with checkbox">{$T_SHOW_DETAIL}</label>
+                                            <span class="input-group-addon">
+                                                <input type="checkbox" name="target_show_detail" value="1" {$OUTPUT_SHOWDETAIL}>
+                                            </span>
+                                        </div>
+{/if}
+                                    </li>
+{if $OUTPUT_SHOW_SHOWGRAPH}
+    				                <li>
+{if $BOOTSTRAP_STYLES == "2"}
+                                        <input class="reportico_bootstrap2_checkbox" type="checkbox" name="target_show_graph" value="1" {$OUTPUT_SHOWGRAPH}>
+                                        <label style="display:inline">{$T_SHOW_GRAPH}</label>
+{else}
+                                        <div class="input-group" style="margin-bottom: 0px; ; float: right">
+                                            <label class="form-control" aria-label="Text input with checkbox">{$T_SHOW_GRAPH}</label>
+                                            <span class="input-group-addon">
+                                                <input type="checkbox" name="target_show_graph" value="1" {$OUTPUT_SHOWGRAPH}>
+                                            </span>
+                                        </div>
+{/if}
+                                    </li>
+{/if}
+    				                <li>
+{if $BOOTSTRAP_STYLES == "2"}
+                                        <input class="reportico_bootstrap2_checkbox" type="checkbox" name="target_show_group_headers" value="1" {$OUTPUT_SHOWGROUPHEADERS}>
+                                        <label style="display:inline">{$T_SHOW_GRPHEADERS}</label>
+{else}
+                                        <div class="input-group" style="margin-bottom: 0px; ; float: right">
+                                            <label class="form-control" aria-label="Text input with checkbox">{$T_SHOW_GRPHEADERS}</label>
+                                            <span class="input-group-addon">
+                                                <input type="checkbox" name="target_show_group_headers" value="1" {$OUTPUT_SHOWGROUPHEADERS}>
+                                            </span>
+                                        </div>
+{/if}
+                                    </li>
+    				                <li>
+{if $BOOTSTRAP_STYLES == "2"}
+                                        <input class="reportico_bootstrap2_checkbox" type="checkbox" name="target_show_group_trailers" value="1" {$OUTPUT_SHOWGROUPTRAILERS}>
+                                        <label style="display:inline">{$T_SHOW_GRPTRAILERS}</label>
+{else}
+                                        <div class="input-group" style="margin-bottom: 0px; ; float: right">
+                                            <label class="form-control" aria-label="Text input with checkbox">{$T_SHOW_GRPTRAILERS}</label>
+                                            <span class="input-group-addon">
+                                                <input type="checkbox" name="target_show_group_trailers" value="1" {$OUTPUT_SHOWGROUPTRAILERS}>
+                                            </span>
+                                        </div>
+{/if}
+                                    </li>
+                                </ul>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+{else}
+{if $SHOW_HIDE_PREPARE_SECTION_BOXES == "show"}
+			<div style="width: 50%; padding-top: 15px;float: left;vertical-align: bottom;text-align: center"> <b>{$T_SHOW}</b>
+				<INPUT type="checkbox" style="display:none" name="user_criteria_entered" value="1" checked="1">
 				<INPUT type="checkbox" name="target_show_criteria" value="1" {$OUTPUT_SHOWCRITERIA}>{$T_SHOW_CRITERIA}
-				<INPUT type="checkbox" name="target_show_group_headers" value="1" {$OUTPUT_SHOWGROUPHEADERS}>{$T_SHOW_GRPHEADERS}
 				<INPUT type="checkbox" name="target_show_detail" value="1" {$OUTPUT_SHOWDETAIL}>{$T_SHOW_DETAIL}
+				<INPUT type="checkbox" name="target_show_group_headers" value="1" {$OUTPUT_SHOWGROUPHEADERS}>{$T_SHOW_GRPHEADERS}
 				<INPUT type="checkbox" name="target_show_group_trailers" value="1" {$OUTPUT_SHOWGROUPTRAILERS}>{$T_SHOW_GRPTRAILERS}
-				<INPUT type="checkbox" name="target_show_column_headers" value="1" {$OUTPUT_SHOWCOLHEADERS}>{$T_SHOW_COLHEADERS}
-{if $OUTPUT_SHOW_SHOWGRAPH}
+{if $OUTPUT_SHOW_SHOWGRAPH && false}
 				<INPUT type="checkbox" name="target_show_graph" value="1" {$OUTPUT_SHOWGRAPH}>{$T_SHOW_GRAPH}<BR>
 {/if}
-{/if}
 			</div>
+{else}
+			<div style="width: 50%; padding-top: 15px;float: left;vertical-align: bottom;text-align: center"> <b>{$T_SHOW}</b>
+				<INPUT type="checkbox" name="target_show_criteria" value="1" {$OUTPUT_SHOWCRITERIA}>{$T_SHOW_CRITERIA}
+			</div>
+{/if}
+{/if}
             </td>
 		</TR>
-{else}
 {/if}
 	</TABLE>
 <div id="criteriabody">
@@ -462,8 +570,16 @@
 		<TR id="swPrpCriteriaBody">
 			<TD class="swPrpCritEntry">
 			<div id="swPrpSubmitPane">
+{if !$IS_ADMIN_SCREEN}
+{if $SHOW_HIDE_PREPARE_GO_BUTTONS == "show"}
     				<input type="submit" class="{$BOOTSTRAP_STYLE_GO_BUTTON}prepareAjaxExecute swHTMLGoBox" id="prepareAjaxExecute" name="submitPrepare" value="{$T_GO}">
+{/if}
+{if $SHOW_HIDE_PREPARE_RESET_BUTTONS == "show"}
     				<input type="submit" class="{$BOOTSTRAP_STYLE_RESET_BUTTON}reporticoSubmit" name="clearform" value="{$T_RESET}">
+{/if}
+{else}
+    				<input type="submit" class="{$BOOTSTRAP_STYLE_GO_BUTTON}prepareAjaxExecute swHTMLGoBox" id="prepareAjaxExecute" name="submitPrepare" value="{$T_GO}">
+{/if}
 {if $SHOW_MINIMAINTAIN} 
 <div style="float: left">
 {if !$REPORTICO_BOOTSTRAP_MODAL}
@@ -482,8 +598,39 @@ $loopct = 0;
 {/php}
 {if isset($CRITERIA_ITEMS)}
 {section name=critno loop=$CRITERIA_ITEMS}
+{if $CRITERIA_ITEMS[critno].display_group && ( $CRITERIA_ITEMS[critno].display_group != $CRITERIA_ITEMS[critno].last_display_group ) }
+<tr id="swToggleCriteriaDiv{$CRITERIA_ITEMS[critno].display_group_class}">
+<td colspan="3">
+<a class="swToggleCriteria" id="swToggleCriteria{$CRITERIA_ITEMS[critno].display_group_class}" href="javascript:toggleCriteria('{$CRITERIA_ITEMS[critno].display_group_class}')">+</a>
+{$CRITERIA_ITEMS[critno].display_group}
+</td>
+</tr>
+{/if}
+{if $CRITERIA_ITEMS[critno].hidden || $CRITERIA_ITEMS[critno].display_group }
+{if $CRITERIA_ITEMS[critno].display_group }
+                    <tr class="swPrpCritLine  swDisplayGroupLine displayGroup{$CRITERIA_ITEMS[critno].display_group_class}" id="criteria_{$CRITERIA_ITEMS[critno].name}" style="display:none">
+{else}
+                    <tr class="swPrpCritLine" id="criteria_{$CRITERIA_ITEMS[critno].name}" style="display:none">
+{/if}
+{else}
                     <tr class="swPrpCritLine" id="criteria_{$CRITERIA_ITEMS[critno].name}">
+{/if}
                         <td class='swPrpCritTitle'>
+{if $CRITERIA_ITEMS[critno].tooltip }
+{if $BOOTSTRAP_STYLES}
+{if $BOOTSTRAP_STYLES == "3" || $BOOTSTRAP_STYLES == "joomla3" }
+                            <a class='reportico_tooltip' data-toggle="tooltip" data-placement="right" title="{$CRITERIA_ITEMS[critno].tooltip}">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                            </a>
+{else}
+                            <a class='reportico_tooltip' data-toggle="tooltip" data-placement="right" title="{$CRITERIA_ITEMS[critno].tooltip}">
+                                    <span class="icon-question-sign"></span>
+                            </a>
+{/if}
+{else}
+                            <div class="swHelpIcon" alt="tab" title = "{$CRITERIA_ITEMS[critno].tooltip}"><img class="swHelpIcon"></img></div>
+{/if}
+{/if}
 {php}
 $itemval = str_pad($loopct, 4, '0', STR_PAD_LEFT);
 $this->assign('criterianumber', $itemval);
@@ -510,7 +657,9 @@ $loopct++;
 {if isset($CRITERIA_ITEMS)}
 {if count($CRITERIA_ITEMS) > 1}
 <div id="{$BOOTSTRAP_STYLE_SMALL_BUTTON}swPrpSubmitPane">
+{if !$IS_ADMIN_SCREEN}
 	<input type="submit" class="{$BOOTSTRAP_STYLE_GO_BUTTON}prepareAjaxExecute swHTMLGoBox" id="prepareAjaxExecute" name="submitPrepare" value="{$T_GO}">
+{/if}
     <!--input type="submit" class="reporticoSubmit" name="clearform" value="{$T_RESET}"-->
 </div>
 {/if}
@@ -542,8 +691,8 @@ $loopct++;
 </div>
 <p>
 {if $SHOW_EXPANDED}
-							{$T_SEARCH} {$EXPANDED_TITLE} :<br><input  type="text" class="{$BOOTSTRAP_STYLE_TEXTFIELD}" name="expand_value" style="width: 50%;display: inline" size="30" value="{$EXPANDED_SEARCH_VALUE}"</input>
-									<input id="reporticoPerformExpand" class="{$BOOTSTRAP_STYLE_SMALL_BUTTON}swPrpSubmit" style="margin-bottom: 2px" type="submit" name="EXPANDSEARCH_{$EXPANDED_ITEM}" value="Search"><br>
+							{$T_SEARCH} {$EXPANDED_TITLE} :<br><input  id="expandsearch" type="text" class="{$BOOTSTRAP_STYLE_TEXTFIELD}" name="expand_value" style="width: 50%;display: inline" size="30" value="{$EXPANDED_SEARCH_VALUE}"</input>
+									<input id="reporticoSearchExpand" class="{$BOOTSTRAP_STYLE_SMALL_BUTTON}swPrpSubmit" style="margin-bottom: 2px" type="submit" name="EXPANDSEARCH_{$EXPANDED_ITEM}" value="Search"><br>
 
 {$CONTENT}
 							<br>
@@ -572,26 +721,59 @@ $loopct++;
 			<!---->
 
 </FORM>
-{if $SHOW_MINIMAINTAIN}
 {if $REPORTICO_BOOTSTRAP_MODAL}
-{if $BOOTSTRAP_STYLES == "3" }
+{if $BOOTSTRAP_STYLES == "3"  || $BOOTSTRAP_STYLES == "joomla3"}
+{if $BOOTSTRAP_STYLES == "joomla3"}
+{literal}
+<style type="text/css">
+    #reporticoModal .modal-dialog .modal-content
+    {
+        width:900px; margin-left:-150px;
+    }
+</style>
+{/literal}
+{/if}
+<a id="a_reporticoModal" href="#reporticoModal" role="button" class="btn" data-target="#reporticoModal" data-toggle="modal" style="display:none">BB2</a>
 <div class="modal fade" id="reporticoModal" tabindex="-1" role="dialog" aria-labelledby="reporticoModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
 {else}
+<a id="a_reporticoModal" href="#reporticoModal" role="button" class="btn" data-target="#reporticoModal" data-toggle="modal" style="display:none">BB2</a>
 <div class="modal fade" style="width: 900px; margin-left: -450px" id="reporticoModal" tabindex="-1" role="dialog" aria-labelledby="reporticoModal" aria-hidden="true">
     <div class="modal-dialog">
 {/if}
         <div class="modal-content">
             <div class="modal-header">
-            <button type="button" class="close reportico-bootstrap-modal-close" aria-hidden="true">&times;</button>
+            <button type="button" class="close reportico-bootstrap-modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h4 class="modal-title reportico-modal-title" id="reporticoModalLabel">Set Parameter</h4>
             </div>
-            <div class="modal-body" style="padding: 0px" id="swMiniMaintain">
+            <div class="modal-body" style="padding: 0px; overflow-y: auto" id="swMiniMaintain">
                 <h3>Modal Body</h3>
             </div>
             <div class="modal-footer">
-                <!--button type="button" class="btn btn-default" data-dismiss="modal">Close</button-->
-                <button type="button" class="btn btn-primary swMiniMaintainSubmit" >Close</button>
+                <button type="button" data-dismiss="modal" class="btn btn-primary swMiniMaintainSubmit" >Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+{if $BOOTSTRAP_STYLES == "3"  || $BOOTSTRAP_STYLES == "joomla3"}
+<a id="a_reporticoNoticeModal" href="#reporticoNoticeModal" role="button" class="btn" data-target="#reporticoNoticeModal" data-toggle="modal" style="display:none">B2</a>
+<div class="modal fade" id="reporticoNoticeModal" tabindex="-1" role="dialog" aria-labelledby="reporticoNoticeModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+{else}
+<a id="a_reporticoNoticeModal" href="#reporticoNoticeModal" role="button" class="btn" data-target="#reporticoNoticeModal" data-toggle="modal" style="display:none">B2</a>
+<div class="modal hide fade" id="reporticoNoticeModal" tabindex="-1" role="dialog" aria-labelledby="reporticoNoticeModal" aria-hidden="true">
+    <div class="modal-dialog">
+{/if}
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" data-dismiss="modal" class="close" aria-hidden="true">&times;</button>
+            <h4 class="modal-title reportico-notice-modal-title" id="reporticoNoticeModalLabel">{$T_NOTICE}</h4>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; padding: 0px" id="reporticoNoticeModalBody">
+                <h3>Modal Body</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
         </div>
     </div>
   </div>
@@ -602,7 +784,7 @@ $loopct++;
         <div class="reportico-modal-content">
             <div class="reportico-modal-header">
             <button type="button" class="reportico-modal-close">&times;</button>
-            <h4 class="reportico-modal-title" id="reporticoModalLabel">Set Parameter</h4>
+            <h4 class="reportico-modal-title" id="reporticoModalLabel">{$T_NOTICE}</h4>
             </div>
             <div class="reportico-modal-body" style="padding: 0px" id="swMiniMaintain">
                 <h3>Modal Body</h3>
@@ -614,7 +796,23 @@ $loopct++;
     </div>
   </div>
 </div>
-{/if}
+<div id="reporticoNoticeModal" tabindex="-1" class="reportico-notice-modal">
+    <div class="reportico-notice-modal-dialog">
+        <div class="reportico-notice-modal-content">
+            <div class="reportico-notice-modal-header">
+            <button type="button" class="reportico-notice-modal-close">&times;</button>
+            <h4 class="reportico-notice-modal-title" id="reporticoNoticeModalLabel">Set Parameter</h4>
+            </div>
+            <div class="reportico-notice-modal-body" id="reporticoNoticeModalBody">
+                <h3>Modal Body</h3>
+            </div>
+            <div class="reportico-notice-modal-footer">
+                <!--button type="button" class="btn btn-default" data-dismiss="modal">Close</button-->
+                <button type="button" class="reportico-notice-modal-button" >Close</button>
+        </div>
+    </div>
+  </div>
+</div>
 {/if}
 <!--div class="smallbanner">Powered by <a href="http://www.reportico.org/" target="_blank">reportico {$REPORTICO_VERSION}</a></div-->
 </div>
