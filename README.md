@@ -64,6 +64,7 @@ app/Http/Middleware/VerifyCsrfToken.php
 
 and adding into the $except array:-
 
+```
     protected $except = [
         //
         ...
@@ -81,6 +82,7 @@ Use the tutorials to get to grips with report design, but for how to embed and c
 To get going with the module go to :-
 
 http://www.reportico.org/laravel/public/index.php
+
 
 
 ## Screenshots
