@@ -329,6 +329,7 @@ reportico_jquery(document).on('click', '.reportico-modal-close', function(event)
     reportico_jquery("#swMiniMaintain").html("");
     reportico_jquery('#reporticoModal').hide();
 });
+*/
 
 reportico_jquery(document).on('click', '.swMiniMaintainSubmit,.reportico-bootstrap-modal-close,.reportico-modal-close', function(event) 
 {
