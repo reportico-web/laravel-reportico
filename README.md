@@ -49,7 +49,14 @@ then publish the config and the assets with:-
 
 php artisan vendor:publish
 
-then you need to exclude reportico from session token validation by editing:-
+
+
+and point your browser at
+
+http://laravel_url/public/index.php/reportico
+
+
+If you have nay issues with button presses causing the screen to look strange, you might like to try disabling session token validation for the package by editing:-
 
 ```
 app/Http/Middleware/VerifyCsrfToken.php
@@ -64,14 +71,9 @@ and adding into the $except array:-
     ];
 ```
 
-and point your browser at
+Then you can use the http://laravel_url/public/index.php/reportico to set an admin password, configure the tutorials or create new report project.
 
-http://laravel_url/public/index.php/reportico
-
-
-
-
-then follow the instructions in the link below :-
+Use the tutorials to get to grips with report design, but for how to embed and create links to reportico from your Laravel app follow the instructions in the link below :-
 
 Quickstart and Documentation
 ============================
