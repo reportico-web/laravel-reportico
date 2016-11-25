@@ -99,8 +99,8 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
-
             $this->engine->url_path_to_assets = $this->app["url"]->asset(config("reportico.path_to_assets"));
+
             
             // Where to store reportco projects
             $this->engine->projects_folder = config("reportico.path_to_projects");

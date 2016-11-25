@@ -3822,9 +3822,6 @@ class reportico extends reportico_object
 	// -----------------------------------------------------------------------------
 	function execute($mode=false, $draw=true)
 	{
-//debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-//echo "oo"; die;
-
 		global $g_system_errors;
 		global $g_system_debug;
 		global $g_code_area;
