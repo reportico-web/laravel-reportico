@@ -82,6 +82,7 @@ function setupCriteriaItems()
         reportico_jquery("#select2_dropdown_" + j + ",#select2_dropdown_expanded_" + j).select2({
           ajax: {
             url: reportico_ajax_script + "?execute_mode=CRITERIA&reportico_criteria=" + j,
+            headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
             type: 'POST',
             error: function(data, status) {
                 return {
@@ -365,6 +366,7 @@ reportico_jquery(document).on('click', '.swMiniMaintainSubmit,.reportico-bootstr
     var cont = this;
     reportico_jquery.ajax({
         type: 'POST',
+        headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -432,6 +434,7 @@ reportico_jquery(document).on('click', '.swMiniMaintain', function(event)
 
     reportico_jquery.ajax({
         type: 'POST',
+        headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -486,6 +489,7 @@ reportico_jquery(document).on('click', '.swPrpSaveButton', function(event)
 
     reportico_jquery.ajax({
         type: 'POST',
+        headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -549,6 +553,7 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
 
         reportico_jquery.ajax({
             type: 'POST',
+            headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
             url: ajaxaction,
             data: params,
             dataType: 'html',
@@ -657,6 +662,7 @@ reportico_jquery(document).on('click', '.swAdminButton, .swAdminButton2, .swMenu
             var cont = this;
             reportico_jquery.ajax({
                 type: 'POST',
+                headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
                 url: ajaxaction,
                 data: params,
                 dataType: 'html',
@@ -691,6 +697,7 @@ function ajaxFileDownload(url, data, expandpanel, reportico_container) {
 
     reportico_jquery.ajax({
       type: 'POST',
+      headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
       url: url,
       data: data,
       dataType: 'html',
@@ -789,6 +796,7 @@ reportico_jquery(document).on('click', '#returnFromExpand', function() {
 		
     reportico_jquery.ajax({
       type: 'POST',
+      headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
       url: ajaxaction,
       data: params,
       dataType: 'html',
@@ -832,6 +840,7 @@ reportico_jquery(document).on('click', '#returnFromExpand', function() {
 
     reportico_jquery.ajax({
         type: 'POST',
+        headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -976,6 +985,7 @@ reportico_jquery(document).on('click', '.swPrintBox,.prepareAjaxExecute,#prepare
     var cont = this;
     reportico_jquery.ajax({
         type: 'POST',
+        headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
         url: ajaxaction,
         data: params,
         dataType: 'html',
@@ -1048,6 +1058,7 @@ function runreport(url, params, container)
     reportico_jquery(container).closest("#reportico_container").addClass("loading");
     reportico_jquery.ajax({
         type: "POST",
+        headers: { 'X-CSRF-TOKEN': reportico_csrf_token },
         data: params,
         url: url,
         dataType: "html",

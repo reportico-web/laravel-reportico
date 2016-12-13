@@ -35,6 +35,7 @@
 .swRepPage tfoot tr td
 {
     border: none !important;
+    background-color: inherit !important;
 }
 .swRepPage th
 {
@@ -51,9 +52,11 @@
 .swPrpToolbarPane input
 {
     float: right;
+    min-width: 42px;
     font-weight: 700;
     margin: 0px 5px 0px 0px;
-    border: 0px solid #888888;
+    box-shadow: none !important;
+    border: 0px none #888888;
     text-decoration: none;
     background-color: #ffffff;
     height: 42px !important;
@@ -299,6 +302,7 @@ div.modal-loading {
     text-decoration: none;
 }
 
+/*
 .reporticoSubmit:hover 
 {
     background-color: #0f3e12 !important;
@@ -310,6 +314,7 @@ div.modal-loading {
     background-color: inherit !important;
     color: #7070CC !important;
 }
+*/
 
 .swToggle, .swToggle:link, .swToggle:visited
 { 
@@ -493,6 +498,7 @@ input.swAdminButton2
     width: 100%;
     margin: 0;
     padding: 0;
+    background-color: inherit !important;
 }
 
 .swPrpCritTitle
@@ -524,6 +530,8 @@ input.swAdminButton2
 
 .swPrpCritExpandButton
 {
+    min-width: 0px !important;
+    box-shadow: none !important;
 }
 
 .swPrpExpand
@@ -1009,7 +1017,7 @@ input.swAdminButton2
     border-style: none;
     padding: 5px;
     background-color: inherit;
-    color: #555;
+    /*color: #555;*/
     width: 100% !important;
 }
 
@@ -1037,7 +1045,7 @@ input.swAdminButton2
 { 
     border-style: none;
     padding: 5px;
-    background-color: inherit;
+    /*background-color: inherit;*/
     color: #555;
     /*width: 160px !important;*/
     max-width: 72% !important;
@@ -1050,7 +1058,7 @@ input.swAdminButton2
     background-color: #F5F5F5;
     border-style: none;
     padding: 5px;
-    background-color: inherit;
+    /*background-color: inherit;*/
     color: #555;
     /*width: 160px !important;*/
     max-width: 72% !important;
@@ -1178,7 +1186,7 @@ input.swAdminButton2
 .swError
 {
     width:          100%;
-    background-color : inherit;
+    /*background-color : inherit;*/
     color : #BB0000;
     border-color : #DDFFDD;
     font-style:	    bold;

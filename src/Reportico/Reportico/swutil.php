@@ -1454,7 +1454,10 @@ function reformatDate($informat, $outformat, $date) {
 function column_name_to_label($columnname)
 {
 	$retstring = str_replace("_", " ", $columnname);
-	$retstring = ucwords(mb_strtolower($retstring,output_charset_to_php_charset(SW_OUTPUT_ENCODING)));
+    if ( !function_exists("mb_strtolower") )
+	    $retstring = ucwords(strtolower($retstring));
+    else
+	    $retstring = ucwords(mb_strtolower($retstring,output_charset_to_php_charset(SW_OUTPUT_ENCODING)));
 	return $retstring;
 }
 
@@ -1462,20 +1465,37 @@ function column_name_to_label($columnname)
 ** Returns if a particular reeportico session parameter is set
 ** using current session namespace
 */
-function isset_reportico_session_param($param)
+function isset_reportico_session_param($param, $session_name = false)
 {
     global $g_session_namespace_key;
-    return isset($_SESSION[$g_session_namespace_key][$param]);
+    if ( !$session_name )
+        return \Session::has("$g_session_namespace_key.$param");
+    else
+        return \Session::has("$session_name.$param");
 }
 
 /*
 ** Sets a reportico session_param
 ** using current session namespace
 */
-function set_reportico_session_param($param, $value)
+function set_reportico_session_param($param, $value, $namespace = false, $array = false)
 {
     global $g_session_namespace_key;
-    $_SESSION[$g_session_namespace_key][$param] = $value;
+    if (  !$namespace  )
+    {
+        \Session::put("$g_session_namespace_key.$param",$value);
+    }
+    else
+    {
+        if ( !$array )
+        {
+            \Session::put("$namespace.$param",$value);
+        }
+        else
+        {
+            \Session::put("$namespace.$array.$param",$value);
+        }
+    }
 }
 
 /*
@@ -1485,13 +1505,26 @@ function set_reportico_session_param($param, $value)
 function get_reportico_session_param($param)
 {
     global $g_session_namespace_key;
-    if ( isset ( $_SESSION[$g_session_namespace_key][$param] ) )
+    if ( \Session::has("$g_session_namespace_key.$param"))
     {
-        return $_SESSION[$g_session_namespace_key][$param];
+        return \Session::get("$g_session_namespace_key.$param");
 }
     else
         return false;
 }
+
+/*
+** Does global reportico session exist
+*/
+function exists_reportico_session()
+{
+    global $g_session_namespace_key;
+    if ( \Session::has($g_session_namespace_key))
+        return true;
+    else
+        return false;
+}
+
 
 /*
 ** Clears a reportico session_param
@@ -1500,8 +1533,8 @@ function get_reportico_session_param($param)
 function unset_reportico_session_param($param)
 {
     global $g_session_namespace_key;
-    if ( isset ( $_SESSION[$g_session_namespace_key][$param] ) )
-        unset ($_SESSION[$g_session_namespace_key][$param]);
+    if ( \Session::has("$g_session_namespace_key.$param"))
+        \Session::forget("$g_session_namespace_key.$param");
 }
 
 /*
@@ -1548,10 +1581,10 @@ function reportico_namespace()
 */
 function initialize_reportico_namespace($namespace)
 {
-            if ( isset($_SESSION[$namespace]) )
-			    unset($_SESSION[$namespace]);
-			$_SESSION[$namespace] = array();
-			$_SESSION[$namespace]["awaiting_initial_defaults"] = true;
-			$_SESSION[$namespace]["firsttimeIn"] = true;
+            if ( \Session::has($namespace) )
+			    \Session::forget($namespace);
+			\Session::put($namespace,array());
+			\Session::put("$namespace.awaiting_initial_defaults",true);
+			\Session::put("$namespace.firsttimeIn",true);
 }
 ?>

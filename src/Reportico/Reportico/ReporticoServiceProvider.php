@@ -40,42 +40,40 @@ class ReporticoServiceProvider extends ServiceProvider {
 	public function register()
 	{
         $app = $this->app;
-        $this->app["router"]->get("reportico", function() use ($app)
-        {
-            //return View::make('reportico.reportico');
-            return $this->app["view"]->make('reportico::reportico');
-        });
 
-        $this->app["router"]->get("reportico/ajax", function() use ($app)
-        {
-            //return View::make('reportico::reportico');
-            //$engine= App::make("getReporticoEngine");
-            $engine = $app["app"]->make('getReporticoEngine');
-            $engine->execute();
-        });
-
-        $this->app["router"]->post("reportico/ajax", function() use ($app)
-        {
-            //return View::make('reportico::reportico');
-            //$engine= App::make("getReporticoEngine");
-            $engine = $app["app"]->make('getReporticoEngine');
-            $engine->execute();
-        });
-
-        $this->app["router"]->get("reportico/dbimage", function() use ($app)
-        {
-            //return View::make('reportico::reportico');
-            //$engine= App::make("getReporticoEngine");
-            // Set Joomla Database Access Config from configuration
-            if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
+        \Route::group(['middleware' => 'web'], function() {
+            \Route::get("reportico", function() 
             {
-                    define('SW_FRAMEWORK_DB_DRIVER','pdo_mysql');
-                    define('SW_FRAMEWORK_DB_USER',"root");
-                    define('SW_FRAMEWORK_DB_PASSWORD',"root");
-                    define('SW_FRAMEWORK_DB_HOST',"127.0.0.1");
-                    define('SW_FRAMEWORK_DB_DATABASE',"iconnex.php");
-            }
-            include("imageget.php");
+                return \View::make('reportico::reportico');
+            });
+
+            \Route::get("reportico/ajax", function() 
+            {
+                $engine = \App::make('getReporticoEngine');
+                $engine->execute();
+                \Session::save();
+                die;
+            });
+
+            \Route::post("reportico/ajax", function()
+            {
+                    $engine = \App::make('getReporticoEngine');
+                    $engine->execute();
+                    \Session::save();
+                    die;
+            });
+            \Route::get("reportico/dbimage", function() 
+            {
+                if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
+                {
+                        define('SW_FRAMEWORK_DB_DRIVER','pdo_mysql');
+                        define('SW_FRAMEWORK_DB_USER',"root");
+                        define('SW_FRAMEWORK_DB_PASSWORD',"root");
+                        define('SW_FRAMEWORK_DB_HOST',"127.0.0.1");
+                        define('SW_FRAMEWORK_DB_DATABASE',"iconnex.php");
+                }
+                include("imageget.php");
+            });
 
         });
 
