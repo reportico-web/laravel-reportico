@@ -51,7 +51,7 @@ php artisan vendor:publish
 
 
 
-and point your browser at
+and then point your browser at
 
 http://laravel_url/public/index.php/reportico
 
