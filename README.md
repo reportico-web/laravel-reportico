@@ -1,5 +1,5 @@
-laravel-reportico
-=================
+## laravel-reportico
+
 
 Reportico Module for Laravel 4 and 5.
 
@@ -13,8 +13,8 @@ Ability to create report projects against the default laravel connection or agai
 Use Reportico's default styling, or let it adapt to your site's bootstrap look and feel
 Here you can find out how to install and get started with the module as well as examples of running Reportico within your site application.
 
-Installation
-============
+## Installation
+
 
 Install with composer 
 
@@ -39,7 +39,7 @@ http://laravel_url/public/index.php/reportico
 For Laravel 5
 -------------
 
-composer require "reportico/laravel-reportico"  "~5.1" 
+composer require "reportico/laravel-reportico"  "dev-master" 
 
 then add to your app.php in the providers section :--
 
@@ -56,7 +56,7 @@ and point your browser at
 http://laravel_url/public/index.php/reportico
 
 
-If you have nay issues with button presses causing the screen to look strange, you might like to try disabling session token validation for the package by editing:-
+If you have any issues with button presses causing the screen to goblank, you might like to try disabling session token validation for the package by editing (but it shouldnt be necessary ):-
 
 ```
 app/Http/Middleware/VerifyCsrfToken.php
@@ -64,6 +64,7 @@ app/Http/Middleware/VerifyCsrfToken.php
 
 and adding into the $except array:-
 
+```
     protected $except = [
         //
         ...
@@ -75,9 +76,22 @@ Then you can use the http://laravel_url/public/index.php/reportico to set an adm
 
 Use the tutorials to get to grips with report design, but for how to embed and create links to reportico from your Laravel app follow the instructions in the link below :-
 
-Quickstart and Documentation
+## Tutorial and Documentation
 ============================
 
 To get going with the module go to :-
 
 http://www.reportico.org/laravel/public/index.php
+
+
+
+## Screenshots
+
+
+![Criteria Page](/images/reportico_prepare.png?raw=true "Criteria Page")
+
+
+![Edit Query Page](/images/reportico_sql.png?raw=true "Edit Query Page")
+
+
+![Report Output Page](/images/reportico_output.png?raw=true "Report Output Page")
