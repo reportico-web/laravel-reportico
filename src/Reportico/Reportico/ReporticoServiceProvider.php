@@ -31,7 +31,8 @@ class ReporticoServiceProvider extends ServiceProvider {
                 __DIR__.'/assets' => public_path('vendor/reportico'),
             ], 'public');
 
-        \Route::group(['middleware' => ['web','auth']], function() {
+        //\Route::group(['middleware' => ['web','auth']], function() {
+        \Route::group(['middleware' => ['web']], function() {
 
             \Route::get("reportico", function() 
             {
