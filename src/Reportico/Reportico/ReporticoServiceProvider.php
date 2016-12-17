@@ -30,18 +30,9 @@ class ReporticoServiceProvider extends ServiceProvider {
         $this->publishes([
                 __DIR__.'/assets' => public_path('vendor/reportico'),
             ], 'public');
-	}
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-        $app = $this->app;
+        \Route::group(['middleware' => ['web','auth']], function() {
 
-        \Route::group(['middleware' => 'web'], function() {
             \Route::get("reportico", function() 
             {
                 return \View::make('reportico::reportico');
@@ -62,6 +53,7 @@ class ReporticoServiceProvider extends ServiceProvider {
                     \Session::save();
                     die;
             });
+
             \Route::get("reportico/dbimage", function() 
             {
                 if ( !defined("SW_FRAMEWORK_DB_DRIVER") )
@@ -75,7 +67,64 @@ class ReporticoServiceProvider extends ServiceProvider {
                 include("imageget.php");
             });
 
+            // Run reportico in admin mode
+            \Route::get("reportico/admin", function() {
+                $engine = \App::make('getReporticoEngine');
+                $engine->access_mode = "FULL";
+                $engine->initial_execute_mode = "ADMIN";
+                $engine->initial_project = "admin";
+                $engine->initial_report = false;
+                $engine->clear_reportico_session = true;
+                $engine->execute();
+            });
+
+            // Generate output for a single report
+            \Route::get("reportico/execute/{project}/{report}", function($project, $report) {
+                $engine = \App::make('getReporticoEngine');
+                $engine->access_mode = "REPORTOUTPUT";  // Run single report, no "return button"
+                //$this->engine->access_mode = "SINGLEREPORT";  // Run single report, no access to other reports
+                //$this->engine->Access_mode = "ONEPROJECT"; // Run single report, but with ability to access other reports
+
+                $engine->initial_execute_mode = "EXECUTE";
+                $engine->initial_project = $project;
+                $engine->initial_report = $report;
+                $engine->clear_reportico_session = true;
+                $engine->execute();
+            });
+
+            \Route::get("reportico/menu/{project}", function($project) {
+                $engine = \App::make('getReporticoEngine');
+                //$this->engine->access_mode = "ALLPROJECTS";  // Run single project menu, with access to other reports in other projects
+                $engine->access_mode = "ONEPROJECT";
+                $engine->initial_project = $project;
+                $engine->clear_reportico_session = true;
+                $engine->execute();
+            });
+
+            \Route::get("reportico/prepare/{project}/{report}", function($project,$report) {
+                $this->engine->access_mode = "SINGLEREPORT"; // Allows running of a single report only
+                //$this->engine->access_mode = "ONEPROJECT";  // Run single report, but allow access to reports in other projects
+                $this->engine->initial_execute_mode = "PREPARE";
+                $this->engine->initial_project = $project;
+                $this->engine->initial_report = $report;
+                if ( !preg_match ( "/.xml$/", $this->engine->initial_report ) )
+                    $this->engine->initial_report .= ".xml" ;
+
+                $this->engine->clear_reportico_session = true;
+                $this->engine->execute();
+            });
+
         });
+	}
+
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
+        $app = $this->app;
 
         $this->app['getReporticoEngine'] = $this->app->share(function($app)
         {
