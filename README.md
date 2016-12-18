@@ -18,6 +18,30 @@ Here you can find out how to install and get started with the module as well as 
 
 Install with composer 
 
+For Laravel 5
+-------------
+
+composer require "reportico/laravel-reportico"  "~5.2" 
+
+then add to your app.php in the providers section :--
+
+Reportico\Reportico\ReporticoServiceProvider::class 
+
+then publish the config and the assets with:-
+
+php artisan vendor:publish
+
+
+
+and then point your browser at
+
+http://laravel_url/public/index.php/reportico
+
+
+
+Then you can use the http://laravel_url/public/index.php/reportico to set an admin password, configure the tutorials or create new report project.
+
+
 For Laravel 4
 -------------
 
@@ -36,43 +60,6 @@ and point your browser at
 http://laravel_url/public/index.php/reportico
 
 
-For Laravel 5
--------------
-
-composer require "reportico/laravel-reportico"  "dev-master" 
-
-then add to your app.php in the providers section :--
-
-Reportico\Reportico\ReporticoServiceProvider::class 
-
-then publish the config and the assets with:-
-
-php artisan vendor:publish
-
-
-
-and then point your browser at
-
-http://laravel_url/public/index.php/reportico
-
-
-If you have any issues with button presses causing the screen to goblank, you might like to try disabling session token validation for the package by editing (but it shouldnt be necessary ):-
-
-```
-app/Http/Middleware/VerifyCsrfToken.php
-```
-
-and adding into the $except array:-
-
-```
-    protected $except = [
-        //
-        ...
-        'reportico/*',
-    ];
-```
-
-Then you can use the http://laravel_url/public/index.php/reportico to set an admin password, configure the tutorials or create new report project.
 
 Use the tutorials to get to grips with report design, but for how to embed and create links to reportico from your Laravel app follow the instructions in the link below :-
 
