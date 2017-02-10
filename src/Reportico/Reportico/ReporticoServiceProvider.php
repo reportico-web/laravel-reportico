@@ -127,7 +127,7 @@ class ReporticoServiceProvider extends ServiceProvider {
 	{
         $app = $this->app;
 
-        $this->app['getReporticoEngine'] = $this->app->share(function($app)
+        $this->app->singleton('getReporticoEngine', function($app)
         {
             $this->engine = new reportico();
 
