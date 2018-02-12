@@ -23,6 +23,8 @@ class ReporticoServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
+        // Define Session engine based on Laravel
+        define ( "REPORTICO_SESSION_CLASS", "\Reportico\Reports\Classes\ReporticoSession" );
         $this->loadViewsFrom(__DIR__.'/../../views', 'reportico');
         $this->publishes([
                     __DIR__.'/../../config/config.php' => config_path('reportico.php'),
@@ -30,6 +32,7 @@ class ReporticoServiceProvider extends ServiceProvider {
         $this->publishes([
                 __DIR__.'/assets' => public_path('vendor/reportico'),
             ], 'public');
+
 
         //\Route::group(['middleware' => ['web','auth']], function() {
         \Route::group(['middleware' => ['web']], function() {
@@ -129,9 +132,10 @@ class ReporticoServiceProvider extends ServiceProvider {
 
         $this->app->singleton('getReporticoEngine', function($app)
         {
-            $this->engine = new reportico();
 
-            $this->engine->reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"]."/reportico/ajax";
+            $this->engine = new \Reportico\Engine\Reportico();
+
+		    $this->engine->reportico_ajax_script_url = \URL::to("/reportico/ajax");
             $this->engine->forward_url_get_parameters = false;
             //$this->engine->forward_url_get_parameters_graph = "reportico/graph";
             //$this->engine->forward_url_get_parameters_dbimage = "reportico/dbimage";
@@ -143,7 +147,7 @@ class ReporticoServiceProvider extends ServiceProvider {
             $this->engine->allow_debug = true;
             $this->engine->framework_parent = config("reportico.framework_type");
 
-            if ( \Auth::user() )
+		    if ( class_exists("Auth") && \Auth::getUser()->id )
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
@@ -182,6 +186,11 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             // Engine to use for PDF reports .. 
             $this->engine->pdf_engine = config("reportico.pdf_engine");
+		    $this->engine->pdf_delivery_mode = "INLINE";
+
+            // Phantom PDF location and temporary file rendering paths
+            $this->engine->pdf_phantomjs_path = config("reportico.pdf_phantomjs_path");
+            $this->engine->pdf_phantomjs_temp_path = config("reportico.pdf_phantomjs_temp_path");
 
             // Whether to turn on dynamic grids to provide searchable/sortable reports
             $this->engine->dynamic_grids = config("reportico.dynamic_grids");
