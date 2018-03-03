@@ -30,7 +30,7 @@
         "post-update-cmd": [
             "PhantomInstaller\\Installer::installPhantomJS"
         ]
-    }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
