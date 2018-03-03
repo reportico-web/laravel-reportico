@@ -7,7 +7,7 @@
             "email": "info@reportico.org"
         }
     ],
-    "require-dev": {
+    "require": {
         "reportico-web/reportico": "dev-reportico-new-architecture"
     },
     "license": "GPL-3.0",
