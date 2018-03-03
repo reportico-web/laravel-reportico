@@ -24,15 +24,19 @@ class ReporticoServiceProvider extends ServiceProvider {
 	public function boot()
 	{
         // Define Session engine based on Laravel
-        define ( "REPORTICO_SESSION_CLASS", "\Reportico\Reports\Classes\ReporticoSession" );
+        define ( "REPORTICO_SESSION_CLASS", "\Reportico\Reportico\ReporticoSession" );
         $this->loadViewsFrom(__DIR__.'/../../views', 'reportico');
+
+        $this->publishes([
+                __DIR__.'/assets' => public_path('vendor/reportico'),
+                base_path("vendor/reportico-web/reportico/projects/admin") => storage_path('reportico/projects/admin'),
+                base_path("vendor/reportico-web/reportico/projects/tutorials") => storage_path('reportico/projects/tutorials'),
+            ], 'public');
+
+
         $this->publishes([
                     __DIR__.'/../../config/config.php' => config_path('reportico.php'),
                 ]);
-        $this->publishes([
-                __DIR__.'/assets' => public_path('vendor/reportico'),
-            ], 'public');
-
 
         //\Route::group(['middleware' => ['web','auth']], function() {
         \Route::group(['middleware' => ['web']], function() {
@@ -147,11 +151,17 @@ class ReporticoServiceProvider extends ServiceProvider {
             $this->engine->allow_debug = true;
             $this->engine->framework_parent = config("reportico.framework_type");
 
-		    if ( class_exists("Auth") && \Auth::getUser()->id )
+		    if ( class_exists("Auth") && \Auth::user() && \Auth::user()->id )
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
             $this->engine->url_path_to_assets = $this->app["url"]->asset(config("reportico.path_to_assets"));
+
+            // Theme configuration
+            $this->engine->theme = "backend";
+            $this->engine->templateViewPath = public_path("vendor/reportico/themes");
+            $this->engine->templateCachePath = storage_path("framework/cache/reportico");
+            $this->engine->url_path_to_templates = $this->engine->url_path_to_assets."/themes";
 
             
             // Where to store reportco projects

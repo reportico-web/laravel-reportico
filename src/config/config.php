@@ -13,7 +13,7 @@
     'path_to_projects' => storage_path()."/reportico/projects",
 
     // Path relative to laravel pase or fully where admin project will be stored
-    'path_to_admin' => 'projects',
+    'path_to_admin' => storage_path()."/reportico/projects",
 
     // Bootstrap Features
     // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
@@ -41,8 +41,7 @@
     'charting_engine_html' => "NVD3",
 
     // Engine to use for pdf .. 
-    // fpdf is faster but tcpdf offers borders, backgorunds, images, headers footers etc
-    'pdf_engine' => "tcpdf",
+    'pdf_engine' => "phantomjs",
 
     // Whether to turn on dynamic grids to provide searchable/sortable reports
     'dynamic_grids' => false,
