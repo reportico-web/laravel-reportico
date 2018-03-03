@@ -9,6 +9,7 @@
     ],
     "require": {
         "php": "^5.5.9|^7.0.0",
+        "reportico-web/reportico": "dev-reportico-new-architecture",
         "setasign/fpdf": "1.7",
         "adodb/adodb-php": "^5.20",
         "tecnickcom/tcpdf": "^6.2",
