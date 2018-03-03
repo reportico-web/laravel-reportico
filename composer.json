@@ -18,7 +18,7 @@
         "jonnyw/php-phantomjs": "4.6"
     },
     "require-dev": {
-        "reportico-web/reportico": "reportico-new-architecture"
+        "reportico-web/reportico": "^1.0"
     },
     "license": "GPL-3.0",
     "autoload": {
