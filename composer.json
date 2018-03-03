@@ -8,7 +8,14 @@
         }
     ],
     "require": {
-        "reportico-web/reportico": "dev-reportico-new-architecture"
+        "php": "^5.5.9|^7.0.0",
+        "setasign/fpdf": "1.7",
+        "adodb/adodb-php": "^5.20",
+        "tecnickcom/tcpdf": "^6.2",
+        "smarty/smarty": "^3.1",
+        "monolog/monolog": "^1.23",
+        "twig/twig": "~1.16",
+        "jonnyw/php-phantomjs": "4.6"
     },
     "license": "GPL-3.0",
     "autoload": {
@@ -24,4 +31,6 @@
             "PhantomInstaller\\Installer::installPhantomJS"
         ]
     }
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
