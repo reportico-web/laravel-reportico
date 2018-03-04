@@ -15,7 +15,7 @@
         "smarty/smarty": "^3.1",
         "monolog/monolog": "^1.23",
         "twig/twig": "~1.16",
-        "reportico-web/reportico": "5.3",
+        "reportico-web/reportico": "4.6",
         "twig11/twig111": "~1.16",
         "jonnyw/php-phantomjs1": "4.6"
     },
