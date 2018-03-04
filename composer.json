@@ -16,8 +16,8 @@
         "monolog/monolog": "^1.23",
         "twig/twig": "~1.16",
         "reportico-web/reportico": "4.6",
-        "twig11/twig111": "~1.16",
-        "jonnyw/php-phantomjs1": "4.6"
+        "twig/twig": "~1.16",
+        "jonnyw/php-phantomjs": "4.6"
     },
     "license": "GPL-3.0",
     "autoload": {
