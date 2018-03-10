@@ -1,7 +1,7 @@
 {% autoescape false %}
 {% if not REPORTICO_AJAX_CALLED %}
 {% if not EMBEDDED_REPORT %}
-<not DOCTYPE html>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE>{{ TITLE|raw }}</TITLE>
@@ -113,6 +113,9 @@
 
 {% endif %}
 <div id="reportico_container">
+
+<div style="{{ CONTENT.styles.body }}">
+
     <script>
         reportico_criteria_items = [];
 {% if CRITERIA_ITEMS is defined %}
@@ -154,7 +157,7 @@
                                 <div style="color: #ff0000;">{{ PASSWORD_ERROR }}</div>
 {% endif %}
 				Enter the report project password. <br><input type="password" name="project_password" value=""></div>
-				<input class="swLinkMenu" type="submit" name="login" value="Login">
+				<input class="reportico-ajax-link" type="submit" name="login" value="Login">
 			</TD>
 {% endif %}
 {% if REPORTICO_DYNAMIC_GRIDS %}
@@ -178,7 +181,110 @@
 {% else %}
 <script type="text/javascript">var reportico_dynamic_grids = false;</script>
 {% endif %}
-{{ CONTENT }}
+
+{# Navigation Buttons #}
+{% for button in CONTENT.buttons %}
+<div class="{{ button.class }}"><a class="reportico-ajax-link" href="{{ button.href }}" title="{{ button.title }}">&nbsp;</a></div>
+{% endfor %}
+
+
+<h1 class="swRepTitle">{{ CONTENT.title }}</h1>
+
+{% if ( CONTENT.criteria ) %}
+<table class="reportico-criteria" style="{{ CONTENT.styles.criteria }}">
+    <tbody>
+        {% for criterium in CONTENT.criteria %}
+        <tr class="reportico-group-header-row"><td class="reportico-group-header-label">{{criterium.label }}</td><td class="reportico-group-header-value">{{ criterium.value }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% for page in CONTENT.pages %}
+    {% for row in page.rows %}
+
+        {# Group Headers ================================================ #}
+        {% for group in row.groupstarts %}
+        <table class="reportico-group-header-box">
+            <tbody>
+                {% for header in group.headers %}
+                <tr class="reportico-group-header-row">
+                    <td class="reportico-group-header-label" style="{{ CONTENT.styles.group_header_label }}">{{ header.label }}</td>
+                    <td class="reportico-group-header-value" style="{{ CONTENT.styles.group_header_value }}">{{ header.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+
+        {# Start of group/report - new detail block  ======= #}
+        {% if row.openrowsection %}
+        <TABLE class="{{ CONTENT.classes.page }} reportico-page" style="{{ CONTENT.styles.page }}">
+
+            {# Column Headers #}
+            <THEAD>
+            <TR>
+            {% for columnHeader in page.headers %}
+                <TH style="{{columnHeader.style}}">
+                {{ columnHeader.content }}
+                </TH>
+            {% endfor %}
+            </TR>
+            </THEAD>
+
+        {% endif %}
+
+        {# Report Detail Row  ================================================ #}
+        <TR class="swRepResultLine" style="{{ row.style }}">
+        {% for column in row.data %}
+            <TD style="{{column.style}}">
+            {{ column.content }}
+            </TD>
+        {% endfor %}
+        </TR>
+
+        {# End of group/report - close detail section do trailers/graphs ===== #}
+        {% if row.closerowsection %}
+            {% if row.groupends %}
+            </TBODY>
+            <TFOOT>
+
+            {% for group in row.groupends %}
+                {% for trailer in group.trailers %}
+                    <tr class="trailer">
+                        {% for column in trailer %}
+                            <td style="{{ column.style }}">{{ column.content }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+
+            </TFOOT>
+            {% endif %}
+        </table>
+
+        {# After Group Charts #}
+        {% for graph in row.graphs %}
+        <div class="swRepResultGraph">
+            {{ graph.url }}
+        </div>
+        {% endfor %}
+
+        {% endif %}
+
+    {% endfor %}  {# each row #}
+
+{% endfor %}  {# each page #}
+
+
+
+
+
+
+
+
+
+</div>
 </div>
 {% if not REPORTICO_AJAX_CALLED %}
 {% if not EMBEDDED_REPORT %}
