@@ -43,6 +43,10 @@
     // Engine to use for pdf .. 
     'pdf_engine' => "phantomjs",
 
+    // Pathing for phantomjs
+    'pdf_phantomjs_path' => base_path('vendor/bin/phantomjs'),
+    'pdf_phantomjs_temp_path' => sys_get_temp_dir(),
+
     // Whether to turn on dynamic grids to provide searchable/sortable reports
     'dynamic_grids' => false,
     'dynamic_grids_sortable' => true,
