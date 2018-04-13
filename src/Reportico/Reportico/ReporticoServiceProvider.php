@@ -28,9 +28,12 @@ class ReporticoServiceProvider extends ServiceProvider {
         $this->loadViewsFrom(__DIR__.'/../../views', 'reportico');
 
         $this->publishes([
-                __DIR__.'/assets' => public_path('vendor/reportico'),
-                base_path("vendor/reportico-web/reportico/projects/admin") => storage_path('reportico/projects/admin'),
+                base_path("vendor/reportico-web/reportico/assets") => public_path('vendor/reportico'),
+                base_path("vendor/reportico-web/reportico/themes/default") => storage_path('reportico/themes/default'),
+                base_path("vendor/reportico-web/reportico/themes/default/css") => public_path('vendor/reportico/themes/default/css'),
+                base_path("vendor/reportico-web/reportico/themes/default/images") => public_path('vendor/reportico/themes/default/images'),
                 base_path("vendor/reportico-web/reportico/projects/tutorials") => storage_path('reportico/projects/tutorials'),
+                base_path("vendor/reportico-web/reportico/projects/admin") => storage_path('reportico/projects/admin'),
             ], 'public');
 
 
@@ -159,8 +162,8 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             // Theme configuration
             $this->engine->theme = "default";
-            $this->engine->templateViewPath = public_path("vendor/reportico/themes");
-            $this->engine->templateCachePath = storage_path("framework/cache/reportico");
+            $this->engine->templateViewPath = storage_path("reportico/themes");
+            $this->engine->templateCachePath = storage_path("framework/cache");
             $this->engine->url_path_to_templates = $this->engine->url_path_to_assets."/themes";
 
             
