@@ -29,7 +29,7 @@ class ReporticoServiceProvider extends ServiceProvider {
 
         $this->publishes([
                 base_path("vendor/reportico-web/reportico/assets") => public_path('vendor/reportico'),
-                base_path("vendor/reportico-web/reportico/themes/default") => storage_path('reportico/themes/default'),
+                base_path("vendor/reportico-web/reportico/themes/default/templates") => storage_path('reportico/themes/default/templates'),
                 base_path("vendor/reportico-web/reportico/themes/default/css") => public_path('vendor/reportico/themes/default/css'),
                 base_path("vendor/reportico-web/reportico/themes/default/images") => public_path('vendor/reportico/themes/default/images'),
                 base_path("vendor/reportico-web/reportico/projects/tutorials") => storage_path('reportico/projects/tutorials'),
@@ -148,7 +148,7 @@ class ReporticoServiceProvider extends ServiceProvider {
             //$this->engine->forward_url_get_parameters_dbimage = "reportico/dbimage";
 
             // Inficate 'path' mechanism for controllers in stead of 'get'
-            $this->engine->reportico_ajax_mode = 2;
+            $this->engine->reportico_ajax_mode = "laravel";
 
             $this->engine->embedded_report = true;
             $this->engine->allow_debug = true;
