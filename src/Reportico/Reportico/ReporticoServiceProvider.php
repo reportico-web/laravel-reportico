@@ -57,6 +57,25 @@ class ReporticoServiceProvider extends ServiceProvider {
                 die;
             });
 
+            /*
+            ** Returns a file to the browser residing below the specified theme folder
+            */
+            \Route::get("reportico/theme/{file1}/{file2}/{file3}", function($file1 = false, $file2 = false, $file3 = false) 
+            {
+                header("Content-Type: text/css");
+                $file = $file1;
+                if ( $file2 ) $file .= "/" . $file2;
+                if ( $file3 ) $file .= "/" . $file3;
+                $folder = storage_path("reportico/themes/");
+                $file = $folder.$file;
+                if ( file_exists($file) ) {
+                    header("Content-Type: text/css");
+                    echo file_get_contents($file);
+                    die;
+                }
+                die;
+            });
+
             \Route::post("reportico/ajax", function()
             {
                     $engine = \App::make('getReporticoEngine');
@@ -139,6 +158,7 @@ class ReporticoServiceProvider extends ServiceProvider {
 
         $this->app->singleton('getReporticoEngine', function($app)
         {
+            self::buildStorage();
 
             $this->engine = new \Reportico\Engine\Reportico();
 
@@ -164,8 +184,7 @@ class ReporticoServiceProvider extends ServiceProvider {
             $this->engine->theme = "default";
             $this->engine->templateViewPath = storage_path("reportico/themes");
             $this->engine->templateCachePath = storage_path("framework/cache");
-            $this->engine->url_path_to_templates = $this->engine->url_path_to_assets."/themes";
-
+            $this->engine->url_path_to_templates = \URL::to("/reportico/theme");
             
             // Where to store reportco projects
             $this->engine->projects_folder = config("reportico.path_to_projects");
@@ -283,5 +302,55 @@ class ReporticoServiceProvider extends ServiceProvider {
     public function generate()
     {
         $this->engine->execute();
+    }
+
+    // Ensures that themes from October and base reportico area are
+    // combined into the storage area
+    static function syncFolder($source, $dest, $replaceExisting = true) {
+
+        if(is_dir($source)) {
+            $dir_handle=opendir($source);
+            while($file=readdir($dir_handle)){
+                if($file!="." && $file!=".."){
+                    
+                    if ( $file == "cache" )
+                        continue;
+
+                    if ( !$replaceExisting && is_dir ($dest."/".$file) )
+                        continue;
+
+                    if(is_dir($source."/".$file)){
+                        if(!is_dir($dest."/".$file)){
+                            //echo "make ".$dest."/".$file; die;
+                            mkdir($dest."/".$file);
+                        }
+                        self::syncFolder($source."/".$file, $dest."/".$file, true);
+                    } else {
+                        copy($source."/".$file, $dest."/".$file);
+                    }
+                }
+            }
+            closedir($dir_handle);
+       } else {
+            copy($source, $dest);
+       }
+    }
+
+    // Ensures that themes from Laravel and base reportico area are
+    // combined into the storage area
+    static public function buildStorage() {
+
+        $dest = storage_path("reportico/themes");
+        if ( !is_dir($dest) ) {
+            mkdir($dest);
+        }
+
+        //$source =  __DIR__."/../themes";
+        //self::syncFolder($source, $dest, false);
+
+        $source =  base_path()."/vendor/reportico-web/reportico/themes";
+        self::syncFolder($source, $dest, false);
+
+        return;
     }
 }
