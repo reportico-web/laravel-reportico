@@ -13,7 +13,7 @@
     'path_to_projects' => storage_path()."/reportico/projects",
 
     // Path relative to laravel pase or fully where admin project will be stored
-    'path_to_admin' => storage_path()."/reportico/projects",
+    'path_to_admin' => base_path()."/vendor/reportico/laravel-reportico/projects",
 
     // Bootstrap Features
     // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2

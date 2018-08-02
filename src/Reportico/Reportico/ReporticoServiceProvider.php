@@ -29,11 +29,9 @@ class ReporticoServiceProvider extends ServiceProvider {
 
         $this->publishes([
                 base_path("vendor/reportico-web/reportico/assets") => public_path('vendor/reportico'),
-                base_path("vendor/reportico-web/reportico/themes/default/templates") => storage_path('reportico/themes/default/templates'),
-                base_path("vendor/reportico-web/reportico/themes/default/css") => public_path('vendor/reportico/themes/default/css'),
-                base_path("vendor/reportico-web/reportico/themes/default/images") => public_path('vendor/reportico/themes/default/images'),
+                base_path("vendor/reportico-web/reportico/themes/default") => storage_path('reportico/themes/default'),
                 base_path("vendor/reportico-web/reportico/projects/tutorials") => storage_path('reportico/projects/tutorials'),
-                base_path("vendor/reportico-web/reportico/projects/admin") => storage_path('reportico/projects/admin'),
+                base_path("vendor/reportico/laravel-reportico/projects/admin") => storage_path('reportico/projects/admin'),
             ], 'public');
 
 
