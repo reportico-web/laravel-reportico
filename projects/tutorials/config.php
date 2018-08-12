@@ -274,7 +274,11 @@ ReporticoApp::setConfig('output_sections', array (
         'page-header-block' => array (
                 array ( 
                         'content' => '{REPORT_TITLE}', 
-                        'styles' => 'border-width: 0px 0px 1px 0px; margin: 15px 0px 0px 0px; border-color: #000000; font-size: 18; border-style: solid;padding:0px 0px 0px 0px; width: 100%; background-color: inherit; color: #000; margin-left: 0%;margin-bottom: 20px;text-align:center' 
+                        'styles' => 'border-width: 0px 0px 1px 0px; margin: 25px 0px 0px 0px; border-color: #000000; font-size: 18; border-style: solid;padding:0px 0px 0px 0px; width: 100%; background-color: inherit; color: #000; margin-left: 0%;margin-bottom: 20px;text-align:center' 
+                      ),
+                array ( 
+                        'content' => '', 
+                        'styles' => 'width: 100; height: 50; margin: 5px 0 0 0; background-image:vendor/reportico/images/reportico100.png' 
                       ),
                 ),
 
@@ -302,6 +306,66 @@ ReporticoApp::setConfig('output_sections', array (
                 ),
 
         ));
+
+ReporticoApp::setConfig('output_sections_tcpdf', array (
+
+        'page-header-block' => array (
+                array ( 
+                        'content' => '{REPORT_TITLE}', 
+                        'styles' => 'border-width: 0px 0px 1px 0px; margin: 50px 0px 0px 0px; border-color: #000000; font-size: 18; border-style: solid;padding:0px 0px 0px 0px; back1ground-color: #f00; color: #000; margin-left: 0%;margin-bottom: 0px;text-align:center' 
+                      ),
+                array ( 
+                        'content' => '', 
+                        'styles' => 'width: 100px; height: 50px; margin: 8px 0px 0px 0px; background-image:'.__DIR__.'/../../../../public/vendor/reportico/images/reportico100.png' 
+                      ),
+                ),
+
+        'page-footer-block' => array (
+                array ( 
+                        'content' => 'Page: {PAGE}', 
+                        'styles' => 'border-width: 1 0 0 0; margin: 40 0 0 0; font-style: italic' 
+                      ),
+                array ( 
+                        'content' => 'Time: date(\'Y-m-d H:i:s\')', 
+                        'styles' => 'font-size: 8pt; text-align: right; font-style: italic; margin-top: 30px;' 
+                      ),
+                ),
+
+        'page-title-block' => array (
+                array ( 
+                        'content' => '{REPORT_TITLE}', 
+                        'styles' => 'border-width: 1 0 0 0; top: 0px; font-size: 8pt; margin: 2px 0px 0px 0px; font-style: italic;' ,
+                        'template' => '<h1>' 
+                      ),
+            ),
+
+        'styles' => array ( 
+
+            'body' => array(
+                'style' => array(
+                    "border-width" => "1px 1px 1px 1px",
+                    "border-style" => "none",
+                    "border-color" => "#333333",
+                    "font-size" => "8pt",
+                    "font-family" => "freesans",
+                    "padding" => "20px 20px 20px 20px"
+                )
+             ),
+
+            'criteria' => array(
+                'style' => array(
+                    "font-size" => "8pt",
+                    "background-color" => "#eeeeee",
+                    "border-style" => "solid",
+                    "border-width" => "1px 1px 1px 1px",
+                    "border-color" => "#888888",
+                    "margin" => "0px 5px 10px 5px",
+                    "padding" => "0px 5px 0px 5px",
+                    "display" => "none",
+                )
+             ),
+
+        )));
 
 
 ReporticoApp::set('static_menu', array (

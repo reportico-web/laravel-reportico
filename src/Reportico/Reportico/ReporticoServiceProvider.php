@@ -103,6 +103,11 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine->initial_project = "admin";
                 $engine->initial_report = false;
                 $engine->clear_reportico_session = true;
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $engine->execute();
             });
 
@@ -117,6 +122,11 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine->initial_project = $project;
                 $engine->initial_report = $report;
                 $engine->clear_reportico_session = true;
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $engine->execute();
             });
 
@@ -126,10 +136,16 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine->access_mode = "ONEPROJECT";
                 $engine->initial_project = $project;
                 $engine->clear_reportico_session = true;
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $engine->execute();
             });
 
             \Route::get("reportico/prepare/{project}/{report}", function($project,$report) {
+                $engine = \App::make('getReporticoEngine');
                 $this->engine->access_mode = "SINGLEREPORT"; // Allows running of a single report only
                 //$this->engine->access_mode = "ONEPROJECT";  // Run single report, but allow access to reports in other projects
                 $this->engine->initial_execute_mode = "PREPARE";
@@ -138,6 +154,11 @@ class ReporticoServiceProvider extends ServiceProvider {
                 if ( !preg_match ( "/.xml$/", $this->engine->initial_report ) )
                     $this->engine->initial_report .= ".xml" ;
 
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $this->engine->clear_reportico_session = true;
                 $this->engine->execute();
             });
@@ -216,7 +237,7 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             // Engine to use for PDF reports .. 
             $this->engine->pdf_engine = config("reportico.pdf_engine");
-		    $this->engine->pdf_delivery_mode = "INLINE";
+		    $this->engine->pdf_delivery_mode = "DOWNLOAD_SAME_WINDOW";
 
             // Phantom PDF location and temporary file rendering paths
             $this->engine->pdf_phantomjs_path = config("reportico.pdf_phantomjs_path");
