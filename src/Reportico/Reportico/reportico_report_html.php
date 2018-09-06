@@ -142,7 +142,7 @@ class reportico_report_html extends reportico_report
 	function abs_paging_height($height_string)
 	{
 		$height = (int)$height_string;
-		if ( strstr($height_string, "%" ) )
+        if ($this->page_height && strstr($height_string, "%")) {
 		{
 			$height = (int)
 				( $this->page_height * $height_string ) / 100;
