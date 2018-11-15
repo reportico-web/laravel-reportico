@@ -359,6 +359,11 @@ class ReporticoServiceProvider extends ServiceProvider {
     // combined into the storage area
     static public function buildStorage() {
 
+        $dest = storage_path("reportico");
+        if ( !is_dir($dest) ) {
+            mkdir($dest);
+        }
+
         $dest = storage_path("reportico/themes");
         if ( !is_dir($dest) ) {
             mkdir($dest);
