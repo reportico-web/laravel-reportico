@@ -1,4 +1,6 @@
 <?php
+namespace Reportico\Engine;
+
 // Extract Criteria Options
 $type = $_criteria["dbtype"]->getCriteriaValue("VALUE", false);
 $name = $_criteria["database"]->getCriteriaValue("VALUE", false);
@@ -14,16 +16,22 @@ $title = $_criteria["projtitle"]->getCriteriaValue("VALUE", false);
 if ( !$title ) { trigger_error ( "Specify Project Title", E_USER_NOTICE ); return; }
 if ( !$type ) { trigger_error ( "Specify Database Type", E_USER_NOTICE ); return; }
 if ( !$project ) { trigger_error ( "Specify Project Name", E_USER_NOTICE ); return; }
-if ( !$name ) { trigger_error ( "Specify Database Name", E_USER_NOTICE ); return; }
-if ( !$host ) { trigger_error ( "Specify Database Host", E_USER_NOTICE ); return; }
-if ( !$user ) { trigger_error ( "Specify Database User", E_USER_NOTICE ); return; }
+//if ( !$name ) { trigger_error ( "Specify Database Name", E_USER_NOTICE ); return; }
+if ( $type != "framework" && $type != "existingconnection" )
+{
+    if ( !name) { trigger_error ( "Specify Database Name", E_USER_NOTICE ); return; }
+    if ( !$type  && $type ) { trigger_error ( "Specify Database User", E_USER_NOTICE ); return; }
+    if ( !$host ) { trigger_error ( "Specify Database Host", E_USER_NOTICE ); return; }
+}
+//if ( !$host ) { trigger_error ( "Specify Database Host", E_USER_NOTICE ); return; }
+//if ( !$user ) { trigger_error ( "Specify Database User", E_USER_NOTICE ); return; }
 //if ( !$password ) { trigger_error ( "Specify Database Type", E_USER_NOTICE ); return; }
 if ( !$baseurl ) { trigger_error ( "Specify Base URL", E_USER_NOTICE ); return; }
 global $g_debug_mode;
 $g_debug_mode = true;
 ;
 
-$test = new reporticoDatasource();
+$test = new \Reportico\Engine\reporticoDatasource();
 
 $test->driver = $type;
 $test->user_name = $user;
@@ -32,14 +40,52 @@ $test->host_name = $host;
 $test->database = $name;
 $test->server = $server;
 $test->protocol = $protocol;
-$test->connect(true);
 
-if ( $test->connected )
-    ReporticoApp::handleDebug("Connection to Database succeeded", 0);
+$g_debug_mode = true;
+ReporticoApp::set("no_sql",true);
+
+echo $test->driver."!!";
+if ( $test->driver == "existingconnection" || preg_match("/^byname_/", $test->driver))
+{
+    $test->driver = "N/A";
+    $test->user_name = "N/A";
+    $test->password = "N/A";
+    $test->host_name = "N/A";
+    $test->database = "N/A";
+    $test->server = "N/A";
+    $test->protocol = "N/A";
+}
+else if ( $test->driver == "framework" )
+{
+    $test->driver = "N/A";
+    $test->user_name = "N/A";
+    $test->password = "N/A";
+    $test->host_name = "N/A";
+    $test->database = "N/A";
+    $test->server = "N/A";
+    $test->protocol = "N/A";
+}
 else
-   trigger_error("Connection to Database failed", E_USER_NOTICE);
+{
+    $test->connect(true);
+    if ( $test->connected )
+    {
+        ReporticoApp::handleDebug("Connection to Database succeeded", 0);
+    }
+    else
+    {
+        trigger_error("Connection to Database failed", E_USER_NOTICE);
+        return;
+    }
 
-$proj_parent = findBestLocationInIncludePath( "projects" );
+    if ( $test->connected )
+        ReporticoApp::handleDebug("Connection to Database succeeded", 0);
+    else
+        trigger_error("Connection to Database failed", E_USER_NOTICE);
+
+}
+
+$proj_parent = ReporticoUtility::findBestLocationInIncludePath( "projects" );
 $proj_dir = $proj_parent."/$project";
 $proj_conf = $proj_dir."/config.php";
 $proj_menu = $proj_dir."/menu.php";
@@ -48,7 +94,6 @@ $proj_lang = $proj_dir."/lang.php";
 $proj_template = $proj_parent."/admin/config.template";
 $menu_template = $proj_parent."/admin/menu.template";
 $lang_template = $proj_parent."/admin/lang.template";
-
 
 if ( !file_exists ( $proj_parent ) )
 {
@@ -94,7 +139,7 @@ $txt = preg_replace ( "/<<DBNAME>>/", $name, $txt);
 $txt = preg_replace ( "/<<DBPROTOCOL>>/", $protocol, $txt);
 $txt = preg_replace ( "/<<DBUSER>>/", $user, $txt);
 echo "<PRE>";
-echo $txt;
+//echo htmlspecialchars($txt);
 echo "</PRE>";
     trigger_error ("Failed to create project directory $proj_dir", E_USER_NOTICE);
     return;
