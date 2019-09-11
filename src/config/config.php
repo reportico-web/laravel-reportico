@@ -15,6 +15,9 @@
     // Path relative to laravel pase or fully where admin project will be stored
     'path_to_admin' => base_path()."/vendor/reportico/laravel-reportico/projects",
 
+    // Theme folder as found in storage/reportico/themes
+    'theme' => 'bootstrap4',
+
     // Bootstrap Features
     // Set bootstrap_styles to false for reportico classic styles, or "3" for bootstrap 3 look and feel and 2 for bootstrap 2
     // If you are embedding reportico and you have already loaded bootstrap then set bootstrap_preloaded equals true so reportico

@@ -203,7 +203,7 @@ class ReporticoServiceProvider extends ServiceProvider {
             $this->engine->url_path_to_assets = $this->app["url"]->asset(config("reportico.path_to_assets"));
 
             // Theme configuration
-            $this->engine->theme = "bootstrap4";
+            $this->engine->theme = config("reportico.theme");
             $this->engine->templateViewPath = storage_path("reportico/themes");
             $this->engine->theme_dir = storage_path("reportico/themes");
             $this->engine->templateCachePath = storage_path("framework/cache");
