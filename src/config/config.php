@@ -38,13 +38,13 @@
     'bootstrap_styles' => "3",
     'bootstrap_preloaded' => false,
 
-    // Engine to use for charts .. 
+    // Engine to use for charts ..
     // HTML reports can use javascript charting, PDF reports must use PCHART
     'charting_engine' => "PCHART",
     'charting_engine_html' => "NVD3",
 
-    // Engine to use for pdf .. 
-    'pdf_engine' => "phantomjs",
+    // Engine to use for pdf ..
+    'pdf_engine' => "chromium",
 
     // Pathing for phantomjs
     'pdf_phantomjs_path' => base_path('vendor/bin/phantomjs'),
