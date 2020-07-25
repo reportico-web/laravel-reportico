@@ -1,7 +1,7 @@
 ## laravel-reportico
 
 
-Reportico Module for Laravel 4 and 5.
+Reportico Module for Laravel 4 and 5, 6 & 7.
 
 Reportico for Laravel allows you design reports using the Reportico report designer. These can be run as a report suite and embedded or linked to within your Laravel web site all accessed through a dedicated controller.
 
@@ -18,8 +18,8 @@ Here you can find out how to install and get started with the module as well as 
 
 Install with composer 
 
-For Laravel 5
--------------
+For Laravel 5, 6, and 7
+-----------------------
 
 composer require "reportico/laravel-reportico"  "~5.2" 
 
