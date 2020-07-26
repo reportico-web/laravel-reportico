@@ -59,6 +59,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaDisplay>NOINPUT</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden/>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -88,6 +91,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaDisplay>NOINPUT</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden/>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -117,6 +123,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>LIST</CriteriaType>
           <CriteriaDisplay>DROPDOWN</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden/>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -142,10 +151,14 @@ Configures a Project Reprting suite</ReportDescription>
           <Title>Host Name</Title>
           <QueryTableName/>
           <QueryColumnName/>
+          <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaHelp>HELP_DATABASE_HOST</CriteriaHelp>
           <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaDisplay>NOINPUT</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden/>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -175,6 +188,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaDisplay>NOINPUT</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden/>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -197,13 +213,16 @@ Configures a Project Reprting suite</ReportDescription>
         </CriteriaItem>
         <CriteriaItem>
           <Name>user</Name>
-          <Title>User Name</Title>
+          <Title>Database User Name</Title>
           <QueryTableName/>
           <QueryColumnName/>
           <CriteriaHelp>HELP_DATABASE_USER</CriteriaHelp>
           <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaDisplay>NOINPUT</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -225,20 +244,151 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaLinks/>
         </CriteriaItem>
         <CriteriaItem>
+          <Name>server</Name>
+          <Title>Server (Informix Only)</Title>
+          <QueryTableName/>
+          <QueryColumnName/>
+          <CriteriaHelp>HELP_DATABASE_INFORMIX_SERVER</CriteriaHelp>
+          <CriteriaType>TEXTFIELD</CriteriaType>
+          <CriteriaDisplay>NOINPUT</CriteriaDisplay>
+          <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden>yes</CriteriaHidden>
+          <CriteriaDisplayGroup/>
+          <ReturnColumn/>
+          <DisplayColumn/>
+          <OverviewColumn/>
+          <MatchColumn/>
+          <CriteriaDefaults>{constant,SW_DB_SERVER}</CriteriaDefaults>
+          <CriteriaList/>
+          <Query>
+            <TableSql/>
+            <WhereSql/>
+            <GroupSql/>
+            <RowSelection/>
+            <SQL>
+              <QuerySql/>
+            </SQL>
+            <QueryColumns/>
+            <OrderColumns/>
+            <Assignments/>
+          </Query>
+          <CriteriaLinks/>
+        </CriteriaItem>
+        <CriteriaItem>
+          <Name>protocol</Name>
+          <Title>Protocol (Informix Only)</Title>
+          <QueryTableName/>
+          <QueryColumnName/>
+          <CriteriaHelp>HELP_DATABASE_INFORMIX_PROTOCOL</CriteriaHelp>
+          <CriteriaType>TEXTFIELD</CriteriaType>
+          <CriteriaDisplay>NOINPUT</CriteriaDisplay>
+          <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired/>
+          <CriteriaHidden>yes</CriteriaHidden>
+          <CriteriaDisplayGroup/>
+          <ReturnColumn/>
+          <DisplayColumn/>
+          <OverviewColumn/>
+          <MatchColumn/>
+          <CriteriaDefaults>{constant,SW_DB_PROTOCOL}</CriteriaDefaults>
+          <CriteriaList/>
+          <Query>
+            <TableSql/>
+            <WhereSql/>
+            <GroupSql/>
+            <RowSelection/>
+            <SQL>
+              <QuerySql/>
+            </SQL>
+            <QueryColumns/>
+            <OrderColumns/>
+            <Assignments/>
+          </Query>
+          <CriteriaLinks/>
+        </CriteriaItem>
+        <CriteriaItem>
           <Name>password</Name>
-          <Title>Password</Title>
+          <Title>Database Password</Title>
           <QueryTableName/>
           <QueryColumnName/>
           <CriteriaHelp>HELP_DATABASE_PASSWORD</CriteriaHelp>
           <CriteriaType>TEXTFIELD</CriteriaType>
           <CriteriaDisplay>NOINPUT</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup/>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
           <MatchColumn/>
           <CriteriaDefaults>{constant,SW_DB_PASSWORD}</CriteriaDefaults>
           <CriteriaList/>
+          <Query>
+            <TableSql/>
+            <WhereSql/>
+            <GroupSql/>
+            <RowSelection/>
+            <SQL>
+              <QuerySql/>
+            </SQL>
+            <QueryColumns/>
+            <OrderColumns/>
+            <Assignments/>
+          </Query>
+          <CriteriaLinks/>
+        </CriteriaItem>
+        <CriteriaItem>
+          <Name>projectpassword</Name>
+          <Title>Project Password</Title>
+          <QueryTableName/>
+          <QueryColumnName/>
+          <CriteriaHelp>HELP_PASSWORD</CriteriaHelp>
+          <CriteriaType>TEXTFIELD</CriteriaType>
+          <CriteriaDisplay>NOINPUT</CriteriaDisplay>
+          <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup>Project Settings</CriteriaDisplayGroup>
+          <ReturnColumn/>
+          <DisplayColumn/>
+          <OverviewColumn/>
+          <MatchColumn/>
+          <CriteriaDefaults>{constant,SW_PROJECT_PASSWORD}</CriteriaDefaults>
+          <CriteriaList/>
+          <Query>
+            <TableSql/>
+            <WhereSql/>
+            <GroupSql/>
+            <RowSelection/>
+            <SQL>
+              <QuerySql/>
+            </SQL>
+            <QueryColumns/>
+            <OrderColumns/>
+            <Assignments/>
+          </Query>
+          <CriteriaLinks/>
+        </CriteriaItem>
+        <CriteriaItem>
+          <Name>language</Name>
+          <Title>Project Language</Title>
+          <QueryTableName/>
+          <QueryColumnName/>
+          <CriteriaHelp>HELP_LANGUAGE</CriteriaHelp>
+          <CriteriaType>LIST</CriteriaType>
+          <CriteriaDisplay>DROPDOWN</CriteriaDisplay>
+          <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup>Project Settings</CriteriaDisplayGroup>
+          <ReturnColumn/>
+          <DisplayColumn/>
+          <OverviewColumn/>
+          <MatchColumn/>
+          <CriteriaDefaults>{constant,SW_LANGUAGE}</CriteriaDefaults>
+          <CriteriaList>{languages}</CriteriaList>
           <Query>
             <TableSql/>
             <WhereSql/>
@@ -284,66 +434,6 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaLinks/>
         </CriteriaItem>
         <CriteriaItem>
-          <Name>server</Name>
-          <Title>Server (Informix Only)</Title>
-          <QueryTableName/>
-          <QueryColumnName/>
-          <CriteriaHelp>HELP_DATABASE_INFORMIX_SERVER</CriteriaHelp>
-          <CriteriaHidden>yes</CriteriaHidden>
-          <CriteriaType>TEXTFIELD</CriteriaType>
-          <CriteriaDisplay>NOINPUT</CriteriaDisplay>
-          <ExpandDisplay>NOINPUT</ExpandDisplay>
-          <ReturnColumn/>
-          <DisplayColumn/>
-          <OverviewColumn/>
-          <MatchColumn/>
-          <CriteriaDefaults>{constant,SW_DB_SERVER}</CriteriaDefaults>
-          <CriteriaList/>
-          <Query>
-            <TableSql/>
-            <WhereSql/>
-            <GroupSql/>
-            <RowSelection/>
-            <SQL>
-              <QuerySql/>
-            </SQL>
-            <QueryColumns/>
-            <OrderColumns/>
-            <Assignments/>
-          </Query>
-          <CriteriaLinks/>
-        </CriteriaItem>
-        <CriteriaItem>
-          <Name>protocol</Name>
-          <Title>Protocol (Informix Only)</Title>
-          <QueryTableName/>
-          <QueryColumnName/>
-          <CriteriaHelp>HELP_DATABASE_INFORMIX_PROTOCOL</CriteriaHelp>
-          <CriteriaHidden>yes</CriteriaHidden>
-          <CriteriaType>TEXTFIELD</CriteriaType>
-          <CriteriaDisplay>NOINPUT</CriteriaDisplay>
-          <ExpandDisplay>NOINPUT</ExpandDisplay>
-          <ReturnColumn/>
-          <DisplayColumn/>
-          <OverviewColumn/>
-          <MatchColumn/>
-          <CriteriaDefaults>{constant,SW_DB_PROTOCOL}</CriteriaDefaults>
-          <CriteriaList/>
-          <Query>
-            <TableSql/>
-            <WhereSql/>
-            <GroupSql/>
-            <RowSelection/>
-            <SQL>
-              <QuerySql/>
-            </SQL>
-            <QueryColumns/>
-            <OrderColumns/>
-            <Assignments/>
-          </Query>
-          <CriteriaLinks/>
-        </CriteriaItem>
-        <CriteriaItem>
           <Name>dbencoding</Name>
           <Title>Database Character &lt;br&gt;Encoding</Title>
           <QueryTableName/>
@@ -352,6 +442,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>LIST</CriteriaType>
           <CriteriaDisplay>DROPDOWN</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup>Advanced</CriteriaDisplayGroup>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -415,64 +508,6 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaLinks/>
         </CriteriaItem>
         <CriteriaItem>
-          <Name>language</Name>
-          <Title>Project Language</Title>
-          <QueryTableName/>
-          <QueryColumnName/>
-          <CriteriaHelp>HELP_LANGUAGE</CriteriaHelp>
-          <CriteriaType>LIST</CriteriaType>
-          <CriteriaDisplay>DROPDOWN</CriteriaDisplay>
-          <ExpandDisplay>NOINPUT</ExpandDisplay>
-          <ReturnColumn/>
-          <DisplayColumn/>
-          <OverviewColumn/>
-          <MatchColumn/>
-          <CriteriaDefaults>{constant,SW_LANGUAGE}</CriteriaDefaults>
-          <CriteriaList>{languages}</CriteriaList>
-          <Query>
-            <TableSql/>
-            <WhereSql/>
-            <GroupSql/>
-            <RowSelection/>
-            <SQL>
-              <QuerySql/>
-            </SQL>
-            <QueryColumns/>
-            <OrderColumns/>
-            <Assignments/>
-          </Query>
-          <CriteriaLinks/>
-        </CriteriaItem>
-        <CriteriaItem>
-          <Name>projectpassword</Name>
-          <Title>Project Password</Title>
-          <QueryTableName/>
-          <QueryColumnName/>
-          <CriteriaHelp>HELP_PASSWORD</CriteriaHelp>
-          <CriteriaType>TEXTFIELD</CriteriaType>
-          <CriteriaDisplay>NOINPUT</CriteriaDisplay>
-          <ExpandDisplay>NOINPUT</ExpandDisplay>
-          <ReturnColumn/>
-          <DisplayColumn/>
-          <OverviewColumn/>
-          <MatchColumn/>
-          <CriteriaDefaults>{constant,SW_PROJECT_PASSWORD}</CriteriaDefaults>
-          <CriteriaList/>
-          <Query>
-            <TableSql/>
-            <WhereSql/>
-            <GroupSql/>
-            <RowSelection/>
-            <SQL>
-              <QuerySql/>
-            </SQL>
-            <QueryColumns/>
-            <OrderColumns/>
-            <Assignments/>
-          </Query>
-          <CriteriaLinks/>
-        </CriteriaItem>
-        <CriteriaItem>
           <Name>displaydateformat</Name>
           <Title>Display Date Format</Title>
           <QueryTableName/>
@@ -481,6 +516,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>LIST</CriteriaType>
           <CriteriaDisplay>DROPDOWN</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup>Advanced</CriteriaDisplayGroup>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
@@ -510,6 +548,9 @@ Configures a Project Reprting suite</ReportDescription>
           <CriteriaType>LIST</CriteriaType>
           <CriteriaDisplay>DROPDOWN</CriteriaDisplay>
           <ExpandDisplay>NOINPUT</ExpandDisplay>
+          <CriteriaRequired>.DEFAULT</CriteriaRequired>
+          <CriteriaHidden>.DEFAULT</CriteriaHidden>
+          <CriteriaDisplayGroup>Advanced</CriteriaDisplayGroup>
           <ReturnColumn/>
           <DisplayColumn/>
           <OverviewColumn/>
