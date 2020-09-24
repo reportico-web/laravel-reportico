@@ -25,6 +25,7 @@ class ReporticoServiceProvider extends ServiceProvider {
     {
         // Define Session engine based on Laravel
         define ( "REPORTICO_SESSION_CLASS", "\Reportico\Reportico\ReporticoSession" );
+        define ( "REPORTICO_BUILDER_CLASS", "\Reportico\Reportico\Builder" );
         $this->loadViewsFrom(__DIR__.'/../../views', 'reportico');
 
         $this->publishes([
@@ -179,13 +180,13 @@ class ReporticoServiceProvider extends ServiceProvider {
     {
         $app = $this->app;
 
-        $this->app->singleton('buildReporticoQuery', function($app)
+        $this->app->bind('buildReporticoQuery', function($app)
         {
             if ( !csrf_token() )
                 $csrfToken = "unknown_csrf";
             else
                 $csrfToken = csrf_token() ;
-            return \Reportico\Engine\Builder::build()
+            return \Reportico\Engine\Builder::_build()
                  ->properties ([
                         "url_path_to_assets" => $this->app["url"]->asset(config("reportico.path_to_assets")),
                                 "url_path_to_templates" => "/vendor/reportico/themes",
