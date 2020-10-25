@@ -13,7 +13,7 @@
     'path_to_projects' => storage_path()."/reportico/projects",
 
     // Path relative to laravel pase or fully where admin project will be stored
-    'path_to_admin' => base_path()."/vendor/reportico/laravel-reportico/projects",
+    'path_to_admin' => storage_path()."/reportico/projects",
 
     // Theme folder as found in storage/reportico/themes
     'theme' => 'bootstrap4',
@@ -44,7 +44,10 @@
     'charting_engine_html' => "NVD3",
 
     // Engine to use for pdf ..
-    'pdf_engine' => "chromium",
+    'pdf_engine' => "tcpdf",
+
+    // DOWNLOAD_SAME_WINDOW, DOWNLOAD_NEW_WINDOW, INLINE
+    'pdf_delivery_mode' => "DOWNLOAD_SAME_WINDOW",
 
     // Pathing for phantomjs
     'pdf_phantomjs_path' => base_path('vendor/bin/phantomjs'),

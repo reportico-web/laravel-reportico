@@ -300,7 +300,7 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             // Engine to use for PDF reports .. 
             $this->engine->pdf_engine = config("reportico.pdf_engine");
-            $this->engine->pdf_delivery_mode = "DOWNLOAD_SAME_WINDOW";
+            $this->engine->pdf_delivery_mode = config("reportico.pdf_delivery_mode", "DOWNLOAD_SAME_WINDOW");
 
             // Phantom PDF location and temporary file rendering paths
             $this->engine->pdf_phantomjs_path = config("reportico.pdf_phantomjs_path");
