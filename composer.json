@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": "^5.5.9|^7.0.0|^8.0.0",
-        "reportico-web/reportico": "^7.1"
+        "reportico-web/reportico": "^8.0"
     },
     "license": "GPL-3.0",
     "autoload": {
