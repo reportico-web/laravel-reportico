@@ -46,6 +46,9 @@
     // Engine to use for pdf ..
     'pdf_engine' => "tcpdf",
 
+    // http schema to use to call puppeteer - false = default to calling schema
+    'pdf_http_schema' => false,
+
     // DOWNLOAD_SAME_WINDOW, DOWNLOAD_NEW_WINDOW, INLINE
     'pdf_delivery_mode' => "DOWNLOAD_SAME_WINDOW",
 

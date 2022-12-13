@@ -118,6 +118,88 @@ class ReporticoSession
     {
     }
 
+    /*
+     * Cleanly shuts doen session
+     */
+    static function keepAllSessionData()
+    {
+        $session_namespace_key = self::reporticoNamespace();
+        
+        $session_namespace_key = "reportico_reporticocrosstab";
+        self::setReporticoSessionParam("XXXXXXXXXXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        \Session::put("XXX","YYY");
+        \Session::keep(["XXX"]);
+        \Session::keep(["$session_namespace_key.XXXXXXXXXXXXXXXXXXXXXXXXXXX"]);
+        \Session::flash("$session_namespace_key.xxxxx", "wow");
+        self::setReporticoSessionParam("hello1", "goodbye2");
+
+    }
+
+    static function showAllSessionData()
+    {
+        $vars = \Session::all() ;
+        foreach ($vars as $k => $var ) {
+                $subs = \Session::get($k) ;
+                //echo $k."<BR>";
+                //echo gettype($var);
+                if ( $k == "reportico_reporticocrosstab" )
+                if ( is_array($var) ) {
+                    foreach ( $var as $k1 => $sub ) {
+                        if ( $k1 == "latestRequest" ) {
+                            echo "LT ".gettype($sub);
+                            if ( is_array($sub) )
+                            foreach ( $sub as $k2 => $v2 ) {
+                                if ( !is_array($v2) )
+                                echo " ===> sub $k2 = $v2<BR>";
+                                else
+                                echo " ===> arr $k2 <BR>";
+                            }
+                        } else {
+                            echo $k1."<BR>";
+                        }
+                    }
+                }
+        }
+    }
+
+
+    //
+    // Return the namespace selected by an external GET or PORT in form
+    // sessionid_namespacej
+    static function switchToRequestedNamespace($default_namespace)
+    {
+        $session_name = $default_namespace;
+
+        // Check for Posted Session Name and use that if specified
+        if (isset($_REQUEST['reportico_session_name'])) {
+            $session_name = $_REQUEST['reportico_session_name'];
+            if (preg_match("/_/", $session_name)) {
+
+                $ar = explode("_", $session_name);
+                if ( count($ar) > 2 && $ar[1] == "reportico" ) {
+                    ReporticoApp::set("session_namespace", $ar[2]);
+                } else 
+                    ReporticoApp::set("session_namespace", $ar[1]);
+
+                if (ReporticoApp::get("session_namespace")) {
+                    ReporticoApp::set("session_namespace_key", "reportico_" . ReporticoApp::get("session_namespace"));
+                }
+
+                // Set session to join only if it is not NS meaning its called from framework and existing session
+                // should be used
+                //if ($ar[0] != "NS") {
+                if ( count($ar) > 2 && $ar[1] == "reportico") 
+                    $session_name = $ar[2];
+                else
+                    $session_name = $ar[1];
+                //}
+
+            }
+        }
+        return $session_name;
+    }
+
+
     static function sessionItem($in_item, $in_default = false)
     {
         $ret = false;
@@ -206,9 +288,12 @@ class ReporticoSession
      * 
      * @return mixed
      */
-    static function getReporticoSessionParam($param)
+    static function getReporticoSessionParam($param, $session_name = false )
     {
         $session_namespace_key = self::reporticoNamespace();
+        if ( $session_name ) {
+            $session_namespace_key = $session_name;
+        }
         if ( \Session::has("$session_namespace_key.$param" ) )
             return \Session::get("$session_namespace_key.$param");
         else
