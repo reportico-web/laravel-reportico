@@ -135,27 +135,46 @@ class ReporticoSession
 
     }
 
-    static function showAllSessionData()
+    static function clearAllSessionData()
     {
         $vars = \Session::all() ;
         foreach ($vars as $k => $var ) {
                 $subs = \Session::get($k) ;
-                //echo $k."<BR>";
+                if ( preg_match("/^reportico/", $k) )
+                    \Session::forget("$k");
+        }
+    }
+
+    static function showAllSessionData($just_session_names = false)
+    {
+        echo "SHOW<BR>";
+        $vars = \Session::all() ;
+        foreach ($vars as $k => $var ) {
+                $subs = \Session::get($k) ;
+                echo $k." => <BR>";
                 //echo gettype($var);
                 if ( $k == "reportico_reporticocrosstab" )
+                if ( is_object($var) ) {
+                }
+                if ( $just_session_names ) continue;
                 if ( is_array($var) ) {
                     foreach ( $var as $k1 => $sub ) {
                         if ( $k1 == "latestRequest" ) {
-                            echo "LT ".gettype($sub);
-                            if ( is_array($sub) )
-                            foreach ( $sub as $k2 => $v2 ) {
-                                if ( !is_array($v2) )
-                                echo " ===> sub $k2 = $v2<BR>";
-                                else
-                                echo " ===> arr $k2 <BR>";
-                            }
+                            //echo "LT ".gettype($sub);
+                            //if ( is_array($sub) )
+                            //foreach ( $sub as $k2 => $v2 ) {
+                                //if ( !is_array($v2) )
+                                //echo " ===> sub $k2 = $v2<BR>";
+                                //else
+                                //echo " ===> arr $k2 <BR>";
+                            //}
                         } else {
-                            echo $k1."<BR>";
+                            if ( is_array($sub) ) {
+                                echo "&nbsp;&nbsp;&nbsp;&nbsp;".$k1." => ARRAY <BR>";
+                            } else {
+                                if ( $sub ) 
+                                    echo "&nbsp;&nbsp;&nbsp;&nbsp;".$k1." => $sub <BR>";
+                            }
                         }
                     }
                 }
@@ -170,30 +189,65 @@ class ReporticoSession
     {
         $session_name = $default_namespace;
 
+        //echo "SWITCH=============================================<BR>";
+        //self::clearAllSessionData();
+        //self::showAllSessionData(true);
+
         // Check for Posted Session Name and use that if specified
         if (isset($_REQUEST['reportico_session_name'])) {
             $session_name = $_REQUEST['reportico_session_name'];
             if (preg_match("/_/", $session_name)) {
 
-                $ar = explode("_", $session_name);
-                if ( count($ar) > 2 && $ar[1] == "reportico" ) {
-                    ReporticoApp::set("session_namespace", $ar[2]);
-                } else 
-                    ReporticoApp::set("session_namespace", $ar[1]);
-
+                $name = preg_replace("/^[^[_]*_/", "", $session_name);
+                $name = preg_replace("/^reportico_/", "", $name);
+                ReporticoApp::set("session_namespace", $name);
                 if (ReporticoApp::get("session_namespace")) {
                     ReporticoApp::set("session_namespace_key", "reportico_" . ReporticoApp::get("session_namespace"));
                 }
 
-                // Set session to join only if it is not NS meaning its called from framework and existing session
-                // should be used
-                //if ($ar[0] != "NS") {
-                if ( count($ar) > 2 && $ar[1] == "reportico") 
-                    $session_name = $ar[2];
-                else
-                    $session_name = $ar[1];
-                //}
+                $session_name = $name;
+                if ( self::issetReporticoSession($session_name) ) {
+                    //echo "EX $session_name<BR>";
+                    if ( $session_name != "reportico") {
+                        if ( self::issetReporticoSession("reportico_reportico") ) {
+                            foreach ( self::getReporticoSession("reportico_reportico") as $key => $value){
+                                if ( !self::issetReporticoSessionParam($key) || $key == "permissions" || $key == "awaiting_initial_defaults") {
+                                    echo "TRANS $key<BR>";
+                                    self::setReporticoSessionParam($key, $value);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    //echo "SWITCH NOT EXISTS $session_name<BR>";
+                    self::initializeReporticoNamespace($session_name);
+                    if ( $session_name != "reportico") {
+                        if ( self::issetReporticoSession("reportico_reportico") ) {
+                            //var_dump(self::getReporticoSession("reportico_reportico"));
+                            foreach ( self::getReporticoSession("reportico_reportico") as $key => $value){
+                                if ( !self::issetReporticoSessionParam($key) || $key == "permissions" || $key == "awaiting_initial_defaults") {
+                                    echo "SWITCH TRANSFER $key<BR>";
+                                    self::setReporticoSessionParam($key, $value);
+                                }
+                            }
+                        }
+                    }
+                }
 
+            } else {
+            }
+        } else {
+            if ( self::issetReporticoSession($session_name) ) {
+                //echo "NO MANUAL ALREADY EX $session_name!!!<BR>";
+            } else {
+                //echo "NO MANUAL NOT EX $session_name!!!<BR>";
+
+                ReporticoApp::set("session_namespace", $session_name);
+                if (ReporticoApp::get("session_namespace")) {
+                    ReporticoApp::set("session_namespace_key", "reportico_" . ReporticoApp::get("session_namespace"));
+                }
+
+                self::initializeReporticoNamespace($session_name);
             }
         }
         return $session_name;
@@ -253,6 +307,20 @@ class ReporticoSession
      * 
      * @return bool 
      */
+    static function issetReporticoSession($session_name)
+    {
+        return \Session::has("reportico_$session_name");
+    }
+
+    /**
+     * Check if a particular reeportico session parameter is set
+     * using current session namespace
+     * 
+     * @param string $param Session parameter name
+     * @param string $session_name Session name
+     * 
+     * @return bool 
+     */
     static function issetReporticoSessionParam($param, $session_name = false)
     {
         $session_namespace_key = self::reporticoNamespace();
@@ -278,6 +346,19 @@ class ReporticoSession
         if ( $param == "peter" )
         \Session::put("peter", "yes".(new \Datetime())->format("H:i:s"));
         //echo " and ".self::getReporticoSessionParam("peter");
+    }
+
+    /**
+     * Return the value of a reportico session_param
+     * using current session namespace
+     * 
+     * @param string $param Session parameter name
+     * 
+     * @return mixed
+     */
+    static function getReporticoSession($session_name)
+    {
+        return \Session::get("$session_name");
     }
 
     /**
@@ -367,6 +448,7 @@ class ReporticoSession
      */
     static function initializeReporticoNamespace($namespace)
     {
+        $namespace = ReporticoApp::get("session_namespace_key");
         if ( \Session::has($namespace) )
             \Session::forget($namespace);
         \Session::put($namespace, array());
