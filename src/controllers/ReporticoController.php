@@ -66,4 +66,5 @@ class ReporticoController extends BaseController
         echo $data;
         return;
     }
+
 }

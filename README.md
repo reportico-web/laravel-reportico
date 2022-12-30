@@ -21,7 +21,7 @@ Install with composer
 For Laravel 5, 6, and 7
 -----------------------
 
-composer require "reportico/laravel-reportico"  "~5.2" 
+composer require "reportico/laravel-reportico"  "dev-develop" 
 
 then add to your app.php in the providers section :--
 

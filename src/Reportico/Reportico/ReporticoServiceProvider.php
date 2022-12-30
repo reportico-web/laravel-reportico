@@ -9,27 +9,40 @@ class ReporticoServiceProvider extends ServiceProvider {
     public $engine;
     private $_assetsUrl;
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
 
-	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        // Define Session engine based on Laravel
+        define ( "REPORTICO_SESSION_CLASS", "\Reportico\Reportico\ReporticoSession" );
+        define ( "REPORTICO_BUILDER_CLASS", "\Reportico\Reportico\Builder" );
         $this->loadViewsFrom(__DIR__.'/../../views', 'reportico');
+
+        $this->publishes([
+                base_path("vendor/reportico-web/reportico/assets") => public_path('vendor/reportico'),
+                base_path("vendor/reportico-web/reportico/themes/default") => storage_path('reportico/themes/default'),
+                base_path("vendor/reportico-web/reportico/themes/bootstrap4") => storage_path('reportico/themes/bootstrap4'),
+                base_path("vendor/reportico-web/reportico/themes/default/css") => public_path('vendor/reportico/themes/default/css'),
+                base_path("vendor/reportico-web/reportico/themes/bootstrap4/css") => public_path('vendor/reportico/themes/bootstrap4/css'),
+                base_path("vendor/reportico-web/reportico/themes/bootstrap4/images") => public_path('vendor/reportico/themes/bootstrap4/images'),
+                base_path("vendor/reportico-web/reportico/projects/tutorials") => storage_path('reportico/projects/tutorials'),
+                base_path("vendor/reportico/laravel-reportico/projects/admin") => storage_path('reportico/projects/admin'),
+            ], 'public');
+
+
         $this->publishes([
                     __DIR__.'/../../config/config.php' => config_path('reportico.php'),
                 ]);
-        $this->publishes([
-                __DIR__.'/assets' => public_path('vendor/reportico'),
-            ], 'public');
 
         //\Route::group(['middleware' => ['web','auth']], function() {
         \Route::group(['middleware' => ['web']], function() {
@@ -44,6 +57,25 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine = \App::make('getReporticoEngine');
                 $engine->execute();
                 \Session::save();
+                die;
+            });
+
+            /*
+            ** Returns a file to the browser residing below the specified theme folder
+            */
+            \Route::get("reportico/theme/{file1}/{file2}/{file3}", function($file1 = false, $file2 = false, $file3 = false) 
+            {
+                header("Content-Type: text/css");
+                $file = $file1;
+                if ( $file2 ) $file .= "/" . $file2;
+                if ( $file3 ) $file .= "/" . $file3;
+                $folder = storage_path("reportico/themes/");
+                $file = $folder.$file;
+                if ( file_exists($file) ) {
+                    header("Content-Type: text/css");
+                    echo file_get_contents($file);
+                    die;
+                }
                 die;
             });
 
@@ -76,6 +108,11 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine->initial_project = "admin";
                 $engine->initial_report = false;
                 $engine->clear_reportico_session = true;
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $engine->execute();
             });
 
@@ -90,6 +127,11 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine->initial_project = $project;
                 $engine->initial_report = $report;
                 $engine->clear_reportico_session = true;
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $engine->execute();
             });
 
@@ -99,10 +141,16 @@ class ReporticoServiceProvider extends ServiceProvider {
                 $engine->access_mode = "ONEPROJECT";
                 $engine->initial_project = $project;
                 $engine->clear_reportico_session = true;
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $engine->execute();
             });
 
             \Route::get("reportico/prepare/{project}/{report}", function($project,$report) {
+                $engine = \App::make('getReporticoEngine');
                 $this->engine->access_mode = "SINGLEREPORT"; // Allows running of a single report only
                 //$this->engine->access_mode = "ONEPROJECT";  // Run single report, but allow access to reports in other projects
                 $this->engine->initial_execute_mode = "PREPARE";
@@ -111,44 +159,114 @@ class ReporticoServiceProvider extends ServiceProvider {
                 if ( !preg_match ( "/.xml$/", $this->engine->initial_report ) )
                     $this->engine->initial_report .= ".xml" ;
 
+                if ( isset($_REQUEST["new_reportico_window"]) && $_REQUEST["new_reportico_window"] ) {
+                    $this->engine->jquery_preloaded = false;
+                    $this->engine->bootstrap_preloaded = false;
+                }
+           
                 $this->engine->clear_reportico_session = true;
                 $this->engine->execute();
             });
 
         });
-	}
+    }
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
         $app = $this->app;
+
+        $this->app->bind('buildReporticoQuery', function($app)
+        {
+            if ( !csrf_token() )
+                $csrfToken = "unknown_csrf";
+            else
+                $csrfToken = csrf_token() ;
+            return \Reportico\Engine\Builder::_build()
+                 ->properties ([
+                        "url_path_to_assets" => $this->app["url"]->asset(config("reportico.path_to_assets")),
+                                "url_path_to_templates" => "/vendor/reportico/themes",
+                        "projects_folder" => config("reportico.path_to_projects"),
+                        "embedded_report" => true,
+                                "force_reportico_mini_maintains" => config("reportico.force_reportico_maintain_modals"),
+                                "framework_parent" => config("reportico.framework_type"),
+                                "theme" => config("reportico.theme"),
+                        "admin_projects_folder" => config("reportico.path_to_admin"),
+                        "show_refresh_button" => config("reportico.show_refresh_button"),
+                        "jquery_preloaded" => config("reportico.jquery_preloaded"),
+                        "bootstrap_styles" => config("reportico.bootstrap_styles"),
+                        "bootstrap_preloaded" => config("reportico.bootstrap_preloaded"),
+                        "force_reportico_mini_maintains" => config("reportico.force_reportico_maintain_modals"),
+                        "charting_engine" => config("reportico.charting_engine"),
+                        "charting_engine_html" => config("reportico.charting_engine_html"),
+                        "pdf_engine" => config("reportico.pdf_engine"),
+                        "pdf_phantomjs_path" => config("reportico.pdf_phantomjs_path"),
+                        "pdf_phantomjs_temp_path" => config("reportico.pdf_phantomjs_temp_path"),
+                        "dynamic_grids" => config("reportico.dynamic_grids"),
+                        "dynamic_grids_sortable" => config("reportico.dynamic_grids_sortable"),
+                        "dynamic_grids_searchable" => config("reportico.dynamic_grids_searchable"),
+                        "dynamic_grids_paging" => config("reportico.dynamic_grids_paging"),
+                        "dynamic_grids_page_size" => config("reportico.dynamic_grids_page_size"),
+                        //"output_template_parameters["show_hide_navigation_menu"]" => config("reportico.show_hide_navigation_menu"),
+                        //"output_template_parameters["show_hide_dropdown_menu"]" => config("reportico.show_hide_dropdown_menu"),
+                        //"output_template_parameters["show_hide_report_output_title"]" => config("reportico.show_hide_report_output_title"),
+                        //"output_template_parameters["show_hide_prepare_section_boxes"]" => config("reportico.show_hide_prepare_section_boxes");
+                        //"output_template_parameters["show_hide_prepare_pdf_button"]" => config("reportico.show_hide_prepare_pdf_button"),
+                        //"output_template_parameters["show_hide_prepare_html_button"]" => config("reportico.show_hide_prepare_html_button"),
+                        //"output_template_parameters["show_hide_prepare_print_html_button"]" => config("reportico.show_hide_prepare_print_html_button"),
+                        //"output_template_parameters["show_hide_prepare_csv_button"]" => config("reportico.show_hide_prepare_csv_button"),
+                        //"output_template_parameters["show_hide_prepare_page_style"]" => config("reportico.show_hide_prepare_page_style"),
+                             "static_menu" => config("reportico.static_menu"),
+                                 "dropdown_menu" => config("reportico.dropdown_menu"),
+                                 "available_connections" => config("database.connections"),
+                         "external_connection" => \DB::connection()->getPdo(),
+                                 "csrfToken" => $csrfToken,
+                 "templateViewPath" => storage_path("reportico/themes"),
+                 "theme_dir" => storage_path("reportico/themes"),
+                 "templateCachePath" => storage_path("framework/cache"),
+                 "url_path_to_templates" => "/vendor/reportico/themes",
+                             "reportico_ajax_script_url" => \URL::to("/reportico/ajax"),
+                                 "forward_url_get_parameters" => false,
+                                 "reportico_ajax_mode" => "laravel",
+                                 "embedded_report" => true,
+                                 "allow_debug" => true,
+            ]);
+        });
 
         $this->app->singleton('getReporticoEngine', function($app)
         {
-            $this->engine = new reportico();
+            self::buildStorage();
 
-            $this->engine->reportico_ajax_script_url = $_SERVER["SCRIPT_NAME"]."/reportico/ajax";
+            $this->engine = new \Reportico\Engine\Reportico();
+
+            $this->engine->reportico_ajax_script_url = \URL::to("/reportico/ajax");
             $this->engine->forward_url_get_parameters = false;
             //$this->engine->forward_url_get_parameters_graph = "reportico/graph";
             //$this->engine->forward_url_get_parameters_dbimage = "reportico/dbimage";
 
             // Inficate 'path' mechanism for controllers in stead of 'get'
-            $this->engine->reportico_ajax_mode = 2;
+            $this->engine->reportico_ajax_mode = "laravel";
 
             $this->engine->embedded_report = true;
             $this->engine->allow_debug = true;
             $this->engine->framework_parent = config("reportico.framework_type");
 
-            if ( \Auth::user() )
+            if ( class_exists("Auth") && \Auth::user() && \Auth::user()->id )
                 $this->engine->external_user = \Auth::user()->id;
             else
                 $this->engine->external_user = false;
             $this->engine->url_path_to_assets = $this->app["url"]->asset(config("reportico.path_to_assets"));
 
+            // Theme configuration
+            $this->engine->theme = config("reportico.theme");
+            $this->engine->templateViewPath = storage_path("reportico/themes");
+            $this->engine->theme_dir = storage_path("reportico/themes");
+            $this->engine->templateCachePath = storage_path("framework/cache");
+            $this->engine->url_path_to_templates = "/vendor/reportico/themes";
             
             // Where to store reportco projects
             $this->engine->projects_folder = config("reportico.path_to_projects");
@@ -182,6 +300,12 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             // Engine to use for PDF reports .. 
             $this->engine->pdf_engine = config("reportico.pdf_engine");
+            $this->engine->pdf_http_schema = config("reportico.pdf_http_schema");
+            $this->engine->pdf_delivery_mode = config("reportico.pdf_delivery_mode", "DOWNLOAD_SAME_WINDOW");
+
+            // Phantom PDF location and temporary file rendering paths
+            $this->engine->pdf_phantomjs_path = config("reportico.pdf_phantomjs_path");
+            $this->engine->pdf_phantomjs_temp_path = config("reportico.pdf_phantomjs_temp_path");
 
             // Whether to turn on dynamic grids to provide searchable/sortable reports
             $this->engine->dynamic_grids = config("reportico.dynamic_grids");
@@ -232,17 +356,17 @@ class ReporticoServiceProvider extends ServiceProvider {
 
             return $this->engine;
         });
-	}
+    }
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return array('reportico.getReporticoEngine', 'reportico.getReporticoEngine');
-	}
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return array('reportico.getReporticoEngine', 'reportico.buildReporticoQuery');
+    }
 
 
     public function preinit()
@@ -261,5 +385,60 @@ class ReporticoServiceProvider extends ServiceProvider {
     public function generate()
     {
         $this->engine->execute();
+    }
+
+    // Ensures that themes from October and base reportico area are
+    // combined into the storage area
+    static function syncFolder($source, $dest, $replaceExisting = true) {
+
+        if(is_dir($source)) {
+            $dir_handle=opendir($source);
+            while($file=readdir($dir_handle)){
+                if($file!="." && $file!=".."){
+                    
+                    if ( $file == "cache" )
+                        continue;
+
+                    if ( !$replaceExisting && is_dir ($dest."/".$file) )
+                        continue;
+
+                    if(is_dir($source."/".$file)){
+                        if(!is_dir($dest."/".$file)){
+                            //echo "make ".$dest."/".$file; die;
+                            mkdir($dest."/".$file);
+                        }
+                        self::syncFolder($source."/".$file, $dest."/".$file, true);
+                    } else {
+                        copy($source."/".$file, $dest."/".$file);
+                    }
+                }
+            }
+            closedir($dir_handle);
+       } else {
+            copy($source, $dest);
+       }
+    }
+
+    // Ensures that themes from Laravel and base reportico area are
+    // combined into the storage area
+    static public function buildStorage() {
+
+        $dest = storage_path("reportico");
+        if ( !is_dir($dest) ) {
+            mkdir($dest);
+        }
+
+        $dest = storage_path("reportico/themes");
+        if ( !is_dir($dest) ) {
+            mkdir($dest);
+        }
+
+        //$source =  __DIR__."/../themes";
+        //self::syncFolder($source, $dest, false);
+
+        $source =  base_path()."/vendor/reportico-web/reportico/themes";
+        self::syncFolder($source, $dest, false);
+
+        return;
     }
 }

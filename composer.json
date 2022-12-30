@@ -7,22 +7,24 @@
             "email": "info@reportico.org"
         }
     ],
-    "license": "GPL-3.0",
     "require": {
-        "php": ">=5.4.0",
-        "illuminate/support": "~5.2"
+        "php": "^5.5.9|^7.0.0|^8.0.0",
+        "reportico-web/reportico": "^8.0"
     },
+    "license": "GPL-3.0",
     "autoload": {
-        "classmap": [
-            "src/migrations",
-            "src/controllers"
-        ],
-        "files": [
-            "src/Reportico/Reportico/reportico.php"
-        ],
         "psr-0": {
             "Reportico\\Reportico\\": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "scripts": {
+        "post-install-cmd": [
+            "PhantomInstaller\\Installer::installPhantomJS"
+        ],
+        "post-update-cmd": [
+            "PhantomInstaller\\Installer::installPhantomJS"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
