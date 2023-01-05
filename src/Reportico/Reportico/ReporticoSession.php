@@ -209,10 +209,11 @@ class ReporticoSession
                 if ( self::issetReporticoSession($session_name) ) {
                     //echo "EX $session_name<BR>";
                     if ( $session_name != "reportico") {
-                        if ( self::issetReporticoSession("reportico_reportico") ) {
+                        if ( self::issetReporticoSession("reportico") ) {
+                            //echo "EX $session_name<BR>";
                             foreach ( self::getReporticoSession("reportico_reportico") as $key => $value){
                                 if ( !self::issetReporticoSessionParam($key) || $key == "permissions" || $key == "awaiting_initial_defaults") {
-                                    echo "TRANS $key<BR>";
+                                    //echo "SWITCH TRANSFER $key<BR>";
                                     self::setReporticoSessionParam($key, $value);
                                 }
                             }
@@ -222,11 +223,12 @@ class ReporticoSession
                     //echo "SWITCH NOT EXISTS $session_name<BR>";
                     self::initializeReporticoNamespace($session_name);
                     if ( $session_name != "reportico") {
-                        if ( self::issetReporticoSession("reportico_reportico") ) {
+                        if ( self::issetReporticoSession("reportico") ) {
+                    //echo "XXXXTRANS NOT EXISTS $session_name<BR>";
                             //var_dump(self::getReporticoSession("reportico_reportico"));
                             foreach ( self::getReporticoSession("reportico_reportico") as $key => $value){
                                 if ( !self::issetReporticoSessionParam($key) || $key == "permissions" || $key == "awaiting_initial_defaults") {
-                                    echo "SWITCH TRANSFER $key<BR>";
+                                    //echo "SWITCH TRANSFER $key<BR>";
                                     self::setReporticoSessionParam($key, $value);
                                 }
                             }
